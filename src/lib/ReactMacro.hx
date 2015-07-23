@@ -12,45 +12,29 @@ class ReactMacro
 		var fields = Context.getBuildFields();
 		var cls    = Context.getLocalClass().toString();
 		if (cls == 'React') return fields;
-		
+
+		var pos = Context.currentPos();
 		var props = fields.find(function(field) return field.name == 'props');
 		var state = fields.find(function(field) return field.name == 'state');
-		
+
 		var types = getPropTypes(props);
 		fields.push({
 			pos: Context.currentPos(),
 			name: 'propTypes',
-			meta: null,
+			meta: [{name:':keep', params:[], pos:pos}],
 			doc: null,
 			access: [APublic, AStatic],
 			kind: FVar(null, types)
 		});
-		
+
 		fields.push({
 			pos: Context.currentPos(),
 			name: 'displayName',
-			meta: null,
+			meta: [{name:':keep', params:[], pos:pos}],
 			doc: null,
-			access: [APublic],
+			access: [APublic, AStatic],
 			kind: FVar(null, macro $v{cls})
 		});
-		
-		// fields.push({
-		// 	pos:Context.currentPos(),
-		// 	name:'new',
-		// 	meta:null,
-		// 	doc:null,
-		// 	access:null,
-		// 	kind:FFun({
-		// 		ret:null,
-		// 		params:null,
-		// 		args:[],
-		// 		expr:macro {
-		// 			displayName = $v{cls};
-		// 			propTypes = $types;
-		// 		}
-		// 	})
-		// });
 
 		fields.map(function(field) {
 			if(field.name == 'new') {
@@ -67,31 +51,6 @@ class ReactMacro
 				case _:
 			}
 		});
-
-		// var cls = cls.split('.').join('_');
-		// fields.push({
-		// 	name: "__init__",
-		// 	doc: null,
-		// 	meta: [],
-		// 	access: [AStatic, APublic],
-		// 	kind: FFun({
-		// 		args : [],
-		// 		expr : macro untyped $i{cls} = __js__('
-		// 			React.createClass((function() {
-		// 				var statics = {};
-		// 				for(var field in $cls)
-		// 					statics[field] = $cls[field];
-		// 				var c = new $cls;
-		// 				for(var field in $cls.prototype) {
-		// 					c[field] = $cls.prototype[field];
-		// 				}
-		// 				c.statics = statics;
-		// 				return c;
-		// 			})())'),
-		// 		ret : macro : Void
-		// 	}),
-		// 	pos: Context.currentPos()
-		// });
 
 		fields.push({
 			name: "create",
@@ -126,9 +85,6 @@ class ReactMacro
 	static function parseJsx(jsx:String):Expr
 	{
 		jsx = ~/=({[^}]+})/g.replace(jsx, '="$$1"');
-		// Sys.println('------');
-		// Sys.println(jsx);
-		// Sys.println('------');
 		var xml = Xml.parse(jsx);
 		var expr = parseJsxNode(xml.firstElement());
 		// Sys.println(expr.toString());
@@ -196,7 +152,7 @@ class ReactMacro
 	{
 		// var cl = Context.getLocalClass().get();
 		var fields = [];
-		
+
 		if (field != null)
 		{
 			var type = switch (field.kind)
@@ -204,7 +160,7 @@ class ReactMacro
 				case FVar(t, _): t;
 				default: null;
 			}
-			
+
 			if (type != null)
 			{
 				switch (type)
@@ -223,7 +179,10 @@ class ReactMacro
 							{
 								case 'Int', 'Float': 'number';
 								case 'String': 'string';
-								default: 'object';
+								default:
+									if (type.indexOf(' -> ') > -1) 'func';
+									else if (type.indexOf('Array') == 0) 'array';
+									else 'object';
 							}
 							var expr = macro React.PropTypes.$type;
 							if (isRequired) expr = macro $expr.isRequired;
@@ -233,7 +192,7 @@ class ReactMacro
 				}
 			}
 		}
-		
+
 		return {pos:Context.currentPos(), expr:EObjectDecl(fields)};
 	}
 }
