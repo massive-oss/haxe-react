@@ -17,18 +17,21 @@ class ReactMacro
 		var props = fields.find(function(field) return field.name == 'props');
 		var state = fields.find(function(field) return field.name == 'state');
 
-		var types = getPropTypes(props);
-		fields.push({
-			pos: Context.currentPos(),
-			name: 'propTypes',
-			meta: [{name:':keep', params:[], pos:pos}],
-			doc: null,
-			access: [APublic, AStatic],
-			kind: FVar(null, types)
-		});
+		if (Context.defined('debug'))
+		{
+			var types = getPropTypes(props);
+			fields.push({
+				pos: pos,
+				name: 'propTypes',
+				meta: [{name:':keep', params:[], pos:pos}],
+				doc: null,
+				access: [APublic, AStatic],
+				kind: FVar(null, types)
+			});
+		}
 
 		fields.push({
-			pos: Context.currentPos(),
+			pos: pos,
 			name: 'displayName',
 			meta: [{name:':keep', params:[], pos:pos}],
 			doc: null,
@@ -52,18 +55,18 @@ class ReactMacro
 			}
 		});
 
-		fields.push({
-			name: "create",
-			doc: null,
-			meta: [],
-			access: [AStatic, APublic, AInline],
-			kind: FFun({
-				args : [{type: macro : Dynamic, name : 'arg'}],
-				expr : macro return untyped __js__('$cls')(arg),
-				ret : macro : React.Component
-			}),
-			pos: Context.currentPos()
-		});
+		// fields.push({
+		// 	name: "create",
+		// 	doc: null,
+		// 	meta: [],
+		// 	access: [AStatic, APublic, AInline],
+		// 	kind: FFun({
+		// 		args : [{type: macro : Dynamic, name : 'arg'}],
+		// 		expr : macro return untyped __js__('$cls')(arg),
+		// 		ret : macro : React.Component
+		// 	}),
+		// 	pos: Context.currentPos()
+		// });
 
 		return fields;
 	}
@@ -73,7 +76,7 @@ class ReactMacro
 		return switch expr.expr {
 			case EMeta(meta, e):
 				if (meta.name == 'dom') {
-					parseJsx(e.getValue());
+					parseJsx(e.getValue(), e.pos);
 				} else {
 					expr;
 				}
@@ -82,16 +85,15 @@ class ReactMacro
 		}
 	}
 
-	static function parseJsx(jsx:String):Expr
+	static function parseJsx(jsx:String, pos:Position):Expr
 	{
 		jsx = ~/=({[^}]+})/g.replace(jsx, '="$$1"');
 		var xml = Xml.parse(jsx);
-		var expr = parseJsxNode(xml.firstElement());
-		// Sys.println(expr.toString());
+		var expr = parseJsxNode(xml.firstElement(), pos);
 		return expr;
 	}
 
-	static function parseJsxNode(xml:Xml)
+	static function parseJsxNode(xml:Xml, pos:Position)
 	{
 		var args = [];
 
@@ -106,11 +108,11 @@ class ReactMacro
 		for (attr in xml.attributes())
 		{
 			var value = xml.get(attr);
-			var expr = parseJsxExpr(value);
+			var expr = parseJsxExpr(value, pos);
 			attrs.push({field:attr, expr:expr});
 		}
 		if (attrs.length == 0) args.push(macro null);
-		else args.push({pos:Context.currentPos(), expr:EObjectDecl(attrs)});
+		else args.push({pos:pos, expr:EObjectDecl(attrs)});
 
 		for (node in xml)
 		{
@@ -118,29 +120,29 @@ class ReactMacro
 			{
 				var value = StringTools.trim(node.toString());
 				if (value.length == 0) continue;
-				var nodes = ~/}[\n\t ]+{/.split(value);
+				var nodes = ~/}[\n\t ]+{/g.split(value);
 				for (i in 0...nodes.length)
 				{
 					var node = nodes[i];
 					if (i > 0) node = '{$node';
 					if (i < nodes.length - 1) node = '$node}';
-					args.push(parseJsxExpr(node));
+					args.push(parseJsxExpr(node, pos));
 				}
 			}
 			else if (node.nodeType == Xml.Element)
 			{
-				args.push(parseJsxNode(node));
+				args.push(parseJsxNode(node, pos));
 			}
 
 		}
 		return macro React.createElement($a{args});
 	}
 
-	static function parseJsxExpr(value:String)
+	static function parseJsxExpr(value:String, pos:Position)
 	{
 		return if (value.charAt(0) == '{' && value.charAt(value.length - 1) == '}')
 		{
-			Context.parse(value.substr(1, value.length - 2), Context.currentPos());
+			Context.parse(value.substr(1, value.length - 2), pos);
 		}
 		else
 		{
@@ -178,6 +180,7 @@ class ReactMacro
 							var type = switch (type)
 							{
 								case 'Int', 'Float': 'number';
+								case 'Bool': 'bool';
 								case 'String': 'string';
 								default:
 									if (type.indexOf(' -> ') > -1) 'func';

@@ -2,19 +2,17 @@ import js.html.Element;
 import js.html.Event;
 import js.html.EventTarget;
 
-// @:jsRequire('react')
 @:native('React')
 extern class React {
 	static function createElement(type:Dynamic, attrs:Dynamic, ?child1:Dynamic, ?child2:Dynamic, ?child3:Dynamic, ?child4:Dynamic, ?child5:Dynamic, ?child6:Dynamic, ?child7:Dynamic, ?child8:Dynamic, ?child9:Dynamic, ?child10:Dynamic):React.Component;
 
+	static function initializeTouchEvents(flag:Bool):Void;
 	static var PropTypes(default, null):ReactPropTypes;
 	static function render(component:Component, container:Element, ?callback:Void -> Void):Component;
 	static function unmountComponentAtNode(container:Element):Bool;
 	static function renderComponentToString(component:React.Component):String;
 	static function renderComponentToStaticMarkup(component:React.Component):String;
 	static function findDOMNode(component:Component):Element;
-
-	static var DOM(default, null):ReactDOM;
 }
 
 @:native('React.Component')
@@ -37,14 +35,6 @@ extern class Component
 	@:keep function componentDidMount():Void;
 	@:keep function componentWillUnmount():Void;
 	@:keep function componentDidUnmount():Void;
-}
-
-// extern class ReactProps implements Dynamic {
-// 	// TODO aVoid Dynamic if possible
-// 	var children(default, null):Dynamic;
-// }
-
-extern class ReactDOM {
 }
 
 extern class SyntheticEvent {
