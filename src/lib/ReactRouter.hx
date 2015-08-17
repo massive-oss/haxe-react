@@ -1,24 +1,23 @@
-@:native('Router')
-@:jsRequire('react-router')
+@:native('ReactRouter')
 extern class ReactRouter
 {
 	public static function run(routes:Dynamic, handler:Dynamic):Void;
 }
 
-@:jsRequire('react-router', 'Route')
+@:native('ReactRouter.Route')
 extern class Route {}
 
-@:jsRequire('react-router', 'DefaultRoute')
+@:native('ReactRouter.DefaultRoute')
 extern class DefaultRoute extends Route {}
 
-@:jsRequire('react-router', 'NotFoundRoute')
+@:native('ReactRouter.NotFoundRoute')
 extern class NotFoundRoute extends Route {}
 
-@:jsRequire('react-router', 'Redirect')
+@:native('ReactRouter.Redirect')
 extern class Redirect {}
 
-@:jsRequire('react-router', 'RouteHandler')
+@:native('ReactRouter.RouteHandler')
 extern class RouteHandler {}
 
-@:jsRequire('react-router', 'Link')
+@:native('ReactRouter.Link')
 extern class Link {}
