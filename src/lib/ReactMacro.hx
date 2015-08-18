@@ -120,7 +120,7 @@ class ReactMacro
 			{
 				var value = StringTools.trim(node.toString());
 				if (value.length == 0) continue;
-				var nodes = ~/}[\n\t ]+{/g.split(value);
+				var nodes = ~/}[\r\n\t ]+{/g.split(value);
 				for (i in 0...nodes.length)
 				{
 					var node = nodes[i];
@@ -152,7 +152,6 @@ class ReactMacro
 
 	static function getPropTypes(field:Field)
 	{
-		// var cl = Context.getLocalClass().get();
 		var fields = [];
 
 		if (field != null)
