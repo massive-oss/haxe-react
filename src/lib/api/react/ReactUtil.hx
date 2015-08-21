@@ -1,3 +1,5 @@
+package api.react;
+
 class ReactUtil
 {
 	public static function cx(obj:Dynamic)

@@ -1,3 +1,5 @@
+package api.react;
+
 @:native('ReactRouter')
 extern class ReactRouter
 {

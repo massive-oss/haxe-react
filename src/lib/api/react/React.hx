@@ -1,3 +1,5 @@
+package api.react;
+
 import js.html.Element;
 import js.html.Event;
 import js.html.EventTarget;
