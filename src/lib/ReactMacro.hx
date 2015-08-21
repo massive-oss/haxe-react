@@ -120,13 +120,17 @@ class ReactMacro
 			{
 				var value = StringTools.trim(node.toString());
 				if (value.length == 0) continue;
-				var nodes = ~/}[\r\n\t ]+{/g.split(value);
-				for (i in 0...nodes.length)
+				
+				var lines = ~/[\r\n]/g.split(value);
+				lines = lines.map(StringTools.trim);
+				for (line in lines)
 				{
-					var node = nodes[i];
-					if (i > 0) node = '{$node';
-					if (i < nodes.length - 1) node = '$node}';
-					args.push(parseJsxExpr(node, pos));
+					if (line.length == 0) continue;
+					~/([^{]+|\{[^}]+\})/g.map(line, function (e){
+						var token = e.matched(0);
+						args.push(parseJsxExpr(token, pos));
+						return '';
+					});
 				}
 			}
 			else if (node.nodeType == Xml.Element)

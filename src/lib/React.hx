@@ -19,7 +19,7 @@ extern class React {
 @:autoBuild(ReactMacro.build())
 extern class Component
 {
-	var refs(default, null):Dynamic<Component>;
+	var refs(default, null):Dynamic<Dynamic>;
 
 	function getDOMNode():Element;
 	function setProps(nextProps:Dynamic):Void;
