@@ -8,7 +8,7 @@ import js.html.EventTarget;
 extern class React
 {
 	static var PropTypes(default, null):ReactPropTypes;
-	static function createElement(type:Dynamic, attrs:Dynamic, ?child1:Dynamic, ?child2:Dynamic, ?child3:Dynamic, ?child4:Dynamic, ?child5:Dynamic, ?child6:Dynamic, ?child7:Dynamic, ?child8:Dynamic, ?child9:Dynamic, ?child10:Dynamic):ReactComponent;
+	static function createElement(type:Dynamic, ?attrs:Dynamic, ?child1:Dynamic, ?child2:Dynamic, ?child3:Dynamic, ?child4:Dynamic, ?child5:Dynamic, ?child6:Dynamic, ?child7:Dynamic, ?child8:Dynamic, ?child9:Dynamic, ?child10:Dynamic):ReactComponent;
 	static function initializeTouchEvents(flag:Bool):Void;
 	static function render(component:ReactComponent, container:Element, ?callback:Void -> Void):ReactComponent;
 	static function unmountComponentAtNode(container:Element):Bool;
