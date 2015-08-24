@@ -1,5 +1,8 @@
 package api.react;
 
+/**
+	https://facebook.github.io/react/docs/top-level-api.html#react.proptypes
+**/
 extern class ReactPropTypes
 {
 	var array:Dynamic;

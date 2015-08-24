@@ -2,31 +2,53 @@ package api.react;
 
 import js.html.Element;
 
+/**
+	https://facebook.github.io/react/docs/component-api.html
+**/
 @:native('React.Component')
-@:keep extern class ReactComponent<TProps:Dynamic, TState:Dynamic, TRefs:Dynamic>
+@:keepSub extern class ReactComponent<TProps:Dynamic, TState:Dynamic, TRefs:Dynamic>
 {
 	var props(default, null):TProps;
 	var state(default, null):TState;
+
+	/**
+		https://facebook.github.io/react/docs/more-about-refs.html
+	**/
 	var refs(default, null):TRefs;
 
-	function getDOMNode():Element;
-	function setProps(nextProps:TProps):Void;
-	function replaceProps(nextProps:TProps):Void;
-	function transferPropsTo(targetComponent:ReactComponentOfDynamic):Void;
-	function setState(nextState:TState, ?callback:Void -> Void):Void;
-	function replaceState(nextState:TState, ?callback:Void -> Void):Void;
+	/**
+		https://facebook.github.io/react/docs/component-api.html#forceupdate
+	**/
 	function forceUpdate(?callback:Void -> Void):Void;
-	function isMounted():Bool;
 
+	/**
+		https://facebook.github.io/react/docs/component-api.html#setstate
+	**/
+	function setState(nextState:TState, ?callback:Void -> Void):Void;
+
+	/**
+		https://facebook.github.io/react/docs/component-specs.html#render
+	**/
 	function render():ReactComponentOfDynamic;
+
+	/**
+		https://facebook.github.io/react/docs/component-specs.html#mounting-componentwillmount
+	**/
 	function componentWillMount():Void;
+
+	/**
+		https://facebook.github.io/react/docs/component-specs.html#mounting-componentdidmount
+	**/
 	function componentDidMount():Void;
+
+	/**
+		https://facebook.github.io/react/docs/component-specs.html#unmounting-componentwillunmount
+	**/
 	function componentWillUnmount():Void;
-	function componentDidUnmount():Void;
 }
 
 typedef ReactComponentRefs = Dynamic<ReactComponentOfDynamic>;
-typedef ReactComponentOfDynamic = ReactComponent<Dynamic, Dynamic, ReactComponentRefs>;
+typedef ReactComponentOfDynamic = ReactComponent<Dynamic, Dynamic, Dynamic>;
 typedef ReactComponentOfProps<TProps> = ReactComponent<TProps, Dynamic, ReactComponentRefs>;
 typedef ReactComponentOfState<TState> = ReactComponent<Dynamic, TState, ReactComponentRefs>;
 typedef ReactComponentOfRefs<TRefs> = ReactComponent<Dynamic, Dynamic, TRefs>;

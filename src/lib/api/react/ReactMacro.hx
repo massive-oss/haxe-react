@@ -4,6 +4,9 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.ExprTools;
 
+/**
+	Provides a simple macro for parsing jsx into Haxe expressions.
+**/
 class ReactMacro
 {
 	#if macro
@@ -11,7 +14,7 @@ class ReactMacro
 	{
 		return parseJsx(ExprTools.getValue(expr), expr.pos);
 	}
-	
+
 	static function parseJsx(jsx:String, pos:Position):Expr
 	{
 		jsx = ~/=({[^}]+})/g.replace(jsx, '="$$1"');
@@ -47,7 +50,7 @@ class ReactMacro
 			{
 				var value = StringTools.trim(node.toString());
 				if (value.length == 0) continue;
-				
+
 				var lines = ~/[\r\n]/g.split(value);
 				lines = lines.map(StringTools.trim);
 				for (line in lines)

@@ -1,18 +1,26 @@
 package api.react;
 
+import js.html.Event;
+import js.html.EventTarget;
+
+/**
+	https://facebook.github.io/react/docs/events.html
+**/
 extern class ReactEvent
 {
-	var bubbles(default, null):Bool;
-	var cancelable(default, null):Bool;
-	var currentTarget(default, null):EventTarget;
-	var defaultPrevented(default, null):Bool;
-	var eventPhase(default, null):Int;
-	var isTrusted(default, null):Bool;
-	var nativeEvent(default, null):Event;
-	var target(default, null):EventTarget;
-	var timeStamp(default, null):Date;
-	var type(default, null):String;
+	public var bubbles(default, null):Bool;
+	public var cancelable(default, null):Bool;
+	public var currentTarget(default, null):EventTarget;
+	public var defaultPrevented(default, null):Bool;
+	public var eventPhase(default, null):Int;
+	public var isTrusted(default, null):Bool;
+	public var nativeEvent(default, null):Event;
+	public var target(default, null):EventTarget;
+	public var timeStamp(default, null):Date;
+	public var type(default, null):String;
 
-	function preventDefault():Void;
-	function stopPropagation():Void;
+	public function preventDefault():Void;
+	public function isDefaultPrevented():Void;
+	public function stopPropagation():Void;
+	public function isPropagationStopped():Void;
 }
