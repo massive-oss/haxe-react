@@ -2,91 +2,16 @@ package api.react;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
-
-using haxe.macro.Tools;
-using StringTools;
-using Lambda;
+import haxe.macro.ExprTools;
 
 class ReactMacro
 {
-	macro static public function build():Array<Field>
+	#if macro
+	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
-		var fields = Context.getBuildFields();
-		var cls    = Context.getLocalClass().toString();
-		if (cls == 'React') return fields;
-
-		var pos = Context.currentPos();
-		var props = fields.find(function(field) return field.name == 'props');
-		var state = fields.find(function(field) return field.name == 'state');
-
-		if (Context.defined('debug'))
-		{
-			var types = getPropTypes(props);
-			fields.push({
-				pos: pos,
-				name: 'propTypes',
-				meta: [{name:':keep', params:[], pos:pos}],
-				doc: null,
-				access: [APublic, AStatic],
-				kind: FVar(null, types)
-			});
-		}
-
-		fields.push({
-			pos: pos,
-			name: 'displayName',
-			meta: [{name:':keep', params:[], pos:pos}],
-			doc: null,
-			access: [APublic, AStatic],
-			kind: FVar(null, macro $v{cls})
-		});
-
-		fields.map(function(field) {
-			if(field.name == 'new') {
-				switch field.kind {
-					case FFun({ args: a }) if(a.length > 0):
-						throw '$cls: a React class cannot have a constructor with arguments';
-					case _:
-				}
-			}
-			switch field.kind {
-				case FFun(o):
-				if (o.expr == null) Sys.println(field.name);
-				o.expr = o.expr.map(transformDom);
-				case _:
-			}
-		});
-
-		// fields.push({
-		// 	name: "create",
-		// 	doc: null,
-		// 	meta: [],
-		// 	access: [AStatic, APublic, AInline],
-		// 	kind: FFun({
-		// 		args : [{type: macro : Dynamic, name : 'arg'}],
-		// 		expr : macro return untyped __js__('$cls')(arg),
-		// 		ret : macro : React.Component
-		// 	}),
-		// 	pos: Context.currentPos()
-		// });
-
-		return fields;
+		return parseJsx(ExprTools.getValue(expr), expr.pos);
 	}
-
-	static function transformDom(expr:Expr)
-	{
-		return switch expr.expr {
-			case EMeta(meta, e):
-				if (meta.name == 'dom') {
-					parseJsx(e.getValue(), e.pos);
-				} else {
-					expr;
-				}
-			case _:
-				expr.map(transformDom);
-		}
-	}
-
+	
 	static function parseJsx(jsx:String, pos:Position):Expr
 	{
 		jsx = ~/=({[^}]+})/g.replace(jsx, '="$$1"');
@@ -141,7 +66,7 @@ class ReactMacro
 			}
 
 		}
-		return macro React.createElement($a{args});
+		return macro api.react.React.createElement($a{args});
 	}
 
 	static function parseJsxExpr(value:String, pos:Position)
@@ -155,53 +80,10 @@ class ReactMacro
 			macro $v{value};
 		}
 	}
-
-	static function getPropTypes(field:Field)
+	#else
+	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
-		var fields = [];
-
-		if (field != null)
-		{
-			var type = switch (field.kind)
-			{
-				case FVar(t, _): t;
-				default: null;
-			}
-
-			if (type != null)
-			{
-				switch (type)
-				{
-					case TAnonymous(props):
-						for (field in props)
-						{
-							var isRequired = !Lambda.exists(field.meta, function (meta)
-								return meta.name == ':optional');
-							var type = switch (field.kind)
-							{
-								case FVar(t, _): t.toString();
-								default: null;
-							}
-							var type = switch (type)
-							{
-								case 'Int', 'Float': 'number';
-								case 'Bool': 'bool';
-								case 'String': 'string';
-								default:
-									if (type.indexOf(' -> ') > -1) 'func';
-									else if (type.indexOf('Array') == 0) 'array';
-									else 'object';
-							}
-							var expr = macro React.PropTypes.$type;
-							if (isRequired) expr = macro $expr.isRequired;
-							fields.push({field:field.name, expr:expr});
-						}
-					default:
-				}
-			}
-		}
-
-		return {pos:Context.currentPos(), expr:EObjectDecl(fields)};
+		return null;
 	}
+	#end
 }
-
