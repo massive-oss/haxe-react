@@ -20,7 +20,7 @@ extern class ReactEvent
 	public var type(default, null):String;
 
 	public function preventDefault():Void;
-	public function isDefaultPrevented():Void;
+	public function isDefaultPrevented():Bool;
 	public function stopPropagation():Void;
-	public function isPropagationStopped():Void;
+	public function isPropagationStopped():Bool;
 }
