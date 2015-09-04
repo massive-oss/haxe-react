@@ -45,6 +45,9 @@ import js.html.Element;
 		https://facebook.github.io/react/docs/component-specs.html#unmounting-componentwillunmount
 	**/
 	function componentWillUnmount():Void;
+
+	function componentWillReceiveProps(nextProps:TProps):Void;
+	function shouldComponentUpdate(nextProps:TProps, nextState:TState):Bool;
 }
 
 typedef ReactComponentRefs = Dynamic<ReactComponentOfDynamic>;

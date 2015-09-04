@@ -19,4 +19,12 @@ class ReactUtil
 					Reflect.setField(target, field, Reflect.field(source, field));
 		return target;
 	}
+
+	public static function mapi<A, B>(items:Array<A>, map:Int -> A -> B):Array<B>
+	{
+		var newItems = [];
+		for (i in 0...items.length)
+			newItems.push(map(i, items[i]));
+		return newItems;
+	}
 }
