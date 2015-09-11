@@ -6,6 +6,7 @@ import js.html.Element;
 	https://facebook.github.io/react/docs/component-api.html
 **/
 @:native('React.Component')
+@:autoBuild(api.react.ReactMacro.setDisplayName())
 @:keepSub extern class ReactComponent<TProps:Dynamic, TState:Dynamic, TRefs:Dynamic>
 {
 	var props(default, null):TProps;

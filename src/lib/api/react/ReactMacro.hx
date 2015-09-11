@@ -83,6 +83,27 @@ class ReactMacro
 			macro $v{value};
 		}
 	}
+	
+	public static function setDisplayName()
+	{
+		var fields = Context.getBuildFields();
+		
+		for (field in fields) 
+			if (field.name == 'displayName') return fields;
+		
+		var inClass = Context.getLocalClass().get();
+		var className = macro $v{inClass.name};
+		
+		var field:Field = {
+			name:'displayName',
+			access:[Access.AStatic, Access.APrivate],
+			kind:FieldType.FVar(null, className),
+			pos:Context.currentPos()
+		}
+		fields.push(field);
+		return fields;
+	}
+
 	#else
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
