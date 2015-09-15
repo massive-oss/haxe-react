@@ -16,7 +16,7 @@ extern class ReactMouseEvent extends ReactEvent
 	public var metaKey:Bool;
 	public var pageX:Int;
 	public var pageY:Int;
-	public var relatedTarget:EventTarget
+	public var relatedTarget:EventTarget;
 	public var screenX:Int;
 	public var screenY:Int;
 	public var shiftKey:Bool;
