@@ -47,8 +47,25 @@ import js.html.Element;
 	**/
 	function componentWillUnmount():Void;
 
+	/**
+		https://facebook.github.io/react/docs/component-specs.html#updating-componentwillreceiveprops
+	**/
 	function componentWillReceiveProps(nextProps:TProps):Void;
+
+	/**
+		https://facebook.github.io/react/docs/component-specs.html#updating-shouldcomponentupdate
+	**/
 	function shouldComponentUpdate(nextProps:TProps, nextState:TState):Bool;
+
+	/**
+		https://facebook.github.io/react/docs/component-specs.html#updating-componentwillupdate
+	**/
+	function componentWillUpdate(nextProps:TProps, nextState:TState):Void;
+
+	/**
+		https://facebook.github.io/react/docs/component-specs.html#updating-componentdidupdate
+	**/
+	function componentDidUpdate(prevProps:TProps, prevState:TState):Void;
 }
 
 typedef ReactComponentRefs = Dynamic<ReactComponentOfDynamic>;
