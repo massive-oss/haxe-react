@@ -1,5 +1,7 @@
 package api.react;
 
+import api.react.ReactComponent.ReactComponentOfDynamic;
+
 class ReactUtil
 {
 	public static function cx(obj:Dynamic)
@@ -26,5 +28,28 @@ class ReactUtil
 		for (i in 0...items.length)
 			newItems.push(map(i, items[i]));
 		return newItems;
+	}
+
+	/**
+		https://facebook.github.io/react/docs/pure-render-mixin.html
+
+		Implementing a simple shallow compare of next props and next state
+		similar to the PureRenderMixin react addon
+	**/
+	public static function shouldComponentUpdate(component:ReactComponentOfDynamic, nextProps:Dynamic, nextState:Dynamic):Bool
+	{
+		return !shallowCompare(component.props, nextProps) || !shallowCompare(component.state, nextState);
+	}
+
+	static function shallowCompare(a:Dynamic, b:Dynamic):Bool
+	{
+		var aFields = Reflect.fields(a);
+		var bFields = Reflect.fields(b);
+		if (aFields.length != bFields.length)
+			return false;
+		for (field in aFields)
+			if (!Reflect.hasField(b, field) || Reflect.field(b, field) != Reflect.field(a, field))
+				return false;
+		return true;
 	}
 }
