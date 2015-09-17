@@ -55,7 +55,7 @@ import js.html.Element;
 	/**
 		https://facebook.github.io/react/docs/component-specs.html#updating-shouldcomponentupdate
 	**/
-	function shouldComponentUpdate(nextProps:TProps, nextState:TState):Bool;
+	dynamic function shouldComponentUpdate(nextProps:TProps, nextState:TState):Bool;
 
 	/**
 		https://facebook.github.io/react/docs/component-specs.html#updating-componentwillupdate
