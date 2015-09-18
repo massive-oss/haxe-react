@@ -4,15 +4,18 @@ import api.react.ReactComponent.ReactComponentOfDynamic;
 
 class ReactUtil
 {
-	public static function cx(list:Array<Dynamic>)
+	public static function cx(arrayOrObject:Dynamic)
 	{
-		var classes = [];
-		for (value in list)
+		var array:Array<Dynamic<Bool>>;
+		if (!Std.is(arrayOrObject, Array)) array = arrayOrObject;
+		else array = [arrayOrObject];
+		var classes:Array<String> = [];
+		for (value in array)
 		{
 			if (value == null) continue;
 			if (Std.is(value, String))
 			{
-				classes.push(value);
+				classes.push(cast value);
 			}
 			else
 			{
@@ -20,7 +23,6 @@ class ReactUtil
 					if (Reflect.field(value, field) == true)
 						classes.push(field);
 			}
-
 		}
 		return classes.join(' ');
 	}
