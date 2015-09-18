@@ -4,12 +4,24 @@ import api.react.ReactComponent.ReactComponentOfDynamic;
 
 class ReactUtil
 {
-	public static function cx(obj:Dynamic)
+	public static function cx(list:Array<Dynamic>)
 	{
 		var classes = [];
-		for (field in Reflect.fields(obj))
-			if (Reflect.field(obj, field) == true)
-				classes.push(field);
+		for (value in list)
+		{
+			if (value == null) continue;
+			if (Std.is(value, String))
+			{
+				classes.push(value);
+			}
+			else
+			{
+				for (field in Reflect.fields(value))
+					if (Reflect.field(value, field) == true)
+						classes.push(field);
+			}
+
+		}
 		return classes.join(' ');
 	}
 
