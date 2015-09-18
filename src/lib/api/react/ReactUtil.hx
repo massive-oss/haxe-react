@@ -7,7 +7,7 @@ class ReactUtil
 	public static function cx(arrayOrObject:Dynamic)
 	{
 		var array:Array<Dynamic<Bool>>;
-		if (!Std.is(arrayOrObject, Array)) array = arrayOrObject;
+		if (Std.is(arrayOrObject, Array)) array = arrayOrObject;
 		else array = [arrayOrObject];
 		var classes:Array<String> = [];
 		for (value in array)
