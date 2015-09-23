@@ -9,8 +9,12 @@ import js.html.Element;
 @:autoBuild(api.react.ReactMacro.setDisplayName())
 @:keepSub extern class ReactComponent<TProps:Dynamic, TState:Dynamic, TRefs:Dynamic>
 {
+	static var defaultProps:Dynamic;
+	static var contextTypes:Dynamic;
+
 	var props(default, null):TProps;
 	var state(default, null):TState;
+	var context(default, null):Dynamic;
 
 	/**
 		https://facebook.github.io/react/docs/more-about-refs.html
