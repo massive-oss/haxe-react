@@ -23,6 +23,13 @@ extern class React
 		?child6:Dynamic, ?child7:Dynamic, ?child8:Dynamic, ?child9:Dynamic, ?child10:Dynamic):ReactComponentOfDynamic;
 
 	/**
+		https://facebook.github.io/react/docs/top-level-api.html#react.cloneelement
+	**/
+	public static function cloneElement(element:ReactComponentOfDynamic, ?attrs:Dynamic,
+		?child1:Dynamic, ?child2:Dynamic, ?child3:Dynamic, ?child4:Dynamic, ?child5:Dynamic,
+		?child6:Dynamic, ?child7:Dynamic, ?child8:Dynamic, ?child9:Dynamic, ?child10:Dynamic):ReactComponentOfDynamic;
+
+	/**
 		https://facebook.github.io/react/docs/top-level-api.html#react.initializetouchevents
 	**/
 	public static function initializeTouchEvents(flag:Bool):Void;
@@ -51,4 +58,32 @@ extern class React
 		https://facebook.github.io/react/docs/top-level-api.html#react.finddomnode
 	**/
 	public static function findDOMNode(component:ReactComponentOfDynamic):Element;
+	
+	/**
+		https://facebook.github.io/react/docs/top-level-api.html#react.children
+	**/
+	public static var Children:ReactChildren;
+}
+
+extern interface ReactChildren
+{
+	/**
+		https://facebook.github.io/react/docs/top-level-api.html#react.children.map
+	**/
+	function map(children:Dynamic, fn:ReactComponentOfDynamic->ReactComponentOfDynamic):Dynamic;
+	
+	/**
+		https://facebook.github.io/react/docs/top-level-api.html#react.children.foreach
+	**/
+	function foreach(children:Dynamic, fn:ReactComponentOfDynamic->Void):Void;
+	
+	/**
+		https://facebook.github.io/react/docs/top-level-api.html#react.children.count
+	**/
+	function count(children:Dynamic):Int;
+	
+	/**
+		https://facebook.github.io/react/docs/top-level-api.html#react.children.only
+	**/
+	function only(children:Dynamic):ReactComponentOfDynamic;
 }

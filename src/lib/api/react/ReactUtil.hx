@@ -43,6 +43,23 @@ class ReactUtil
 			newItems.push(map(i, items[i]));
 		return newItems;
 	}
+	
+	/**
+		Clone opaque children structure, providing additional props to merge:
+		- as a object
+		- or as a function (child->props)
+	**/
+	public static function cloneChildren(children:Dynamic, props:Dynamic):Dynamic
+	{
+		if (Reflect.isFunction(props))
+			return React.Children.map(children, function(child) {
+				return React.cloneElement(child, props(child));
+			});
+		else
+			return React.Children.map(children, function(child) {
+				return React.cloneElement(child, props);
+			});
+	}
 
 	/**
 		https://facebook.github.io/react/docs/pure-render-mixin.html
