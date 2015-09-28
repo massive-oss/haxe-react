@@ -20,7 +20,8 @@ extern class React
 	**/
 	public static function createElement(type:Dynamic, ?attrs:Dynamic,
 		?child1:Dynamic, ?child2:Dynamic, ?child3:Dynamic, ?child4:Dynamic, ?child5:Dynamic,
-		?child6:Dynamic, ?child7:Dynamic, ?child8:Dynamic, ?child9:Dynamic, ?child10:Dynamic):ReactComponentOfDynamic;
+		?child6:Dynamic, ?child7:Dynamic, ?child8:Dynamic, ?child9:Dynamic, ?child10:Dynamic,
+		?child11:Dynamic, ?child12:Dynamic, ?child13:Dynamic, ?child14:Dynamic, ?child15:Dynamic):ReactComponentOfDynamic;
 
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#react.initializetouchevents
