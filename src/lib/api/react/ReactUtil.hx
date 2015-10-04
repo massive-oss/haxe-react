@@ -38,6 +38,7 @@ class ReactUtil
 
 	public static function mapi<A, B>(items:Array<A>, map:Int -> A -> B):Array<B>
 	{
+		if (items == null) return null;
 		var newItems = [];
 		for (i in 0...items.length)
 			newItems.push(map(i, items[i]));
