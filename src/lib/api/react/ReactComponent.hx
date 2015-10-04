@@ -79,4 +79,4 @@ typedef ReactComponentOfState<TState> = ReactComponent<Dynamic, TState, ReactCom
 typedef ReactComponentOfRefs<TRefs> = ReactComponent<Dynamic, Dynamic, TRefs>;
 typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponent<TProps, TState, ReactComponentRefs>;
 typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponent<TProps, Dynamic, TRefs>;
-typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponent<TState, Dynamic, TRefs>;
+typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponent<Dynamic, TState, TRefs>;
