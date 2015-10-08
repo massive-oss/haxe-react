@@ -5,9 +5,11 @@ import js.html.Element;
 /**
 	https://facebook.github.io/react/docs/component-api.html
 **/
-@:native('React.Component')
+typedef ReactComponent = ReactComponentOf<ReactComponentProps, ReactComponentState, ReactComponentRefs>;
+
+@:keepSub @:native('React.Component')
 @:autoBuild(api.react.ReactMacro.setDisplayName())
-@:keepSub extern class ReactComponent<TProps:Dynamic, TState:Dynamic, TRefs:Dynamic>
+extern class ReactComponentOf <TProps:ReactComponentProps, TState:ReactComponentState, TRefs:Dynamic>
 {
 	static var defaultProps:Dynamic;
 	static var contextTypes:Dynamic;
@@ -34,7 +36,7 @@ import js.html.Element;
 	/**
 		https://facebook.github.io/react/docs/component-specs.html#render
 	**/
-	function render():ReactComponentOfDynamic;
+	function render():ReactComponent;
 
 	/**
 		https://facebook.github.io/react/docs/component-specs.html#mounting-componentwillmount
@@ -72,11 +74,10 @@ import js.html.Element;
 	function componentDidUpdate(prevProps:TProps, prevState:TState):Void;
 }
 
-typedef ReactComponentRefs = Dynamic<ReactComponentOfDynamic>;
-typedef ReactComponentOfDynamic = ReactComponent<Dynamic, Dynamic, Dynamic>;
-typedef ReactComponentOfProps<TProps> = ReactComponent<TProps, Dynamic, ReactComponentRefs>;
-typedef ReactComponentOfState<TState> = ReactComponent<Dynamic, TState, ReactComponentRefs>;
-typedef ReactComponentOfRefs<TRefs> = ReactComponent<Dynamic, Dynamic, TRefs>;
-typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponent<TProps, TState, ReactComponentRefs>;
-typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponent<TProps, Dynamic, TRefs>;
-typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponent<Dynamic, TState, TRefs>;
+typedef ReactComponentProps = {
+	@:optional var children:Array<ReactComponent>;
+}
+
+typedef ReactComponentState = {};
+
+typedef ReactComponentRefs = {};
