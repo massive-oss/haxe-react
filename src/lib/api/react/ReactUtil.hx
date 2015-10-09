@@ -1,6 +1,6 @@
 package api.react;
 
-import api.react.ReactComponent.ReactComponentOfDynamic;
+import api.react.ReactComponent;
 
 class ReactUtil
 {
@@ -44,7 +44,7 @@ class ReactUtil
 			newItems.push(map(i, items[i]));
 		return newItems;
 	}
-	
+
 	/**
 		Clone opaque children structure, providing additional props to merge:
 		- as a object
@@ -68,7 +68,7 @@ class ReactUtil
 		Implementing a simple shallow compare of next props and next state
 		similar to the PureRenderMixin react addon
 	**/
-	public static function shouldComponentUpdate(component:ReactComponentOfDynamic, nextProps:Dynamic, nextState:Dynamic):Bool
+	public static function shouldComponentUpdate(component:Dynamic, nextProps:Dynamic, nextState:Dynamic):Bool
 	{
 		return !shallowCompare(component.props, nextProps) || !shallowCompare(component.state, nextState);
 	}
