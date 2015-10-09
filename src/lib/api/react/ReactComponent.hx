@@ -5,11 +5,15 @@ import js.html.Element;
 /**
 	https://facebook.github.io/react/docs/component-api.html
 **/
-typedef ReactComponent = ReactComponentOf<ReactComponentProps, ReactComponentState, ReactComponentRefs>;
+typedef ReactComponent = ReactComponentOf<Dynamic, Dynamic, Dynamic>;
+typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Dynamic, Dynamic>;
+typedef ReactComponentOfState<TState> = ReactComponentOf<Dynamic, TState, Dynamic>;
+typedef ReactComponentOfRefs<TRefs> = ReactComponentOf<Dynamic, Dynamic, TRefs>;
+typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic>;
 
 @:keepSub @:native('React.Component')
 @:autoBuild(api.react.ReactMacro.setDisplayName())
-extern class ReactComponentOf <TProps:ReactComponentProps, TState:ReactComponentState, TRefs:Dynamic>
+extern class ReactComponentOf<TProps, TState, TRefs>
 {
 	static var defaultProps:Dynamic;
 	static var contextTypes:Dynamic;
@@ -79,7 +83,3 @@ extern class ReactComponentOf <TProps:ReactComponentProps, TState:ReactComponent
 typedef ReactComponentProps = {
 	@:optional var children:Array<ReactComponent>;
 }
-
-typedef ReactComponentState = {};
-
-typedef ReactComponentRefs = {};
