@@ -10,6 +10,7 @@ import haxe.macro.ExprTools;
 class ReactMacro
 {
 	#if macro
+	static var reInterpolationClass = ~/(<|<\/)\$/g;
 	static var reInterpolationVar = ~/\$([a-z_][a-z0-9_]*)/gi;
 	static var reInterpolationExpr = ~/\${/g;
 	static var reAttributeBinding = ~/=({[^}]+})/g;
@@ -41,6 +42,7 @@ class ReactMacro
 	
 	static function escapeJsx(jsx:String) 
 	{
+		jsx = reInterpolationClass.replace(jsx, '$$1'); // '<$Item></$Item>' string interpolation
 		jsx = reInterpolationVar.replace(jsx, '{$$1}'); // '$foo' string interpolation
 		jsx = reInterpolationExpr.replace(jsx, '{'); // '${foo}' string interpolation
 		jsx = reAttributeBinding.replace(jsx, '="$$1"'); // attr={foo} escaping
