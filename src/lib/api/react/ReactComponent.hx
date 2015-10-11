@@ -1,6 +1,11 @@
 package api.react;
 
-import js.html.Element;
+typedef ReactComponentProps = {
+	/**
+		Children have to be manipulated using React.Children.*
+	**/
+	@:optional var children:Dynamic; 
+}
 
 /**
 	https://facebook.github.io/react/docs/component-api.html
@@ -9,6 +14,7 @@ typedef ReactComponent = ReactComponentOf<Dynamic, Dynamic, Dynamic>;
 typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Dynamic, Dynamic>;
 typedef ReactComponentOfState<TState> = ReactComponentOf<Dynamic, TState, Dynamic>;
 typedef ReactComponentOfRefs<TRefs> = ReactComponentOf<Dynamic, Dynamic, TRefs>;
+typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, TState, TRefs>;
 typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic>;
 
 @:keepSub @:native('React.Component')
@@ -78,8 +84,4 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 		https://facebook.github.io/react/docs/component-specs.html#updating-componentdidupdate
 	**/
 	function componentDidUpdate(prevProps:TProps, prevState:TState):Void;
-}
-
-typedef ReactComponentProps = {
-	@:optional var children:Array<ReactComponent>;
 }
