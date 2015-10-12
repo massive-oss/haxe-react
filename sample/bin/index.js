@@ -348,7 +348,10 @@ view.TodoApp.__name__ = true;
 view.TodoApp.__super__ = React.Component;
 view.TodoApp.prototype = $extend(React.Component.prototype,{
 	render: function() {
-		return React.createElement("div",{ className : "app"},React.createElement("div",{ className : "header"},React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),React.createElement("button",{ className : "button-add", onClick : $bind(this,this.addItem)},"+")),React.createElement(view.TodoList,{ data : this.state.items}));
+		var unchecked = this.state.items.filter(function(item) {
+			return !item.checked;
+		}).length;
+		return React.createElement("div",{ className : "app"},React.createElement("div",{ className : "header"},React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),React.createElement("button",{ className : "button-add", onClick : $bind(this,this.addItem)},"+")),React.createElement(view.TodoList,{ data : this.state.items}),React.createElement("div",{ className : "footer"},unchecked," task(s) left"));
 	}
 	,addItem: function() {
 		var text = this.refs.input.value;
@@ -417,6 +420,17 @@ if(Array.prototype.map == null) Array.prototype.map = function(f) {
 		a[i] = f(this[i]);
 	}
 	return a;
+};
+if(Array.prototype.filter == null) Array.prototype.filter = function(f1) {
+	var a1 = [];
+	var _g11 = 0;
+	var _g2 = this.length;
+	while(_g11 < _g2) {
+		var i1 = _g11++;
+		var e = this[i1];
+		if(f1(e)) a1.push(e);
+	}
+	return a1;
 };
 msignal.SlotList.NIL = new msignal.SlotList(null,null);
 store.TodoActions.addItem = new msignal.Signal1();

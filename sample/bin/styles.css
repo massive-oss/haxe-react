@@ -31,3 +31,8 @@ ul, li {
 .list > li.checked {
 	background: #ddd;
 }
+
+.footer {
+	margin-top: 4px;
+	color: #666;
+}

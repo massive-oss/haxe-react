@@ -1,6 +1,6 @@
 -cp src
 -main Main
 -lib api-react
--lib  msignal
+-lib msignal
 -js bin/index.js
 -debug

@@ -32,6 +32,8 @@ class TodoApp extends ReactComponentOfStateAndRefs<TodoAppState, TodoAppRefs>
 	
 	override public function render() 
 	{
+		var unchecked = state.items.filter(function(item) return !item.checked).length;
+		
 		return jsx('
 			<div className="app">
 				<div className="header">
@@ -39,6 +41,7 @@ class TodoApp extends ReactComponentOfStateAndRefs<TodoAppState, TodoAppRefs>
 					<button className="button-add" onClick={addItem}>+</button>
 				</div>
 				<TodoList data={state.items}/>
+				<div className="footer">{unchecked} task(s) left</div>
 			</div>
 		');
 	}
