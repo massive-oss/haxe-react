@@ -16,6 +16,7 @@ typedef ReactComponentOfState<TState> = ReactComponentOf<Dynamic, TState, Dynami
 typedef ReactComponentOfRefs<TRefs> = ReactComponentOf<Dynamic, Dynamic, TRefs>;
 typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, TState, TRefs>;
 typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic>;
+typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, Dynamic, TRefs>;
 
 @:keepSub @:native('React.Component')
 @:autoBuild(api.react.ReactMacro.setDisplayName())
