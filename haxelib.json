@@ -7,7 +7,7 @@
     "massive"
   ],
 	"releasenote": "See https://github.com/massiveinteractive/haxe-react/blob/master/readme.md",
-	"version": "0.14.0",
+	"version": "0.2.0",
 	"url": "https://github.com/massiveinteractive/haxe-react",
 	"classPath": "src/lib",
 	"dependencies": 
