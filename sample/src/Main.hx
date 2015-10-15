@@ -9,6 +9,6 @@ class Main
 {
 	public static function main()
 	{
-		ReactDOM.render(jsx('<TodoApp/>'), Browser.document.getElementById('app'));
+		ReactDOM.render(jsx('<$TodoApp/>'), Browser.document.getElementById('app'));
 	}
 }

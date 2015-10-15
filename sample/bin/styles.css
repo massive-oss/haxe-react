@@ -24,12 +24,14 @@ ul, li {
 	display: block;
 	padding: 4px;
 	margin-top: 2px;
-	border: solid 1px gray;
+	border: solid 1px #ccc;
+	background: #eee;
 	user-select: none;
 	-webkit-user-select: none;
 }
 .list > li.checked {
-	background: #ddd;
+	background: #3a3;
+	color: #fff;
 }
 
 .footer {

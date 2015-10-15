@@ -21,8 +21,8 @@ class TodoList extends ReactComponentOfProps<TodoListProps>
 	override public function render() 
 	{
 		return jsx('
-			<ul className="list" onClick={toggleChecked}>
-				{createChildren()}
+			<ul className="list" onClick=$toggleChecked>
+				${createChildren()}
 			</ul>
 		');
 	}
@@ -56,7 +56,7 @@ class TodoListItem extends ReactComponentOfProps<TodoItemProps>
 		super();
 	}
 	
-	override public function shouldComponentUpdate(nextProps:TodoItemProps, nextState:TodoItemProps):Bool 
+	override public function shouldComponentUpdate(nextProps:TodoItemProps, nextState:Dynamic):Bool 
 	{
 		return nextProps.data.checked != checked;
 	}
@@ -67,6 +67,6 @@ class TodoListItem extends ReactComponentOfProps<TodoItemProps>
 		checked = entry.checked;
 		var cname = checked ? 'checked' : '';
 		var id = 'item-${entry.id}';
-		return jsx('<li id={id} className={cname}>{entry.label}</li>');
+		return jsx('<li id=$id className=$cname>${entry.label}</li>');
 	}
 }

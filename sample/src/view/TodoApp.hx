@@ -38,10 +38,10 @@ class TodoApp extends ReactComponentOfStateAndRefs<TodoAppState, TodoAppRefs>
 			<div className="app">
 				<div className="header">
 					<input ref="input" placeholder="Enter new task description" />
-					<button className="button-add" onClick={addItem}>+</button>
+					<button className="button-add" onClick=$addItem>+</button>
 				</div>
-				<TodoList data={state.items}/>
-				<div className="footer">{unchecked} task(s) left</div>
+				<$TodoList data=${state.items}/>
+				<div className="footer">$unchecked task(s) left</div>
 			</div>
 		');
 	}

@@ -1,4 +1,4 @@
-(function () { "use strict";
+(function (console) { "use strict";
 function $extend(from, fields) {
 	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
 	for (var name in fields) proto[name] = fields[name];
@@ -8,8 +8,9 @@ function $extend(from, fields) {
 var Main = function() { };
 Main.__name__ = true;
 Main.main = function() {
-	ReactDOM.render(React.createElement(view.TodoApp,null),window.document.getElementById("app"));
+	ReactDOM.render(React.createElement(view_TodoApp,null),window.document.getElementById("app"));
 };
+Math.__name__ = true;
 var Reflect = function() { };
 Reflect.__name__ = true;
 Reflect.isFunction = function(f) {
@@ -20,19 +21,26 @@ Reflect.compareMethods = function(f1,f2) {
 	if(!Reflect.isFunction(f1) || !Reflect.isFunction(f2)) return false;
 	return f1.scope == f2.scope && f1.method == f2.method && f1.method != null;
 };
-var api = {};
-api.react = {};
-api.react.ReactMacro = function() { };
-api.react.ReactMacro.__name__ = true;
-var msignal = {};
-msignal.Signal = function(valueClasses) {
+var api_react_ReactMacro = function() { };
+api_react_ReactMacro.__name__ = true;
+var js__$Boot_HaxeError = function(val) {
+	Error.call(this);
+	this.val = val;
+	this.message = String(val);
+	if(Error.captureStackTrace) Error.captureStackTrace(this,js__$Boot_HaxeError);
+};
+js__$Boot_HaxeError.__name__ = true;
+js__$Boot_HaxeError.__super__ = Error;
+js__$Boot_HaxeError.prototype = $extend(Error.prototype,{
+});
+var msignal_Signal = function(valueClasses) {
 	if(valueClasses == null) valueClasses = [];
 	this.valueClasses = valueClasses;
-	this.slots = msignal.SlotList.NIL;
+	this.slots = msignal_SlotList.NIL;
 	this.priorityBased = false;
 };
-msignal.Signal.__name__ = true;
-msignal.Signal.prototype = {
+msignal_Signal.__name__ = true;
+msignal_Signal.prototype = {
 	add: function(listener) {
 		return this.registerListener(listener);
 	}
@@ -54,7 +62,7 @@ msignal.Signal.prototype = {
 		return slot;
 	}
 	,removeAll: function() {
-		this.slots = msignal.SlotList.NIL;
+		this.slots = msignal_SlotList.NIL;
 	}
 	,registerListener: function(listener,once,priority) {
 		if(priority == null) priority = 0;
@@ -71,7 +79,7 @@ msignal.Signal.prototype = {
 		if(!this.slots.nonEmpty) return true;
 		var existingSlot = this.slots.find(listener);
 		if(existingSlot == null) return true;
-		if(existingSlot.once != once) throw "You cannot addOnce() then add() the same listener without removing the relationship first.";
+		if(existingSlot.once != once) throw new js__$Boot_HaxeError("You cannot addOnce() then add() the same listener without removing the relationship first.");
 		return false;
 	}
 	,createSlot: function(listener,once,priority) {
@@ -83,12 +91,12 @@ msignal.Signal.prototype = {
 		return this.slots.get_length();
 	}
 };
-msignal.Signal0 = function() {
-	msignal.Signal.call(this);
+var msignal_Signal0 = function() {
+	msignal_Signal.call(this);
 };
-msignal.Signal0.__name__ = true;
-msignal.Signal0.__super__ = msignal.Signal;
-msignal.Signal0.prototype = $extend(msignal.Signal.prototype,{
+msignal_Signal0.__name__ = true;
+msignal_Signal0.__super__ = msignal_Signal;
+msignal_Signal0.prototype = $extend(msignal_Signal.prototype,{
 	dispatch: function() {
 		var slotsToProcess = this.slots;
 		while(slotsToProcess.nonEmpty) {
@@ -99,15 +107,15 @@ msignal.Signal0.prototype = $extend(msignal.Signal.prototype,{
 	,createSlot: function(listener,once,priority) {
 		if(priority == null) priority = 0;
 		if(once == null) once = false;
-		return new msignal.Slot0(this,listener,once,priority);
+		return new msignal_Slot0(this,listener,once,priority);
 	}
 });
-msignal.Signal1 = function(type) {
-	msignal.Signal.call(this,[type]);
+var msignal_Signal1 = function(type) {
+	msignal_Signal.call(this,[type]);
 };
-msignal.Signal1.__name__ = true;
-msignal.Signal1.__super__ = msignal.Signal;
-msignal.Signal1.prototype = $extend(msignal.Signal.prototype,{
+msignal_Signal1.__name__ = true;
+msignal_Signal1.__super__ = msignal_Signal;
+msignal_Signal1.prototype = $extend(msignal_Signal.prototype,{
 	dispatch: function(value) {
 		var slotsToProcess = this.slots;
 		while(slotsToProcess.nonEmpty) {
@@ -118,15 +126,15 @@ msignal.Signal1.prototype = $extend(msignal.Signal.prototype,{
 	,createSlot: function(listener,once,priority) {
 		if(priority == null) priority = 0;
 		if(once == null) once = false;
-		return new msignal.Slot1(this,listener,once,priority);
+		return new msignal_Slot1(this,listener,once,priority);
 	}
 });
-msignal.Signal2 = function(type1,type2) {
-	msignal.Signal.call(this,[type1,type2]);
+var msignal_Signal2 = function(type1,type2) {
+	msignal_Signal.call(this,[type1,type2]);
 };
-msignal.Signal2.__name__ = true;
-msignal.Signal2.__super__ = msignal.Signal;
-msignal.Signal2.prototype = $extend(msignal.Signal.prototype,{
+msignal_Signal2.__name__ = true;
+msignal_Signal2.__super__ = msignal_Signal;
+msignal_Signal2.prototype = $extend(msignal_Signal.prototype,{
 	dispatch: function(value1,value2) {
 		var slotsToProcess = this.slots;
 		while(slotsToProcess.nonEmpty) {
@@ -137,10 +145,10 @@ msignal.Signal2.prototype = $extend(msignal.Signal.prototype,{
 	,createSlot: function(listener,once,priority) {
 		if(priority == null) priority = 0;
 		if(once == null) once = false;
-		return new msignal.Slot2(this,listener,once,priority);
+		return new msignal_Slot2(this,listener,once,priority);
 	}
 });
-msignal.Slot = function(signal,listener,once,priority) {
+var msignal_Slot = function(signal,listener,once,priority) {
 	if(priority == null) priority = 0;
 	if(once == null) once = false;
 	this.signal = signal;
@@ -149,38 +157,38 @@ msignal.Slot = function(signal,listener,once,priority) {
 	this.priority = priority;
 	this.enabled = true;
 };
-msignal.Slot.__name__ = true;
-msignal.Slot.prototype = {
+msignal_Slot.__name__ = true;
+msignal_Slot.prototype = {
 	remove: function() {
 		this.signal.remove(this.listener);
 	}
 	,set_listener: function(value) {
-		if(value == null) throw "listener cannot be null";
+		if(value == null) throw new js__$Boot_HaxeError("listener cannot be null");
 		return this.listener = value;
 	}
 };
-msignal.Slot0 = function(signal,listener,once,priority) {
+var msignal_Slot0 = function(signal,listener,once,priority) {
 	if(priority == null) priority = 0;
 	if(once == null) once = false;
-	msignal.Slot.call(this,signal,listener,once,priority);
+	msignal_Slot.call(this,signal,listener,once,priority);
 };
-msignal.Slot0.__name__ = true;
-msignal.Slot0.__super__ = msignal.Slot;
-msignal.Slot0.prototype = $extend(msignal.Slot.prototype,{
+msignal_Slot0.__name__ = true;
+msignal_Slot0.__super__ = msignal_Slot;
+msignal_Slot0.prototype = $extend(msignal_Slot.prototype,{
 	execute: function() {
 		if(!this.enabled) return;
 		if(this.once) this.remove();
 		this.listener();
 	}
 });
-msignal.Slot1 = function(signal,listener,once,priority) {
+var msignal_Slot1 = function(signal,listener,once,priority) {
 	if(priority == null) priority = 0;
 	if(once == null) once = false;
-	msignal.Slot.call(this,signal,listener,once,priority);
+	msignal_Slot.call(this,signal,listener,once,priority);
 };
-msignal.Slot1.__name__ = true;
-msignal.Slot1.__super__ = msignal.Slot;
-msignal.Slot1.prototype = $extend(msignal.Slot.prototype,{
+msignal_Slot1.__name__ = true;
+msignal_Slot1.__super__ = msignal_Slot;
+msignal_Slot1.prototype = $extend(msignal_Slot.prototype,{
 	execute: function(value1) {
 		if(!this.enabled) return;
 		if(this.once) this.remove();
@@ -188,14 +196,14 @@ msignal.Slot1.prototype = $extend(msignal.Slot.prototype,{
 		this.listener(value1);
 	}
 });
-msignal.Slot2 = function(signal,listener,once,priority) {
+var msignal_Slot2 = function(signal,listener,once,priority) {
 	if(priority == null) priority = 0;
 	if(once == null) once = false;
-	msignal.Slot.call(this,signal,listener,once,priority);
+	msignal_Slot.call(this,signal,listener,once,priority);
 };
-msignal.Slot2.__name__ = true;
-msignal.Slot2.__super__ = msignal.Slot;
-msignal.Slot2.prototype = $extend(msignal.Slot.prototype,{
+msignal_Slot2.__name__ = true;
+msignal_Slot2.__super__ = msignal_Slot;
+msignal_Slot2.prototype = $extend(msignal_Slot.prototype,{
 	execute: function(value1,value2) {
 		if(!this.enabled) return;
 		if(this.once) this.remove();
@@ -204,22 +212,22 @@ msignal.Slot2.prototype = $extend(msignal.Slot.prototype,{
 		this.listener(value1,value2);
 	}
 });
-msignal.SlotList = function(head,tail) {
+var msignal_SlotList = function(head,tail) {
 	this.nonEmpty = false;
 	if(head == null && tail == null) {
-		if(msignal.SlotList.NIL != null) throw "Parameters head and tail are null. Use the NIL element instead.";
+		if(msignal_SlotList.NIL != null) throw new js__$Boot_HaxeError("Parameters head and tail are null. Use the NIL element instead.");
 		this.nonEmpty = false;
-	} else if(head == null) throw "Parameter head cannot be null."; else {
+	} else if(head == null) throw new js__$Boot_HaxeError("Parameter head cannot be null."); else {
 		this.head = head;
-		if(tail == null) this.tail = msignal.SlotList.NIL; else this.tail = tail;
+		if(tail == null) this.tail = msignal_SlotList.NIL; else this.tail = tail;
 		this.nonEmpty = true;
 	}
 };
-msignal.SlotList.__name__ = true;
-msignal.SlotList.prototype = {
+msignal_SlotList.__name__ = true;
+msignal_SlotList.prototype = {
 	get_length: function() {
 		if(!this.nonEmpty) return 0;
-		if(this.tail == msignal.SlotList.NIL) return 1;
+		if(this.tail == msignal_SlotList.NIL) return 1;
 		var result = 0;
 		var p = this;
 		while(p.nonEmpty) {
@@ -229,27 +237,27 @@ msignal.SlotList.prototype = {
 		return result;
 	}
 	,prepend: function(slot) {
-		return new msignal.SlotList(slot,this);
+		return new msignal_SlotList(slot,this);
 	}
 	,append: function(slot) {
 		if(slot == null) return this;
-		if(!this.nonEmpty) return new msignal.SlotList(slot);
-		if(this.tail == msignal.SlotList.NIL) return new msignal.SlotList(slot).prepend(this.head);
-		var wholeClone = new msignal.SlotList(this.head);
+		if(!this.nonEmpty) return new msignal_SlotList(slot);
+		if(this.tail == msignal_SlotList.NIL) return new msignal_SlotList(slot).prepend(this.head);
+		var wholeClone = new msignal_SlotList(this.head);
 		var subClone = wholeClone;
 		var current = this.tail;
 		while(current.nonEmpty) {
-			subClone = subClone.tail = new msignal.SlotList(current.head);
+			subClone = subClone.tail = new msignal_SlotList(current.head);
 			current = current.tail;
 		}
-		subClone.tail = new msignal.SlotList(slot);
+		subClone.tail = new msignal_SlotList(slot);
 		return wholeClone;
 	}
 	,insertWithPriority: function(slot) {
-		if(!this.nonEmpty) return new msignal.SlotList(slot);
+		if(!this.nonEmpty) return new msignal_SlotList(slot);
 		var priority = slot.priority;
 		if(priority >= this.head.priority) return this.prepend(slot);
-		var wholeClone = new msignal.SlotList(this.head);
+		var wholeClone = new msignal_SlotList(this.head);
 		var subClone = wholeClone;
 		var current = this.tail;
 		while(current.nonEmpty) {
@@ -257,16 +265,16 @@ msignal.SlotList.prototype = {
 				subClone.tail = current.prepend(slot);
 				return wholeClone;
 			}
-			subClone = subClone.tail = new msignal.SlotList(current.head);
+			subClone = subClone.tail = new msignal_SlotList(current.head);
 			current = current.tail;
 		}
-		subClone.tail = new msignal.SlotList(slot);
+		subClone.tail = new msignal_SlotList(slot);
 		return wholeClone;
 	}
 	,filterNot: function(listener) {
 		if(!this.nonEmpty || listener == null) return this;
 		if(Reflect.compareMethods(this.head.listener,listener)) return this.tail;
-		var wholeClone = new msignal.SlotList(this.head);
+		var wholeClone = new msignal_SlotList(this.head);
 		var subClone = wholeClone;
 		var current = this.tail;
 		while(current.nonEmpty) {
@@ -274,7 +282,7 @@ msignal.SlotList.prototype = {
 				subClone.tail = current.tail;
 				return wholeClone;
 			}
-			subClone = subClone.tail = new msignal.SlotList(current.head);
+			subClone = subClone.tail = new msignal_SlotList(current.head);
 			current = current.tail;
 		}
 		return this;
@@ -298,17 +306,16 @@ msignal.SlotList.prototype = {
 		return null;
 	}
 };
-var store = {};
-store.TodoActions = function() { };
-store.TodoActions.__name__ = true;
-store.TodoStore = function() {
-	this.changed = new msignal.Signal0();
+var store_TodoActions = function() { };
+store_TodoActions.__name__ = true;
+var store_TodoStore = function() {
+	this.changed = new msignal_Signal0();
 	this.loadItems();
-	store.TodoActions.toggleItem.add($bind(this,this.toggleItem));
-	store.TodoActions.addItem.add($bind(this,this.addItem));
+	store_TodoActions.toggleItem.add($bind(this,this.toggleItem));
+	store_TodoActions.addItem.add($bind(this,this.addItem));
 };
-store.TodoStore.__name__ = true;
-store.TodoStore.prototype = {
+store_TodoStore.__name__ = true;
+store_TodoStore.prototype = {
 	toggleItem: function(id) {
 		this.list = this.list.map(function(item) {
 			if(item.id == id) item.checked = !item.checked;
@@ -334,9 +341,8 @@ store.TodoStore.prototype = {
 		this.lastId = this.list.length;
 	}
 };
-var view = {};
-view.TodoApp = function() {
-	this.todoStore = new store.TodoStore();
+var view_TodoApp = function() {
+	this.todoStore = new store_TodoStore();
 	var _g = this;
 	React.Component.call(this);
 	this.state = { items : this.todoStore.list};
@@ -344,31 +350,31 @@ view.TodoApp = function() {
 		_g.setState({ items : _g.todoStore.list});
 	});
 };
-view.TodoApp.__name__ = true;
-view.TodoApp.__super__ = React.Component;
-view.TodoApp.prototype = $extend(React.Component.prototype,{
+view_TodoApp.__name__ = true;
+view_TodoApp.__super__ = React.Component;
+view_TodoApp.prototype = $extend(React.Component.prototype,{
 	render: function() {
 		var unchecked = this.state.items.filter(function(item) {
 			return !item.checked;
 		}).length;
-		return React.createElement("div",{ className : "app"},React.createElement("div",{ className : "header"},React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),React.createElement("button",{ className : "button-add", onClick : $bind(this,this.addItem)},"+")),React.createElement(view.TodoList,{ data : this.state.items}),React.createElement("div",{ className : "footer"},unchecked," task(s) left"));
+		return React.createElement("div",{ className : "app"},React.createElement("div",{ className : "header"},React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),React.createElement("button",{ onClick : $bind(this,this.addItem), className : "button-add"},"+")),React.createElement(view_TodoList,{ data : this.state.items}),React.createElement("div",{ className : "footer"},unchecked," task(s) left"));
 	}
 	,addItem: function() {
 		var text = this.refs.input.value;
 		if(text.length > 0) {
-			store.TodoActions.addItem.dispatch(text);
+			store_TodoActions.addItem.dispatch(text);
 			this.refs.input.value = "";
 		}
 	}
 });
-view.TodoList = function() {
+var view_TodoList = function() {
 	React.Component.call(this);
 };
-view.TodoList.__name__ = true;
-view.TodoList.__super__ = React.Component;
-view.TodoList.prototype = $extend(React.Component.prototype,{
+view_TodoList.__name__ = true;
+view_TodoList.__super__ = React.Component;
+view_TodoList.prototype = $extend(React.Component.prototype,{
 	render: function() {
-		return React.createElement("ul",{ className : "list", onClick : $bind(this,this.toggleChecked)},this.createChildren());
+		return React.createElement("ul",{ onClick : $bind(this,this.toggleChecked), className : "list"},this.createChildren());
 	}
 	,createChildren: function() {
 		var _g = [];
@@ -377,7 +383,7 @@ view.TodoList.prototype = $extend(React.Component.prototype,{
 		while(_g1 < _g2.length) {
 			var entry = _g2[_g1];
 			++_g1;
-			_g.push(React.createElement(view.TodoListItem,{ data : entry, key : entry.id}));
+			_g.push(React.createElement(view_TodoListItem,{ data : entry, key : entry.id}));
 		}
 		return _g;
 	}
@@ -385,16 +391,16 @@ view.TodoList.prototype = $extend(React.Component.prototype,{
 		var node = e.target;
 		if(node.nodeName == "LI") {
 			var id = node.id.split("-")[1];
-			store.TodoActions.toggleItem.dispatch(id);
+			store_TodoActions.toggleItem.dispatch(id);
 		}
 	}
 });
-view.TodoListItem = function() {
+var view_TodoListItem = function() {
 	React.Component.call(this);
 };
-view.TodoListItem.__name__ = true;
-view.TodoListItem.__super__ = React.Component;
-view.TodoListItem.prototype = $extend(React.Component.prototype,{
+view_TodoListItem.__name__ = true;
+view_TodoListItem.__super__ = React.Component;
+view_TodoListItem.prototype = $extend(React.Component.prototype,{
 	shouldComponentUpdate: function(nextProps,nextState) {
 		return nextProps.data.checked != this.checked;
 	}
@@ -404,7 +410,7 @@ view.TodoListItem.prototype = $extend(React.Component.prototype,{
 		var cname;
 		if(this.checked) cname = "checked"; else cname = "";
 		var id = "item-" + entry.id;
-		return React.createElement("li",{ className : cname, id : id},entry.label);
+		return React.createElement("li",{ id : id, className : cname},entry.label);
 	}
 });
 var $_, $fid = 0;
@@ -432,13 +438,13 @@ if(Array.prototype.filter == null) Array.prototype.filter = function(f1) {
 	}
 	return a1;
 };
-msignal.SlotList.NIL = new msignal.SlotList(null,null);
-store.TodoActions.addItem = new msignal.Signal1();
-store.TodoActions.toggleItem = new msignal.Signal1();
-view.TodoApp.displayName = "TodoApp";
-view.TodoList.displayName = "TodoList";
-view.TodoListItem.displayName = "TodoListItem";
+msignal_SlotList.NIL = new msignal_SlotList(null,null);
+store_TodoActions.addItem = new msignal_Signal1();
+store_TodoActions.toggleItem = new msignal_Signal1();
+view_TodoApp.displayName = "TodoApp";
+view_TodoList.displayName = "TodoList";
+view_TodoListItem.displayName = "TodoListItem";
 Main.main();
-})();
+})(typeof console != "undefined" ? console : {log:function(){}});
 
 //# sourceMappingURL=index.js.map
