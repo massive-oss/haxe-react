@@ -4,6 +4,8 @@ A Haxe library offering externs and tool functions leveraging Haxe's excellent t
 compile time macros to offer a strongly typed language to work with the increasingly popular 
 [React](https://facebook.github.io/react/) library.
 
+	haxelib install react
+
 ## API
 
 Most of the regular React API is integrated:
