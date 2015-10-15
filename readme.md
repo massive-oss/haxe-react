@@ -8,7 +8,7 @@ compile time macros to offer a strongly typed language to work with the increasi
 
 ## API
 
-Most of the regular React API is integrated:
+Most of the regular React API is integrated (non-JSX example):
 
 	import api.react.React;
 	import api.react.ReactDOM;
