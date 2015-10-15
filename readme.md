@@ -1,8 +1,8 @@
 # Haxe React
 
 A Haxe library offering externs and tool functions leveraging Haxe's excellent type system and 
-compile time macro of offer a strongly typed language to work with the increasingly popular 
-for [React](https://facebook.github.io/react/) library.
+compile time macros to offer a strongly typed language to work with the increasingly popular 
+[React](https://facebook.github.io/react/) library.
 
 ## API
 
