@@ -5,7 +5,7 @@ The classic Todo app done using Haxe React and a Flux-like store.
 ## Building
 
     haxelib install msignal
-    haxelib install api-react
+    haxelib install react
     haxe build.hxml
 
 ## Haxe React
