@@ -1,15 +1,26 @@
 package api.react;
 
-import js.html.Element;
+typedef ReactComponentProps = {
+	/**
+		Children have to be manipulated using React.Children.*
+	**/
+	@:optional var children:Dynamic; 
+}
 
 /**
 	https://facebook.github.io/react/docs/component-api.html
 **/
-typedef ReactComponent = ReactComponentOf<ReactComponentProps, ReactComponentState, ReactComponentRefs>;
+typedef ReactComponent = ReactComponentOf<Dynamic, Dynamic, Dynamic>;
+typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Dynamic, Dynamic>;
+typedef ReactComponentOfState<TState> = ReactComponentOf<Dynamic, TState, Dynamic>;
+typedef ReactComponentOfRefs<TRefs> = ReactComponentOf<Dynamic, Dynamic, TRefs>;
+typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, TState, TRefs>;
+typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic>;
+typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, Dynamic, TRefs>;
 
 @:keepSub @:native('React.Component')
 @:autoBuild(api.react.ReactMacro.setDisplayName())
-extern class ReactComponentOf <TProps:ReactComponentProps, TState:ReactComponentState, TRefs:Dynamic>
+extern class ReactComponentOf<TProps, TState, TRefs>
 {
 	static var defaultProps:Dynamic;
 	static var contextTypes:Dynamic;
@@ -75,11 +86,3 @@ extern class ReactComponentOf <TProps:ReactComponentProps, TState:ReactComponent
 	**/
 	function componentDidUpdate(prevProps:TProps, prevState:TState):Void;
 }
-
-typedef ReactComponentProps = {
-	@:optional var children:Array<ReactComponent>;
-}
-
-typedef ReactComponentState = {};
-
-typedef ReactComponentRefs = {};
