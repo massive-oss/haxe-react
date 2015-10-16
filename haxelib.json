@@ -4,7 +4,7 @@
 	"tags": [],
 	"description": "Haxe React is a set of externs and tools to use Facebook React with Haxe",
 	"contributors": [
-    "massive"
+    "massive","elsassph"
   ],
 	"releasenote": "See https://github.com/massiveinteractive/haxe-react/blob/master/readme.md",
 	"version": "0.2.0",
