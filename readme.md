@@ -10,24 +10,26 @@ compile time macros to offer a strongly typed language to work with the increasi
 
 Most of the regular React API is integrated (non-JSX example):
 
-	import api.react.React;
-	import api.react.ReactDOM;
+```haxe
+import api.react.React;
+import api.react.ReactDOM;
 
-	class App extends ReactComponent {
+class App extends ReactComponent {
 
-		static public function main() {
-			ReactDOM.render(React.createElement(App), Browser.document.getElementById('app'));
-		}
-	
-		public function new() {
-			super();
-		}
-	
-		override function render() {
-			var cname = 'foo';
-			return React.createElement('div', {className:cname}, [/*children*/]);
-		}
+	static public function main() {
+		ReactDOM.render(React.createElement(App), Browser.document.getElementById('app'));
 	}
+
+	public function new() {
+		super();
+	}
+
+	override function render() {
+		var cname = 'foo';
+		return React.createElement('div', {className:cname}, [/*children*/]);
+	}
+}
+```
 
 ### TODO
 
@@ -40,12 +42,14 @@ a fully untyped component.
 
 To fully benefit from Haxe's strict typing you should look into extending a stricter base class:
 
-	typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Dynamic, Dynamic>;
-	typedef ReactComponentOfState<TState> = ReactComponentOf<Dynamic, TState, Dynamic>;
-	typedef ReactComponentOfRefs<TRefs> = ReactComponentOf<Dynamic, Dynamic, TRefs>;
-	typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic>;
-	typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, Dynamic, TRefs>;
-	typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, TState, TRefs>;
+```haxe
+typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Dynamic, Dynamic>;
+typedef ReactComponentOfState<TState> = ReactComponentOf<Dynamic, TState, Dynamic>;
+typedef ReactComponentOfRefs<TRefs> = ReactComponentOf<Dynamic, Dynamic, TRefs>;
+typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic>;
+typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, Dynamic, TRefs>;
+typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, TState, TRefs>;
+```
 
 ## JSX
 
@@ -60,30 +64,32 @@ the same kind of code that Facebook's JSX, Babel and Typescript will generate.
 Both classic JSX `{}` binding and Haxe string interpolation `$var` / `${expression}` / `<$Comp>` 
 are allowed. The advantage of string interpolation is Haxe editor supports for completion and
 code navigation.
-	
-	import api.react.React;
-	import api.react.ReactDOM;
-	import api.react.ReactMacro.jsx;
 
-	class App extends ReactComponent {
+```haxe
+import api.react.React;
+import api.react.ReactDOM;
+import api.react.ReactMacro.jsx;
 
-		static public function main() {
-			ReactDOM.render(jsx('<App/>'), Browser.document.getElementById('app'));
-		}
-	
-		public function new() {
-			super();
-		}
-	
-		override function render() {
-			var cname = 'foo';
-			return jsx('
-				<div className=$cname>
-					${/*children*/}
-				</div>
-			');
-		}
+class App extends ReactComponent {
+
+	static public function main() {
+		ReactDOM.render(jsx('<App/>'), Browser.document.getElementById('app'));
 	}
+
+	public function new() {
+		super();
+	}
+
+	override function render() {
+		var cname = 'foo';
+		return jsx('
+			<div className=$cname>
+				${/*children*/}
+			</div>
+		');
+	}
+}
+```
 
 ### Known limitations: 
 
