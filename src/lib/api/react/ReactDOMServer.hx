@@ -3,6 +3,9 @@ package api.react;
 /**
 	https://facebook.github.io/react/docs/top-level-api.html
 **/
+#if (!react_global)
+@:jsRequire('react-dom/server')
+#end
 @:native('ReactDOMServer')
 extern class ReactDOMServer
 {
