@@ -10,17 +10,43 @@ import haxe.macro.ExprTools;
 class ReactMacro
 {
 	#if macro
+	static var reInterpolationClass = ~/(<|<\/)\$/g;
+	static var reInterpolationVar = ~/\$([a-z_][a-z0-9_]*)/gi;
+	static var reInterpolationExpr = ~/\${/g;
+	static var reAttributeBinding = ~/=({[^}]+})/g;
+	
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
+		#if display
+		return macro api.react.React.createElement(${expr});
+		#else
 		return parseJsx(ExprTools.getValue(expr), expr.pos);
+		#end
 	}
 
 	static function parseJsx(jsx:String, pos:Position):Expr
 	{
-		jsx = ~/=({[^}]+})/g.replace(jsx, '="$$1"');
-		var xml = Xml.parse(jsx);
-		var expr = parseJsxNode(xml.firstElement(), pos);
-		return expr;
+		jsx = escapeJsx(jsx);
+		try 
+		{
+			var xml = Xml.parse(jsx);
+			var expr = parseJsxNode(xml.firstElement(), pos);
+			return expr;
+		}
+		catch (err:Dynamic)
+		{
+			Context.fatalError('Invalid JSX: ' + err, pos);
+			return null;
+		}
+	}
+	
+	static function escapeJsx(jsx:String) 
+	{
+		jsx = reInterpolationClass.replace(jsx, '$$1'); // '<$Item></$Item>' string interpolation
+		jsx = reInterpolationVar.replace(jsx, '{$$1}'); // '$foo' string interpolation
+		jsx = reInterpolationExpr.replace(jsx, '{'); // '${foo}' string interpolation
+		jsx = reAttributeBinding.replace(jsx, '="$$1"'); // attr={foo} escaping
+		return jsx;
 	}
 
 	static function parseJsxNode(xml:Xml, pos:Position)
