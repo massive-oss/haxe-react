@@ -1,0 +1,7 @@
+-lib react
+
+-D react_native
+
+-cp src
+-js index.ios.js
+-main Main
