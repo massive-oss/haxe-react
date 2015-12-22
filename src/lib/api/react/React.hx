@@ -3,7 +3,9 @@ package api.react;
 /**
 	https://facebook.github.io/react/docs/top-level-api.html
 **/
-#if (!react_global)
+#if react_native
+@:jsRequire('react-native')
+#elseif (!react_global)
 @:jsRequire('react')
 #end
 @:native('React')

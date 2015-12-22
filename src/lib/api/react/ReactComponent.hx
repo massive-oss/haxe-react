@@ -18,7 +18,9 @@ typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, 
 typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic>;
 typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, Dynamic, TRefs>;
 
-#if (!react_global)
+#if react_native
+@:jsRequire("ReactComponent")
+#elseif (!react_global)
 @:jsRequire('react', 'Component')
 #end
 @:native('React.Component')
