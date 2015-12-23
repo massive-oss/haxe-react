@@ -6,10 +6,15 @@ package api.react.native.component;
 extern class ListView{}
 
 @:jsRequire('react-native', 'ListView.DataSource')
-extern class ListViewDataSource
+extern class ListViewDataSource<T>
 {
-	public function new(data:Dynamic);
-	public function cloneWithRows(arr:Array<Dynamic>):Dynamic;
+	public function new(options:ListViewDataSourceOptions<T>);
+	public function cloneWithRows(arr:Array<T>):ListViewDataSource<T>;
+}
+
+typedef ListViewDataSourceOptions<T> =
+{
+	rowHasChanged:T->T->Bool,
 }
 
 #end
