@@ -1,6 +1,7 @@
 -cp src
 -main Main
--lib react
+-lib api-react
 -lib msignal
+-D react_global
 -js bin/index.js
 -debug

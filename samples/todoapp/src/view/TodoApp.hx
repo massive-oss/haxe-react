@@ -19,9 +19,9 @@ class TodoApp extends ReactComponentOfStateAndRefs<TodoAppState, TodoAppRefs>
 {
 	var todoStore = new TodoStore();
 	
-	public function new()
+	public function new(props:Dynamic)
 	{
-		super();
+		super(props);
 		
 		state = { items:todoStore.list };
 		
