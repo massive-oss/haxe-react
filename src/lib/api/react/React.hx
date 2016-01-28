@@ -1,5 +1,7 @@
 package api.react;
 
+import api.react.ReactComponent;
+
 /**
 	https://facebook.github.io/react/docs/top-level-api.html
 **/
@@ -21,6 +23,18 @@ extern class React
 		?child1:Dynamic, ?child2:Dynamic, ?child3:Dynamic, ?child4:Dynamic, ?child5:Dynamic,
 		?child6:Dynamic, ?child7:Dynamic, ?child8:Dynamic, ?child9:Dynamic, ?child10:Dynamic,
 		?child11:Dynamic, ?child12:Dynamic, ?child13:Dynamic, ?child14:Dynamic, ?child15:Dynamic):ReactComponent;
+		
+	public inline static function createClassElement<P,S,R,T:Class<ReactComponentOf<P,S,R>>>(type:T, ?attrs:P,
+		?child1:Dynamic, ?child2:Dynamic, ?child3:Dynamic, ?child4:Dynamic, ?child5:Dynamic,
+		?child6:Dynamic, ?child7:Dynamic, ?child8:Dynamic, ?child9:Dynamic, ?child10:Dynamic,
+		?child11:Dynamic, ?child12:Dynamic, ?child13:Dynamic, ?child14:Dynamic, ?child15:Dynamic):ReactComponent
+			return createElement(type, attrs, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12, child13, child14, child15);
+		
+	public inline static function createHtmlElement(type:String, ?attrs:Dynamic,
+		?child1:Dynamic, ?child2:Dynamic, ?child3:Dynamic, ?child4:Dynamic, ?child5:Dynamic,
+		?child6:Dynamic, ?child7:Dynamic, ?child8:Dynamic, ?child9:Dynamic, ?child10:Dynamic,
+		?child11:Dynamic, ?child12:Dynamic, ?child13:Dynamic, ?child14:Dynamic, ?child15:Dynamic):ReactComponent
+			return createElement(type, attrs, child1, child2, child3, child4, child5, child6, child7, child8, child9, child10, child11, child12, child13, child14, child15);
 
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#react.cloneelement

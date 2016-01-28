@@ -53,11 +53,12 @@ class ReactMacro
 	{
 		var args = [];
 
+		var isHtmlType = true;
 		// parse type
 		var path = xml.nodeName.split('.');
 		var last = path[path.length - 1];
-		if (path.length == 1 && last.charAt(0) == last.charAt(0).toLowerCase()) args.push(macro $v{path[0]});
-		else args.push(macro $p{path});
+		var isHtmlType = path.length == 1 && last.charAt(0) == last.charAt(0).toLowerCase();
+		args.push(isHtmlType ? macro $v{path[0]} : macro $p{path});
 
 		// parse attributes
 		var attrs = [];
@@ -95,7 +96,7 @@ class ReactMacro
 			}
 
 		}
-		return macro api.react.React.createElement($a{args});
+		return isHtmlType ? macro api.react.React.createHtmlElement($a{args}) : macro api.react.React.createClassElement($a{args});
 	}
 
 	static function parseJsxExpr(value:String, pos:Position)
