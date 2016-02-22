@@ -6,10 +6,40 @@ import js.Promise;
 @:jsRequire('react-native', 'CameraRoll')
 extern class CameraRoll
 {
-	public static function getPhotos(params:Dynamic):Promise<CameraRollResult>;
+	public static function getPhotos(params:GetPhotoParams):Promise<GetPhotoResult>;
 }
 
-typedef CameraRollResult =
+@:enum
+abstract GroupTypes(String)
+{
+	var GAlbum = 'Album';
+	var GAll = 'All';
+	var GEvent = 'Event';
+	var GFaces = 'Faces';
+	var GLibrary = 'Library';
+	var GPhotoStream = 'PhotoStream';
+	var GSavedPhotos = 'SavedPhotos';
+}
+
+@:enum
+abstract AssetType(String)
+{
+	var AAll = 'All';
+	var AVideo = 'Video';
+	var APhotos = 'Photos';
+}
+
+typedef GetPhotoParams =
+{
+	first:Int,
+	?after:String,
+	?groupTypes:GroupTypes,
+	?groupName:String,
+	?assetType:AssetType,
+	?mimeTypes:Array<String>,
+}
+
+typedef GetPhotoResult =
 {
 	edges:Array<{
 		node: {
