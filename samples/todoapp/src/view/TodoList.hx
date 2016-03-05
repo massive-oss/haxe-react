@@ -65,8 +65,11 @@ class TodoListItem extends ReactComponentOfProps<TodoItemProps>
 	{
 		var entry:TodoItem = props.data;
 		checked = entry.checked;
-		var cname = checked ? 'checked' : '';
 		var id = 'item-${entry.id}';
-		return jsx('<li id=$id className=$cname>${entry.label}</li>');
+		return jsx('
+			<li id = $id className = ${checked ? "checked" : ""}>
+				${entry.label}
+			</li>
+		');
 	}
 }

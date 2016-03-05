@@ -357,7 +357,8 @@ view_TodoApp.prototype = $extend(React.Component.prototype,{
 		var unchecked = this.state.items.filter(function(item) {
 			return !item.checked;
 		}).length;
-		return React.createElement("div",{ className : "app"},React.createElement("div",{ className : "header"},React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),React.createElement("button",{ onClick : $bind(this,this.addItem), className : "button-add"},"+")),React.createElement(view_TodoList,{ data : this.state.items}),React.createElement("div",{ className : "footer"},unchecked," task(s) left"));
+		var listProps = { data : this.state.items};
+		return React.createElement("div",{ style : { margin : "10px"}, className : "app"},React.createElement("div",{ className : "header"},React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),React.createElement("button",{ onClick : $bind(this,this.addItem), className : "button-add"},"+")),React.createElement(view_TodoList,React.__spread({ },listProps)),React.createElement("div",{ className : "footer"},unchecked," task(s) left"));
 	}
 	,addItem: function() {
 		var text = this.refs.input.value;
@@ -407,10 +408,8 @@ view_TodoListItem.prototype = $extend(React.Component.prototype,{
 	,render: function() {
 		var entry = this.props.data;
 		this.checked = entry.checked;
-		var cname;
-		if(this.checked) cname = "checked"; else cname = "";
 		var id = "item-" + entry.id;
-		return React.createElement("li",{ id : id, className : cname},entry.label);
+		return React.createElement("li",{ id : id, className : this.checked?"checked":""},entry.label);
 	}
 });
 var $_, $fid = 0;

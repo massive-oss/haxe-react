@@ -10,11 +10,6 @@ import haxe.macro.ExprTools;
 class ReactMacro
 {
 	#if macro
-	static var reInterpolationClass = ~/(<|<\/)\$/g;
-	static var reInterpolationVar = ~/\$([a-z_][a-z0-9_]*)/gi;
-	static var reInterpolationExpr = ~/\${/g;
-	static var reAttributeBinding = ~/=({[^}]+})/g;
-	
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
 		#if display
@@ -26,9 +21,9 @@ class ReactMacro
 
 	static function parseJsx(jsx:String, pos:Position):Expr
 	{
-		jsx = escapeJsx(jsx);
 		try 
 		{
+			jsx = escapeJsx(jsx);
 			var xml = Xml.parse(jsx);
 			var expr = parseJsxNode(xml.firstElement(), pos);
 			return expr;
@@ -42,11 +37,117 @@ class ReactMacro
 	
 	static function escapeJsx(jsx:String) 
 	{
-		jsx = reInterpolationClass.replace(jsx, '$$1'); // '<$Item></$Item>' string interpolation
-		jsx = reInterpolationVar.replace(jsx, '{$$1}'); // '$foo' string interpolation
-		jsx = reInterpolationExpr.replace(jsx, '{'); // '${foo}' string interpolation
-		jsx = reAttributeBinding.replace(jsx, '="$$1"'); // attr={foo} escaping
-		return jsx;
+		var reChar = ~/[a-zA-Z0-9_]/;
+		var buf = new StringBuf();
+		var chars = jsx.split('');
+		var len = chars.length;
+		var inTag = false;
+		var inAttrib = false;
+		var inExpr = false;
+		var braceCount = 0;
+		var spreadCount = 0;
+		var cp = '';
+		var ci = '';
+		var cn = chars[0];
+		var i = 0;
+		while (i < len) {
+			if (ci != ' ') cp = ci;
+			ci = cn;
+			cn = chars[++i];
+			
+			// inline blocks
+			if (ci == '{') {
+				// quote bidings
+				if (braceCount == 0 && inTag) {
+					if (cp == '=') {
+						inAttrib = true;
+						inExpr = true;
+						buf.add('"');
+					}
+					// spread attributes
+					else if (cn == '.' && chars[i] == '.' && chars[i + 1] == '.') {
+						inAttrib = true;
+						inExpr = true;
+						i += 3;
+						cn = chars[i];
+						buf.add('.');
+						buf.add(spreadCount++);
+						buf.add('="');
+					}
+				}
+				braceCount++;
+			}
+			if (braceCount > 0) {
+				// escape double-quotes inside attributes
+				if (inAttrib && ci == '"') buf.add('&quot;'); 
+				else buf.add(ci);
+				// close binding quote
+				if (ci == '}') {
+					braceCount--;
+					if (braceCount == 0 && inAttrib && inExpr) {
+						inAttrib = false;
+						inExpr = false;
+						buf.add('"');
+						ci = '"';
+					}
+				}
+				continue;
+			}
+			
+			// xml attributes
+			if (inAttrib) {
+				if (ci == '"' && cn != '\\') inAttrib = false;
+				buf.add(ci);
+				continue;
+			}
+			
+			// string interpolation
+			if (ci == '$') {
+				// drop $ of ${foo} or $$
+				if (cn == '{' || cn == '$') {
+					ci = cp;
+					continue; 
+				}
+				// <$MyTag>
+				if (inTag && cp == '<') {
+					continue;
+				}
+				// </$MyTag>
+				if (inTag && cp == '/' && chars[i - 3] == '<') {
+					continue;
+				}
+				// $foo -> {foo}
+				if (reChar.match(cn)) {
+					if (inTag && cp == '=') {
+						inAttrib = true;
+						buf.add('"');
+					}
+					ci = '{';
+					do {
+						buf.add(ci);
+						cp = ci;
+						ci = cn;
+						cn = chars[++i];
+					} 
+					while (i < len && reChar.match(ci));
+					buf.add('}');
+					if (inAttrib) {
+						inAttrib = false;
+						buf.add('"');
+					}
+				}
+			}
+			
+			// xml tags
+			if (inTag) {
+				if  (ci == '>') inTag = false;
+			}
+			else if (ci == '<') {
+				inTag = true;
+			}
+			buf.add(ci);
+		}
+		return buf.toString();
 	}
 
 	static function parseJsxNode(xml:Xml, pos:Position)
@@ -61,15 +162,24 @@ class ReactMacro
 
 		// parse attributes
 		var attrs = [];
+		var spread = [];
 		for (attr in xml.attributes())
 		{
 			var value = xml.get(attr);
 			var expr = parseJsxExpr(value, pos);
-			attrs.push({field:attr, expr:expr});
+			if (attr.charAt(0) == '.') spread.push(expr);
+			else attrs.push({field:attr, expr:expr});
 		}
-		if (attrs.length == 0) args.push(macro null);
-		else args.push({pos:pos, expr:EObjectDecl(attrs)});
-
+		if (spread.length > 0) 
+		{
+			args.push(makeSpread(spread, attrs, pos));
+		}
+		else
+		{
+			if (attrs.length == 0) args.push(macro null);
+			else args.push({pos:pos, expr:EObjectDecl(attrs)});
+		}
+		
 		for (node in xml)
 		{
 			if (node.nodeType == Xml.PCData)
@@ -96,6 +206,13 @@ class ReactMacro
 
 		}
 		return macro api.react.React.createElement($a{args});
+	}
+	
+	static function makeSpread(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position) 
+	{
+		var args = [macro {}].concat(spread);
+		if (attrs.length > 0) args.push({pos:pos, expr:EObjectDecl(attrs)});
+		return macro untyped api.react.React.__spread($a{args});
 	}
 
 	static function parseJsxExpr(value:String, pos:Position)
