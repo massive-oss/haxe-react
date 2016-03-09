@@ -9,7 +9,6 @@ import haxe.macro.ExprTools;
 **/
 class ReactMacro
 {
-	#if macro
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
 		#if display
@@ -18,7 +17,13 @@ class ReactMacro
 		return parseJsx(ExprTools.getValue(expr), expr.pos);
 		#end
 	}
+	
+	public static macro function escape(expr:ExprOf<String>):Expr
+	{
+		return macro $v{escapeJsx(ExprTools.getValue(expr))};
+	}
 
+	#if macro
 	static function parseJsx(jsx:String, pos:Position):Expr
 	{
 		try 
@@ -135,6 +140,12 @@ class ReactMacro
 						inAttrib = false;
 						buf.add('"');
 					}
+					// retry last char
+					i--;
+					cn = ci;
+					ci = '}';
+					cp = '';
+					continue;
 				}
 			}
 			
@@ -245,12 +256,6 @@ class ReactMacro
 		}
 		fields.push(field);
 		return fields;
-	}
-
-	#else
-	public static macro function jsx(expr:ExprOf<String>):Expr
-	{
-		return null;
 	}
 	#end
 }
