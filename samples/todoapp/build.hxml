@@ -2,5 +2,6 @@
 -main Main
 -lib react
 -lib msignal
+-D react_global
 -js bin/index.js
 -debug

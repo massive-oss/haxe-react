@@ -5,3 +5,4 @@ example-filterproducts/node_modules
 /.idea
 *.iml
 *.hxproj
+*.map

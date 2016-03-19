@@ -96,7 +96,7 @@ class ReactMacro
 			}
 
 		}
-		return isHtmlType ? macro api.react.React.createHtmlElement($a{args}) : macro api.react.React.createClassElement($a{args});
+		return macro api.react.React.createElement($a{args});
 	}
 
 	static function parseJsxExpr(value:String, pos:Position)
