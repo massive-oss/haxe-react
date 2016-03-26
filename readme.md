@@ -97,3 +97,37 @@ class App extends ReactComponent {
 	}
 }
 ```
+
+## React JS dependency
+
+There are 2 ways to link the React JS library:
+
+### Require method (default)
+
+By default the library uses `require('react')` to reference React JS. 
+
+This means you are expected to use `npm` to install this dependency:
+
+	npm install react
+
+and a second build step to generate the final JS file, for instance using `browserify`:
+
+	npm install browserify
+	browserify haxe-output.js -o final-output.js
+
+(note that you can use `watchify` to automatically run this build step) 
+
+### Global JS
+
+The other common method is to download or reference the CDN files of React JS in your HTML page:
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.5/react-with-addons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.5/react-dom.min.js"></script>
+```
+
+and don't forget to add the following Haxe define to your build command:
+
+	-D react_global
+
+Look at `samples/todoapp` for an example of this approach.
