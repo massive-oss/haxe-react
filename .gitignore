@@ -6,3 +6,5 @@ example-filterproducts/node_modules
 *.iml
 *.hxproj
 *.map
+test/report/
+test/build/

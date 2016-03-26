@@ -34,13 +34,14 @@ class TodoApp extends ReactComponentOfStateAndRefs<TodoAppState, TodoAppRefs>
 	{
 		var unchecked = state.items.filter(function(item) return !item.checked).length;
 		
+		var listProps = { data:state.items };
 		return jsx('
-			<div className="app">
+			<div className="app" style={{margin:"10px"}}>
 				<div className="header">
 					<input ref="input" placeholder="Enter new task description" />
 					<button className="button-add" onClick=$addItem>+</button>
 				</div>
-				<$TodoList data=${state.items}/>
+				<$TodoList {...listProps}/>
 				<div className="footer">$unchecked task(s) left</div>
 			</div>
 		');
