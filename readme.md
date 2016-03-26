@@ -55,7 +55,7 @@ typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, 
 
 ### The compromise 
 
-Unfortunately, the Haxe compiler (and editors) doesn't allow to use exactly the JSX XML DSL, 
+The Haxe compiler (and editors) doesn't allow to use exactly the JSX XML DSL, 
 so we had to compromise a bit...
 
 This library's take on JSX is to use a compile-time macro to parse JSX as a string to generate
@@ -64,6 +64,8 @@ the same kind of code that Facebook's JSX, Babel and Typescript will generate.
 Both classic JSX `{}` binding and Haxe string interpolation `$var` / `${expression}` / `<$Comp>` 
 are allowed. The advantage of string interpolation is Haxe editor supports for completion and
 code navigation.
+
+Spread operator and complex expressions within curly braces are supported.
 
 ```haxe
 import api.react.React;
@@ -84,16 +86,14 @@ class App extends ReactComponent {
 		var cname = 'foo';
 		return jsx('
 			<div className=$cname>
+				<App.statelessComponent style=${{margin:"10px"}}/>
 				${/*children*/}
 			</div>
 		');
 	}
+	
+	static function statelessComponent(props:Dynamic) {
+		return jsx('<div {...props}/>');
+	}
 }
 ```
-
-### Known limitations: 
-
-- you can't include double quotes in an expression assigned to an attribute.
-Eg. `<div className=${state.selected?"selected":""}>`
-- You can't use functions (and thus factories) for stateless rendering. We're looking into this. 
- 
