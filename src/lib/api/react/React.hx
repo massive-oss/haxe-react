@@ -1,5 +1,9 @@
 package api.react;
 
+import api.react.ReactComponent;
+import haxe.extern.Rest;
+import haxe.extern.EitherType;
+
 /**
 	https://facebook.github.io/react/docs/top-level-api.html
 **/
@@ -17,8 +21,8 @@ extern class React
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#react.createelement
 	**/
-	public static function createElement(type:Dynamic, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactComponent;
-
+	public static function createElement<P, T:Class<ReactComponentOfProps<P>>>(type:EitherType<T, String>, ?attrs:P, children:Rest<Dynamic>):ReactComponent;
+	
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#react.cloneelement
 	**/
