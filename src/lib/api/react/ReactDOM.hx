@@ -6,7 +6,7 @@ import js.html.Element;
 	https://facebook.github.io/react/docs/top-level-api.html
 **/
 #if (!react_global)
-@:jsRequire('react-dom')
+@:jsRequire("react-dom")
 #end
 @:native('ReactDOM')
 extern class ReactDOM
