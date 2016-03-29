@@ -4,7 +4,7 @@ package api.react;
 	https://facebook.github.io/react/docs/top-level-api.html
 **/
 #if (!react_global)
-@:jsRequire('react')
+@:jsRequire("react")
 #end
 @:native('React')
 extern class React
