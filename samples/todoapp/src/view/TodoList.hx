@@ -13,9 +13,9 @@ typedef TodoListProps = {
 
 class TodoList extends ReactComponentOfProps<TodoListProps>
 {
-	public function new() 
+	public function new(props:TodoListProps)
 	{
-		super();
+		super(props);
 	}
 	
 	override public function render() 
@@ -51,9 +51,9 @@ class TodoListItem extends ReactComponentOfProps<TodoItemProps>
 {
 	var checked:Bool;
 	
-	public function new()
+	public function new(props:TodoItemProps)
 	{
-		super();
+		super(props);
 	}
 	
 	override public function shouldComponentUpdate(nextProps:TodoItemProps, nextState:Dynamic):Bool 
@@ -65,8 +65,11 @@ class TodoListItem extends ReactComponentOfProps<TodoItemProps>
 	{
 		var entry:TodoItem = props.data;
 		checked = entry.checked;
-		var cname = checked ? 'checked' : '';
 		var id = 'item-${entry.id}';
-		return jsx('<li id=$id className=$cname>${entry.label}</li>');
+		return jsx('
+			<li id = $id className = ${checked ? "checked" : ""}>
+				${entry.label}
+			</li>
+		');
 	}
 }

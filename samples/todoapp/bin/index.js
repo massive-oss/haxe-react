@@ -341,10 +341,10 @@ store_TodoStore.prototype = {
 		this.lastId = this.list.length;
 	}
 };
-var view_TodoApp = function() {
+var view_TodoApp = function(props) {
 	this.todoStore = new store_TodoStore();
 	var _g = this;
-	React.Component.call(this);
+	React.Component.call(this,props);
 	this.state = { items : this.todoStore.list};
 	this.todoStore.changed.add(function() {
 		_g.setState({ items : _g.todoStore.list});
@@ -357,7 +357,8 @@ view_TodoApp.prototype = $extend(React.Component.prototype,{
 		var unchecked = this.state.items.filter(function(item) {
 			return !item.checked;
 		}).length;
-		return React.createElement("div",{ className : "app"},React.createElement("div",{ className : "header"},React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),React.createElement("button",{ onClick : $bind(this,this.addItem), className : "button-add"},"+")),React.createElement(view_TodoList,{ data : this.state.items}),React.createElement("div",{ className : "footer"},unchecked," task(s) left"));
+		var listProps = { data : this.state.items};
+		return React.createElement("div",{ style : { margin : "10px"}, className : "app"},React.createElement("div",{ className : "header"},React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),React.createElement("button",{ onClick : $bind(this,this.addItem), className : "button-add"},"+")),React.createElement(view_TodoList,React.__spread({ },listProps)),React.createElement("div",{ className : "footer"},unchecked," task(s) left"));
 	}
 	,addItem: function() {
 		var text = this.refs.input.value;
@@ -367,8 +368,8 @@ view_TodoApp.prototype = $extend(React.Component.prototype,{
 		}
 	}
 });
-var view_TodoList = function() {
-	React.Component.call(this);
+var view_TodoList = function(props) {
+	React.Component.call(this,props);
 };
 view_TodoList.__name__ = true;
 view_TodoList.__super__ = React.Component;
@@ -395,8 +396,8 @@ view_TodoList.prototype = $extend(React.Component.prototype,{
 		}
 	}
 });
-var view_TodoListItem = function() {
-	React.Component.call(this);
+var view_TodoListItem = function(props) {
+	React.Component.call(this,props);
 };
 view_TodoListItem.__name__ = true;
 view_TodoListItem.__super__ = React.Component;
@@ -407,10 +408,8 @@ view_TodoListItem.prototype = $extend(React.Component.prototype,{
 	,render: function() {
 		var entry = this.props.data;
 		this.checked = entry.checked;
-		var cname;
-		if(this.checked) cname = "checked"; else cname = "";
 		var id = "item-" + entry.id;
-		return React.createElement("li",{ id : id, className : cname},entry.label);
+		return React.createElement("li",{ id : id, className : this.checked?"checked":""},entry.label);
 	}
 });
 var $_, $fid = 0;

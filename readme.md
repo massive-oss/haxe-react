@@ -55,7 +55,7 @@ typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, 
 
 ### The compromise 
 
-Unfortunately, the Haxe compiler (and editors) doesn't allow to use exactly the JSX XML DSL, 
+The Haxe compiler (and editors) doesn't allow to use exactly the JSX XML DSL, 
 so we had to compromise a bit...
 
 This library's take on JSX is to use a compile-time macro to parse JSX as a string to generate
@@ -64,6 +64,8 @@ the same kind of code that Facebook's JSX, Babel and Typescript will generate.
 Both classic JSX `{}` binding and Haxe string interpolation `$var` / `${expression}` / `<$Comp>` 
 are allowed. The advantage of string interpolation is Haxe editor supports for completion and
 code navigation.
+
+Spread operator and complex expressions within curly braces are supported.
 
 ```haxe
 import api.react.React;
@@ -84,16 +86,48 @@ class App extends ReactComponent {
 		var cname = 'foo';
 		return jsx('
 			<div className=$cname>
+				<App.statelessComponent style=${{margin:"10px"}}/>
 				${/*children*/}
 			</div>
 		');
 	}
+	
+	static function statelessComponent(props:Dynamic) {
+		return jsx('<div {...props}/>');
+	}
 }
 ```
 
-### Known limitations: 
+## React JS dependency
 
-- you can't include double quotes in an expression assigned to an attribute.
-Eg. `<div className=${state.selected?"selected":""}>`
-- You can't use functions (and thus factories) for stateless rendering. We're looking into this. 
- 
+There are 2 ways to link the React JS library:
+
+### Require method (default)
+
+By default the library uses `require('react')` to reference React JS. 
+
+This means you are expected to use `npm` to install this dependency:
+
+	npm install react
+
+and a second build step to generate the final JS file, for instance using `browserify`:
+
+	npm install browserify
+	browserify haxe-output.js -o final-output.js
+
+(note that you can use `watchify` to automatically run this build step) 
+
+### Global JS
+
+The other common method is to download or reference the CDN files of React JS in your HTML page:
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.5/react-with-addons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.5/react-dom.min.js"></script>
+```
+
+and don't forget to add the following Haxe define to your build command:
+
+	-D react_global
+
+Look at `samples/todoapp` for an example of this approach.

@@ -21,7 +21,7 @@ typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, D
 #if react_native
 @:jsRequire("ReactComponent")
 #elseif (!react_global)
-@:jsRequire('react', 'Component')
+@:jsRequire("react", "Component")
 #end
 @:native('React.Component')
 @:keepSub 
@@ -40,7 +40,7 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 	**/
 	var refs(default, null):TRefs;
 
-	function new(?props:TProps);
+	function new(props:TProps);
 
 	/**
 		https://facebook.github.io/react/docs/component-api.html#forceupdate
