@@ -122,8 +122,8 @@ and a second build step to generate the final JS file, for instance using `brows
 The other common method is to download or reference the CDN files of React JS in your HTML page:
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.5/react-with-addons.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.5/react-dom.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-with-addons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.min.js"></script>
 ```
 
 and don't forget to add the following Haxe define to your build command:
