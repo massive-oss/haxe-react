@@ -56,4 +56,9 @@ extern interface ReactChildren
 		https://facebook.github.io/react/docs/top-level-api.html#react.children.only
 	**/
 	function only(children:Dynamic):ReactComponent;
+
+	/**
+		https://facebook.github.io/react/docs/top-level-api.html#react.children.toarray
+	**/
+	function toArray(children:Dynamic):Array<Dynamic>;
 }
