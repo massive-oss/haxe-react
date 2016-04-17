@@ -197,28 +197,12 @@ class ReactMacro
 		if (useLiteral)
 		{
 			if (children.length > 0) attrs.push({field:'children', expr:macro $a{children}});
+			if (key == null) key = macro null;
+			if (ref == null) ref = macro null;
 			
 			var props = makeProps(spread, attrs, pos);
 			
-			// TODO could not get EObjectDecl to generare the $$typeof field
-			if (key == null && ref == null) return macro untyped {
-				"$$typeof": untyped __js__("$$tre"),
-				type: $type, 
-				props: $props
-			}
-			else if (ref == null) return macro untyped {
-				"$$typeof": untyped __js__("$$tre"),
-				type: $type, 
-				props: $props, 
-				key: $key
-			}
-			else if (key == null) return macro untyped {
-				"$$typeof": untyped __js__("$$tre"),
-				type: $type, 
-				props: $props, 
-				ref: $ref 
-			}
-			else return macro untyped {
+			return macro untyped {
 				"$$typeof": untyped __js__("$$tre"),
 				type: $type, 
 				props: $props, 
