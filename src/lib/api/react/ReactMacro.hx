@@ -163,34 +163,107 @@ class ReactMacro
 
 	static function parseJsxNode(xml:Xml, pos:Position)
 	{
-		var args = [];
-
 		// parse type
 		var path = xml.nodeName.split('.');
 		var last = path[path.length - 1];
-		if (path.length == 1 && last.charAt(0) == last.charAt(0).toLowerCase()) args.push(macro $v{path[0]});
-		else args.push(macro $p{path});
+		var isHtml = path.length == 1 && last.charAt(0) == last.charAt(0).toLowerCase();
+		var type = isHtml ? macro $v{path[0]} : macro $p{path};
 
 		// parse attributes
 		var attrs = [];
 		var spread = [];
+		var key = null;
+		var ref = null;
 		for (attr in xml.attributes())
 		{
 			var value = xml.get(attr);
 			var expr = parseJsxExpr(value, pos);
-			if (attr.charAt(0) == '.') spread.push(expr);
+			if (attr == 'key') key = expr;
+			else if (attr == 'ref') ref = expr;
+			else if (attr.charAt(0) == '.') spread.push(expr);
 			else attrs.push({field:attr, expr:expr});
 		}
-		if (spread.length > 0) 
-		{
-			args.push(makeSpread(spread, attrs, pos));
-		}
-		else
-		{
-			if (attrs.length == 0) args.push(macro null);
-			else args.push({pos:pos, expr:EObjectDecl(attrs)});
-		}
 		
+		// parse children
+		var children = parseChildren(xml, pos);
+		
+		// inline declaration or createElement?
+		#if (!debug && !react_no_inline)
+		var useLiteral = ref == null || canUseLiteral(ref);
+		#else
+		var useLiteral = false;
+		#end
+		
+		if (useLiteral)
+		{
+			if (children.length > 0) attrs.push({field:'children', expr:macro $a{children}});
+			
+			var props = makeProps(spread, attrs, pos);
+			
+			// TODO could not get EObjectDecl to generare the $$typeof field
+			if (key == null && ref == null) return macro untyped {
+				"$$typeof": untyped __js__("$$tre"),
+				type: $type, 
+				props: $props
+			}
+			else if (ref == null) return macro untyped {
+				"$$typeof": untyped __js__("$$tre"),
+				type: $type, 
+				props: $props, 
+				key: $key
+			}
+			else if (key == null) return macro untyped {
+				"$$typeof": untyped __js__("$$tre"),
+				type: $type, 
+				props: $props, 
+				ref: $ref 
+			}
+			else return macro untyped {
+				"$$typeof": untyped __js__("$$tre"),
+				type: $type, 
+				props: $props, 
+				key: $key, 
+				ref: $ref 
+			}
+		}
+		else 
+		{
+			if (ref != null) attrs.unshift({field:'ref', expr:ref});
+			if (key != null) attrs.unshift({field:'key', expr:key});
+			
+			var props = makeProps(spread, attrs, pos);
+			
+			var args = [type, props].concat(children);
+			return macro api.react.React.createElement($a{args});
+		}
+	}
+	
+	static function canUseLiteral(ref:Expr) 
+	{
+		// only refs as functions are allowed in literals, strings require the full createElement context 
+		return switch (Context.typeof(ref)) {
+			case TFun(_): true; 
+			default: false; 
+		}
+	}
+	
+	static function makeProps(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position) 
+	{
+		return spread.length > 0
+			? makeSpread(spread, attrs, pos)
+			: attrs.length == 0 ? macro null : {pos:pos, expr:EObjectDecl(attrs)}
+	}
+	
+	static function makeSpread(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position) 
+	{
+		var args = [macro {}].concat(spread);
+		if (attrs.length > 0) args.push({pos:pos, expr:EObjectDecl(attrs)});
+		return macro untyped Object.assign($a{args});
+	}
+	
+	static function parseChildren(xml:Xml, pos:Position) 
+	{
+		var children = [];
 		for (node in xml)
 		{
 			if (node.nodeType == Xml.PCData)
@@ -205,37 +278,24 @@ class ReactMacro
 					if (line.length == 0) continue;
 					~/([^{]+|\{[^}]+\})/g.map(line, function (e){
 						var token = e.matched(0);
-						args.push(parseJsxExpr(token, pos));
+						children.push(parseJsxExpr(token, pos));
 						return '';
 					});
 				}
 			}
 			else if (node.nodeType == Xml.Element)
 			{
-				args.push(parseJsxNode(node, pos));
+				children.push(parseJsxNode(node, pos));
 			}
-
 		}
-		return macro api.react.React.createElement($a{args});
-	}
-	
-	static function makeSpread(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position) 
-	{
-		var args = [macro {}].concat(spread);
-		if (attrs.length > 0) args.push({pos:pos, expr:EObjectDecl(attrs)});
-		return macro untyped api.react.React.__spread($a{args});
+		return children;
 	}
 
 	static function parseJsxExpr(value:String, pos:Position)
 	{
-		return if (value.charAt(0) == '{' && value.charAt(value.length - 1) == '}')
-		{
-			Context.parse(value.substr(1, value.length - 2), pos);
-		}
-		else
-		{
-			macro $v{value};
-		}
+		return value.charAt(0) == '{' && value.charAt(value.length - 1) == '}'
+			? Context.parse(value.substr(1, value.length - 2), pos)
+			: macro $v{value};
 	}
 	
 	public static function setDisplayName()
@@ -256,6 +316,13 @@ class ReactMacro
 		}
 		fields.push(field);
 		return fields;
+	}
+	#end
+	
+	#if (js && !react_no_inline)
+	static function __init__() {
+		// required magic value to tag literal react elements
+		untyped __js__("var $$tre = (typeof Symbol === \"function\" && Symbol.for && Symbol.for(\"react.element\")) || 0xeac7");
 	}
 	#end
 }
