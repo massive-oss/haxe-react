@@ -26,8 +26,6 @@ Std.__name__ = true;
 Std.string = function(s) {
 	return js_Boot.__string_rec(s,"");
 };
-var api_react_ReactMacro = function() { };
-api_react_ReactMacro.__name__ = true;
 var js_Boot = function() { };
 js_Boot.__name__ = true;
 js_Boot.__string_rec = function(o,s) {
@@ -299,20 +297,6 @@ msignal_SlotList.prototype = {
 	,prepend: function(slot) {
 		return new msignal_SlotList(slot,this);
 	}
-	,append: function(slot) {
-		if(slot == null) return this;
-		if(!this.nonEmpty) return new msignal_SlotList(slot);
-		if(this.tail == msignal_SlotList.NIL) return new msignal_SlotList(slot).prepend(this.head);
-		var wholeClone = new msignal_SlotList(this.head);
-		var subClone = wholeClone;
-		var current = this.tail;
-		while(current.nonEmpty) {
-			subClone = subClone.tail = new msignal_SlotList(current.head);
-			current = current.tail;
-		}
-		subClone.tail = new msignal_SlotList(slot);
-		return wholeClone;
-	}
 	,insertWithPriority: function(slot) {
 		if(!this.nonEmpty) return new msignal_SlotList(slot);
 		var priority = slot.priority;
@@ -346,15 +330,6 @@ msignal_SlotList.prototype = {
 			current = current.tail;
 		}
 		return this;
-	}
-	,contains: function(listener) {
-		if(!this.nonEmpty) return false;
-		var p = this;
-		while(p.nonEmpty) {
-			if(Reflect.compareMethods(p.head.listener,listener)) return true;
-			p = p.tail;
-		}
-		return false;
 	}
 	,find: function(listener) {
 		if(!this.nonEmpty) return null;
@@ -418,7 +393,7 @@ view_TodoApp.prototype = $extend(React.Component.prototype,{
 			return !item.checked;
 		}).length;
 		var listProps = { data : this.state.items};
-		return { '$$typeof' : $$tre, type : "div", props : { style : { margin : "10px"}, className : "app", children : [{ '$$typeof' : $$tre, type : "div", props : { className : "header", children : [React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),{ '$$typeof' : $$tre, type : "button", props : { onClick : $bind(this,this.addItem), className : "button-add", children : ["+"]}, key : null, ref : null}]}, key : null, ref : null},{ '$$typeof' : $$tre, type : view_TodoList, props : React.__spread({ },listProps), key : null, ref : $bind(this,this.mountList)},{ '$$typeof' : $$tre, type : "div", props : { className : "footer", children : [unchecked," task(s) left"]}, key : null, ref : null}]}, key : null, ref : null};
+		return { '$$typeof' : $$tre, type : "div", props : { style : { margin : "10px"}, className : "app", children : [{ '$$typeof' : $$tre, type : "div", props : { className : "header", children : [React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),{ '$$typeof' : $$tre, type : "button", props : { onClick : $bind(this,this.addItem), className : "button-add", children : ["+"]}, key : null, ref : null}]}, key : null, ref : null},{ '$$typeof' : $$tre, type : view_TodoList, props : Object.assign({ },listProps), key : null, ref : $bind(this,this.mountList)},{ '$$typeof' : $$tre, type : "div", props : { className : "footer", children : [unchecked," task(s) left"]}, key : null, ref : null}]}, key : null, ref : null};
 	}
 	,mountList: function(comp) {
 		console.log("List mounted " + Std.string(comp.props));

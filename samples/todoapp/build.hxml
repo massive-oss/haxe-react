@@ -6,3 +6,4 @@
 -D react_global
 #-D react_no_inline
 #-debug
+-dce full
