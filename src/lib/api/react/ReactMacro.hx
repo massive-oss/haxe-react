@@ -235,7 +235,7 @@ class ReactMacro
 	{
 		return spread.length > 0
 			? makeSpread(spread, attrs, pos)
-			: attrs.length == 0 ? macro null : {pos:pos, expr:EObjectDecl(attrs)}
+			: attrs.length == 0 ? macro {} : {pos:pos, expr:EObjectDecl(attrs)}
 	}
 	
 	static function makeSpread(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position) 

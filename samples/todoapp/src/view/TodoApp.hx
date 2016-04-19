@@ -41,7 +41,9 @@ class TodoApp extends ReactComponentOfStateAndRefs<TodoAppState, TodoAppRefs>
 					<input ref="input" placeholder="Enter new task description" />
 					<button className="button-add" onClick=$addItem>+</button>
 				</div>
+				<hr/>
 				<$TodoList ref={mountList} {...listProps}/>
+				<hr/>
 				<div className="footer">$unchecked task(s) left</div>
 			</div>
 		');
