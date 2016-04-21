@@ -8,7 +8,7 @@ function $extend(from, fields) {
 var Main = function() { };
 Main.__name__ = true;
 Main.main = function() {
-	ReactDOM.render({ '$$typeof' : $$tre, type : view_TodoApp, props : { }, key : null, ref : null},window.document.getElementById("app"));
+	ReactDOM.render({ '$$typeof' : $$tre, type : view_TodoApp, props : { }},window.document.getElementById("app"));
 };
 Math.__name__ = true;
 var Reflect = function() { };
@@ -393,7 +393,7 @@ view_TodoApp.prototype = $extend(React.Component.prototype,{
 			return !item.checked;
 		}).length;
 		var listProps = { data : this.state.items};
-		return { '$$typeof' : $$tre, type : "div", props : { style : { margin : "10px"}, className : "app", children : [{ '$$typeof' : $$tre, type : "div", props : { className : "header", children : [React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),{ '$$typeof' : $$tre, type : "button", props : { onClick : $bind(this,this.addItem), className : "button-add", children : ["+"]}, key : null, ref : null}]}, key : null, ref : null},{ '$$typeof' : $$tre, type : "hr", props : { }, key : null, ref : null},{ '$$typeof' : $$tre, type : view_TodoList, props : Object.assign({ },listProps), key : null, ref : $bind(this,this.mountList)},{ '$$typeof' : $$tre, type : "hr", props : { }, key : null, ref : null},{ '$$typeof' : $$tre, type : "div", props : { className : "footer", children : [unchecked," task(s) left"]}, key : null, ref : null}]}, key : null, ref : null};
+		return { '$$typeof' : $$tre, type : "div", props : { style : { margin : "10px"}, className : "app", children : [{ '$$typeof' : $$tre, type : "div", props : { className : "header", children : [React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),{ '$$typeof' : $$tre, type : "button", props : { onClick : $bind(this,this.addItem), className : "button-add", children : ["+"]}}]}},{ '$$typeof' : $$tre, type : "hr", props : { }},{ '$$typeof' : $$tre, type : view_TodoList, props : Object.assign({ },listProps), ref : $bind(this,this.mountList)},{ '$$typeof' : $$tre, type : "hr", props : { }},{ '$$typeof' : $$tre, type : "div", props : { className : "footer", children : [unchecked," task(s) left"]}}]}};
 	}
 	,mountList: function(comp) {
 		console.log("List mounted " + Std.string(comp.props));
@@ -413,7 +413,7 @@ view_TodoList.__name__ = true;
 view_TodoList.__super__ = React.Component;
 view_TodoList.prototype = $extend(React.Component.prototype,{
 	render: function() {
-		return { '$$typeof' : $$tre, type : "ul", props : { onClick : $bind(this,this.toggleChecked), className : "list", children : [this.createChildren()]}, key : null, ref : null};
+		return { '$$typeof' : $$tre, type : "ul", props : { onClick : $bind(this,this.toggleChecked), className : "list", children : [this.createChildren()]}};
 	}
 	,createChildren: function() {
 		var _g = [];
@@ -422,7 +422,7 @@ view_TodoList.prototype = $extend(React.Component.prototype,{
 		while(_g1 < _g2.length) {
 			var entry = _g2[_g1];
 			++_g1;
-			_g.push({ '$$typeof' : $$tre, type : view_TodoListItem, props : { data : entry}, key : entry.id, ref : null});
+			_g.push({ '$$typeof' : $$tre, type : view_TodoListItem, props : { data : entry}, key : entry.id});
 		}
 		return _g;
 	}
@@ -447,7 +447,7 @@ view_TodoListItem.prototype = $extend(React.Component.prototype,{
 		var entry = this.props.data;
 		this.checked = entry.checked;
 		var id = "item-" + entry.id;
-		return { '$$typeof' : $$tre, type : "li", props : { id : id, className : this.checked?"checked":"", children : [entry.label]}, key : null, ref : null};
+		return { '$$typeof' : $$tre, type : "li", props : { id : id, className : this.checked?"checked":"", children : [entry.label]}};
 	}
 });
 var $_, $fid = 0;

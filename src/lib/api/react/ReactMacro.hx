@@ -12,7 +12,7 @@ class ReactMacro
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
 		#if display
-		return macro api.react.React.createElement(${expr});
+		return macro api.react.React.createElement('');
 		#else
 		return parseJsx(ExprTools.getValue(expr), expr.pos);
 		#end
@@ -197,18 +197,22 @@ class ReactMacro
 		if (useLiteral)
 		{
 			if (children.length > 0) attrs.push({field:'children', expr:macro $a{children}});
+			#if react_monomorphic
 			if (key == null) key = macro null;
 			if (ref == null) ref = macro null;
+			#end
 			
 			var props = makeProps(spread, attrs, pos);
+			var fields = [
+				{field: "@$__hx__$$typeof", expr: macro untyped __js__("$$tre")},
+				{field: 'type', expr: type},
+				{field: 'props', expr: props}
+			];
+			if (key != null) fields.push({field: 'key', expr: key});
+			if (ref != null) fields.push({field: 'ref', expr: ref});
+			var obj = {expr: EObjectDecl(fields), pos: pos};
 			
-			return macro untyped {
-				"$$typeof": untyped __js__("$$tre"),
-				type: $type, 
-				props: $props, 
-				key: $key, 
-				ref: $ref 
-			}
+			return macro (untyped $obj : api.react.ReactComponent);
 		}
 		else 
 		{
