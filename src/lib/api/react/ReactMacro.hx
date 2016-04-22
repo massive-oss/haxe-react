@@ -238,14 +238,16 @@ class ReactMacro
 		}
 	}
 	
-	public static function setDisplayName()
+	public static macro function setDisplayName():Array<Field>
 	{
 		var fields = Context.getBuildFields();
 		
 		for (field in fields) 
-			if (field.name == 'displayName') return fields;
+			if (field.name == 'displayName') return null;
 		
 		var inClass = Context.getLocalClass().get();
+		if (inClass.isExtern) return null;
+		
 		var className = macro $v{inClass.name};
 		
 		var field:Field = {
