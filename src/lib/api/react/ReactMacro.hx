@@ -244,6 +244,11 @@ class ReactMacro
 	
 	static function makeSpread(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position) 
 	{
+		// single spread, no props
+		if (spread.length == 1 && attrs.length == 0)
+			return spread[0];
+		
+		// combine using Object.assign
 		var args = [macro {}].concat(spread);
 		if (attrs.length > 0) args.push({pos:pos, expr:EObjectDecl(attrs)});
 		return macro untyped Object.assign($a{args});
