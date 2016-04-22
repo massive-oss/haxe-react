@@ -135,7 +135,7 @@ Look at `samples/todoapp` for an example of this approach.
 
 ### Inline ReactElements 
 
-By default, when building for release (eg. without `-debug`), calls to `React.createElement` are replaced by inline JS objects. This 
+By default, when building for release (eg. without `-debug`), calls to `React.createElement` are replaced by inline JS objects (if possible). 
 
 See: https://github.com/facebook/react/issues/3228
 
