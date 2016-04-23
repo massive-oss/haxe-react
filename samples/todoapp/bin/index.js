@@ -413,7 +413,7 @@ view_TodoList.__name__ = true;
 view_TodoList.__super__ = React.Component;
 view_TodoList.prototype = $extend(React.Component.prototype,{
 	render: function() {
-		return { '$$typeof' : $$tre, type : "ul", props : Object.assign({ },this.props,{ onClick : $bind(this,this.toggleChecked), className : "list", children : [this.createChildren()]})};
+		return { '$$typeof' : $$tre, type : "ul", props : { onClick : $bind(this,this.toggleChecked), className : "list", children : [this.createChildren()]}};
 	}
 	,createChildren: function() {
 		var _g = [];
@@ -446,8 +446,10 @@ view_TodoListItem.prototype = $extend(React.Component.prototype,{
 	,render: function() {
 		var entry = this.props.data;
 		this.checked = entry.checked;
-		var id = "item-" + entry.id;
-		return { '$$typeof' : $$tre, type : "li", props : { id : id, className : this.checked?"checked":"", children : [entry.label]}};
+		var attrs_className;
+		if(this.checked) attrs_className = "checked"; else attrs_className = "";
+		var attrs_style = { paddingLeft : this.checked?"8px":""};
+		return { '$$typeof' : $$tre, type : "li", props : { id : "item-" + entry.id, children : [entry.label], className : attrs_className, style : attrs_style}};
 	}
 });
 var $_, $fid = 0;

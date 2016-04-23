@@ -21,7 +21,7 @@ class TodoList extends ReactComponentOfProps<TodoListProps>
 	override public function render() 
 	{
 		return jsx('
-			<ul className="list" onClick=$toggleChecked {...props}>
+			<ul className="list" onClick=$toggleChecked>
 				${createChildren()}
 			</ul>
 		');
@@ -65,9 +65,12 @@ class TodoListItem extends ReactComponentOfProps<TodoItemProps>
 	{
 		var entry:TodoItem = props.data;
 		checked = entry.checked;
-		var id = 'item-${entry.id}';
+		var attrs = {
+			className: checked ? 'checked' : '',
+			style: { paddingLeft: checked ? '8px' : '' }
+		};
 		return jsx('
-			<li id = $id className = ${checked ? "checked" : ""}>
+			<li id=${'item-${entry.id}'} {...attrs}>
 				${entry.label}
 			</li>
 		');

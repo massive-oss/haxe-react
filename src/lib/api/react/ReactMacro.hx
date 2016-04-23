@@ -3,6 +3,7 @@ package api.react;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.ExprTools;
+import haxe.macro.Type;
 
 /**
 	Provides a simple macro for parsing jsx into Haxe expressions.
@@ -250,10 +251,65 @@ class ReactMacro
 		if (spread.length == 1 && attrs.length == 0)
 			return spread[0];
 		
-		// combine using Object.assign
-		var args = [macro {}].concat(spread);
-		if (attrs.length > 0) args.push({pos:pos, expr:EObjectDecl(attrs)});
-		return macro untyped Object.assign($a{args});
+		#if react_merge_spreads
+		if (attrs.length > 0)
+		{
+			// combine last to first spread into attrs and stop at first failure
+			var i = spread.length - 1;
+			while (i >= 0)
+			{
+				var obj = spread[i--];
+				var fields = tryGetFields(obj);
+				if (fields != null) 
+				{
+					for (field in fields) 
+					{
+						var name = field.name;
+						if (!hasProp(attrs, name))
+							attrs.push({field: name, expr: macro $obj.$name });
+					}
+					spread.remove(obj);
+				}
+				else break;
+			}
+		}
+		#end
+		
+		var props = attrs.length > 0 ? {pos:pos, expr:EObjectDecl(attrs)} : null;
+		
+		if (spread.length > 0) 
+		{
+			// combine using Object.assign
+			var args = [macro {}].concat(spread);
+			if (props != null) args.push(props);
+			return macro untyped Object.assign($a{args});
+		}
+		else if (props != null) return props;
+		else return macro {};
+	}
+	
+    static function hasProp(attrs:Array<{field:String, expr:Expr}>, name:String) 
+    {
+        for (attr in attrs)
+            if (attr.field == name) return true;
+        return false;
+    }
+	
+	static function tryGetFields(obj:Expr) 
+	{
+		// only accept simple constant expressions
+		switch (obj.expr) {
+			case EConst(_): 
+			case EField(_.expr => EConst(_), _): 
+			default: return null;
+		}
+		// only flatten object literals 
+		switch (Context.typeof(obj)) {
+			case TAnonymous(_.get() => anon):
+				return anon.fields;
+			default: 
+				return null;
+		}
 	}
 	
 	static function parseChildren(xml:Xml, pos:Position) 
