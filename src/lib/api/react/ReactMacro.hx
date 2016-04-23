@@ -12,7 +12,7 @@ class ReactMacro
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
 		#if display
-		return macro api.react.React.createElement(${expr});
+		return macro (null : api.react.ReactComponent);
 		#else
 		return parseJsx(ExprTools.getValue(expr), expr.pos);
 		#end
