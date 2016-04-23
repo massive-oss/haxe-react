@@ -30,7 +30,9 @@ class ReactMacro
 		{
 			jsx = escapeJsx(jsx);
 			var xml = Xml.parse(jsx);
-			var expr = parseJsxNode(xml.firstElement(), pos);
+			var elems = xml.elements();
+			var expr = parseJsxNode(elems.next(), pos);
+			if (elems.hasNext()) throw('Syntax error: Adjacent JSX elements must be wrapped in an enclosing tag');
 			return expr;
 		}
 		catch (err:Dynamic)
