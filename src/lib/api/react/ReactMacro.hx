@@ -12,7 +12,7 @@ class ReactMacro
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
 		#if display
-		return macro api.react.React.createElement('');
+		return macro (null : api.react.ReactComponent);
 		#else
 		return parseJsx(ExprTools.getValue(expr), expr.pos);
 		#end
@@ -30,7 +30,9 @@ class ReactMacro
 		{
 			jsx = escapeJsx(jsx);
 			var xml = Xml.parse(jsx);
-			var expr = parseJsxNode(xml.firstElement(), pos);
+			var elems = xml.elements();
+			var expr = parseJsxNode(elems.next(), pos);
+			if (elems.hasNext()) throw('Syntax error: Adjacent JSX elements must be wrapped in an enclosing tag');
 			return expr;
 		}
 		catch (err:Dynamic)
@@ -291,14 +293,16 @@ class ReactMacro
 			: macro $v{value};
 	}
 	
-	public static function setDisplayName()
+	public static macro function setDisplayName():Array<Field>
 	{
 		var fields = Context.getBuildFields();
 		
 		for (field in fields) 
-			if (field.name == 'displayName') return fields;
+			if (field.name == 'displayName') return null;
 		
 		var inClass = Context.getLocalClass().get();
+		if (inClass.isExtern) return null;
+		
 		var className = macro $v{inClass.name};
 		
 		var field:Field = {
