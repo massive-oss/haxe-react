@@ -23,7 +23,7 @@ typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, D
 #end
 @:native('React.Component')
 @:keepSub 
-@:autoBuild(api.react.ReactMacro.setDisplayName())
+@:autoBuild(api.react.ReactMacro.tagComponent())
 extern class ReactComponentOf<TProps, TState, TRefs>
 {
 	static var defaultProps:Dynamic;
@@ -38,7 +38,7 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 	**/
 	var refs(default, null):TRefs;
 
-	function new(props:TProps);
+	function new(?props:TProps);
 
 	/**
 		https://facebook.github.io/react/docs/component-api.html#forceupdate

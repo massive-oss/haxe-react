@@ -3,6 +3,7 @@ package api.react;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.ExprTools;
+import haxe.macro.Type;
 
 /**
 	Provides a simple macro for parsing jsx into Haxe expressions.
@@ -22,7 +23,7 @@ class ReactMacro
 	{
 		return macro $v{escapeJsx(ExprTools.getValue(expr))};
 	}
-
+	
 	#if macro
 	static function parseJsx(jsx:String, pos:Position):Expr
 	{
@@ -190,31 +191,12 @@ class ReactMacro
 		var children = parseChildren(xml, pos);
 		
 		// inline declaration or createElement?
-		#if (!debug && !react_no_inline)
-		var useLiteral = ref == null || canUseLiteral(ref);
-		#else
-		var useLiteral = false;
-		#end
-		
+		var useLiteral = canUseLiteral(ref);
 		if (useLiteral)
 		{
 			if (children.length > 0) attrs.push({field:'children', expr:macro $a{children}});
-			#if react_monomorphic
-			if (key == null) key = macro null;
-			if (ref == null) ref = macro null;
-			#end
-			
 			var props = makeProps(spread, attrs, pos);
-			var fields = [
-				{field: "@$__hx__$$typeof", expr: macro untyped __js__("$$tre")},
-				{field: 'type', expr: type},
-				{field: 'props', expr: props}
-			];
-			if (key != null) fields.push({field: 'key', expr: key});
-			if (ref != null) fields.push({field: 'ref', expr: ref});
-			var obj = {expr: EObjectDecl(fields), pos: pos};
-			
-			return macro (untyped $obj : api.react.ReactComponent);
+			return genLiteral(type, props, ref, key, pos);
 		}
 		else 
 		{
@@ -224,12 +206,36 @@ class ReactMacro
 			var props = makeProps(spread, attrs, pos);
 			
 			var args = [type, props].concat(children);
-			return macro api.react.React.createElement($a{args});
+			return macro untyped api.react.React._createElement($a{args});
 		}
+	}
+	
+	static private function genLiteral(type:Expr, props:Expr, ref:Expr, key:Expr, pos:Position) 
+	{
+		#if react_monomorphic
+		if (key == null) key = macro null;
+		if (ref == null) ref = macro null;
+		#end
+		
+		var fields = [
+			{field: "@$__hx__$$typeof", expr: macro untyped __js__("$$tre")},
+			{field: 'type', expr: type},
+			{field: 'props', expr: props}
+		];
+		if (key != null) fields.push({field: 'key', expr: key});
+		if (ref != null) fields.push({field: 'ref', expr: ref});
+		var obj = {expr: EObjectDecl(fields), pos: pos};
+		
+		return macro (untyped $obj : api.react.ReactComponent);
 	}
 	
 	static function canUseLiteral(ref:Expr) 
 	{
+		#if (debug || react_no_inline)
+		return false;
+		#end
+		if (ref == null) return true;
+		
 		// only refs as functions are allowed in literals, strings require the full createElement context 
 		return switch (Context.typeof(ref)) {
 			case TFun(_): true; 
@@ -293,26 +299,141 @@ class ReactMacro
 			: macro $v{value};
 	}
 	
-	public static macro function setDisplayName():Array<Field>
+	/**
+	 * Annotate React components for run-time JS reflection
+	 */
+	public static macro function tagComponent():Array<Field>
 	{
+		#if !debug
+		return null;
+		#else
+		
+		var pos = Context.currentPos();
 		var fields = Context.getBuildFields();
-		
-		for (field in fields) 
-			if (field.name == 'displayName') return null;
-		
 		var inClass = Context.getLocalClass().get();
-		if (inClass.isExtern) return null;
+		if (inClass.isExtern) 
+			return null;
 		
+		addDisplayName(fields, inClass, pos);
+		
+		#if react_hot
+		addTagSource(fields, inClass, pos);
+		#end
+		
+		return fields;
+		#end
+	}
+	
+	static function addTagSource(fields:Array<Field>, inClass:ClassType, pos:Position)
+	{
+		var className = inClass.name;
+		var fileName = Context.getPosInfos(inClass.pos).file;
+		var tag = macro untyped Object.defineProperty($i{className}, "__source", {
+				enumerable: false,
+				configurable: true,
+				value: {
+					fileName: $v{fileName},
+					localName: $v{className}
+				}
+			});
+		
+		// append tag to existing __init__
+		for (field in fields)
+			if (field.name == '__init__')
+			{
+				switch (field.kind) {
+					case FFun(f):
+						f.expr = macro {
+							${f.expr};
+							$tag;
+						}
+					default:
+						Context.warning('__init__ declaration not supported to hot-reload tagging', field.pos);
+				}
+				return;
+			}
+		
+		// add new __init__ function with tag
+		var field:Field = {
+			name:'__init__',
+			access:[Access.AStatic, Access.APrivate],
+			kind:FieldType.FFun({
+				args:[],
+				ret:null,
+				expr:tag
+			}),
+			pos:pos
+		}
+		fields.push(field);
+		return;
+	}
+	
+	static function addDisplayName(fields:Array<Field>, inClass:ClassType, pos:Position)
+	{
+		for (field in fields) 
+			if (field.name == 'displayName') return;
+		
+		// add 'displayName' static property to see class names in React inspector panel
 		var className = macro $v{inClass.name};
-		
 		var field:Field = {
 			name:'displayName',
 			access:[Access.AStatic, Access.APrivate],
 			kind:FieldType.FVar(null, className),
-			pos:Context.currentPos()
+			pos:pos
 		}
 		fields.push(field);
-		return fields;
+		return;
+	}
+	
+	/**
+	 * Generate inline react element from regular React.createElement() calls
+	 */
+	public static function inlineElement(type:Expr, attrs:Expr, children:Array<Expr>, pos:Position) 
+	{
+		var deopt = false;
+		var ref:Expr = null;
+		var key:Expr = null;
+		var fields = null;
+		
+		// verify it's an object literal and extract `ref` and `key`
+		switch (attrs.expr) {
+			case EObjectDecl(f):
+				var copy = f.copy();
+				for (field in copy)
+				{
+					if (field.field == 'ref') {
+						ref = field.expr;
+						if (!canUseLiteral(ref)) {
+							deopt = true;
+							break;
+						}
+						copy.remove(field);
+					}
+					else if (field.field == 'key') {
+						key = field.expr;
+						copy.remove(field);
+					}
+				}
+				fields = copy;
+			case EBlock(b):
+				if (b.length == 0) fields = [];
+				else deopt = true;
+			default:
+				deopt = true;
+		}
+		
+		if (deopt)
+		{
+			// better keep unoptimized version
+			var args = [type, attrs].concat(children);
+			return macro untyped api.react.React._createElement($a{args});
+		}
+		
+		// literal react element
+		if (children != null && children.length > 0) 
+			fields.push({ field:'children', expr:macro $a{children} });
+		var props = {pos:pos, expr:EObjectDecl(fields)};
+		return genLiteral(type, props, ref, key, pos);
 	}
 	#end
 }
