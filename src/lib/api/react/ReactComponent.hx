@@ -90,7 +90,7 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 	**/
 	function componentDidUpdate(prevProps:TProps, prevState:TState):Void;
 	
-	#if (js && !react_no_inline)
+	#if (js && !debug && !react_no_inline)
 	static function __init__():Void {
 		// required magic value to tag literal react elements
 		untyped __js__("var $$tre = (typeof Symbol === \"function\" && Symbol.for && Symbol.for(\"react.element\")) || 0xeac7");
