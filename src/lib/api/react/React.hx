@@ -1,4 +1,6 @@
 package api.react;
+import haxe.macro.Context;
+import haxe.macro.Expr;
 
 /**
 	https://facebook.github.io/react/docs/top-level-api.html
@@ -9,6 +11,7 @@ package api.react;
 @:native('React')
 extern class React
 {
+	#if !macro
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#react.proptypes
 	**/
@@ -17,7 +20,13 @@ extern class React
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#react.createelement
 	**/
+	#if (debug || react_no_inline)
 	public static function createElement(type:Dynamic, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactComponent;
+	#end
+	
+	@:noCompletion
+	@:native('createElement')
+	private static function _createElement(type:Dynamic, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactComponent;
 
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#react.cloneelement
@@ -33,6 +42,20 @@ extern class React
 		https://facebook.github.io/react/docs/top-level-api.html#react.children
 	**/
 	public static var Children:ReactChildren;
+	
+	#end
+	
+	#if (!debug && !react_no_inline)
+	macro public static function createElement(type:Expr, rest:Array<Expr>):Expr {
+		var attrs = null;
+		var children = null;
+		if (rest != null && rest.length > 0) {
+			attrs = rest[0];
+			children = rest.slice(1);
+		}
+		return ReactMacro.inlineElement(type, attrs, children, Context.currentPos());
+	}
+	#end
 }
 
 extern interface ReactChildren
