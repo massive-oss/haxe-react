@@ -394,6 +394,7 @@ class ReactMacro
 		var ref:Expr = null;
 		var key:Expr = null;
 		var fields = null;
+		if (attrs == null) attrs = macro {};
 		
 		// verify it's an object literal and extract `ref` and `key`
 		switch (attrs.expr) {

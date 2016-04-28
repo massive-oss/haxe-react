@@ -53,7 +53,7 @@ class TodoApp extends ReactComponentOfStateAndRefs<TodoAppState, TodoAppRefs>
 				React.createElement("input", { ref : "input", placeholder : "Enter new task description"}),
 				React.createElement("button", { onClick : addItem, className : "button-add"}, "+")
 			),
-			React.createElement("hr", { }),
+			React.createElement("hr"),
 			React.createElement(TodoList, { ref : mountList, data:state.items }),
 			React.createElement("hr", { }),
 			React.createElement("div", { className : "footer"}, unchecked, " task(s) left")

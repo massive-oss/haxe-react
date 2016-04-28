@@ -46,7 +46,13 @@ extern class React
 	#end
 	
 	#if (!debug && !react_no_inline)
-	macro public static function createElement(type:Expr, attrs:Expr, children:Array<Expr>):Expr {
+	macro public static function createElement(type:Expr, rest:Array<Expr>):Expr {
+		var attrs = null;
+		var children = null;
+		if (rest != null && rest.length > 0) {
+			attrs = rest[0];
+			children = rest.slice(1);
+		}
 		return ReactMacro.inlineElement(type, attrs, children, Context.currentPos());
 	}
 	#end
