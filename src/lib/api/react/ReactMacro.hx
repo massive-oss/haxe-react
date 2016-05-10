@@ -328,14 +328,7 @@ class ReactMacro
 	{
 		var className = inClass.name;
 		var fileName = Context.getPosInfos(inClass.pos).file;
-		var tag = macro untyped Object.defineProperty($i{className}, "__source", {
-				enumerable: false,
-				configurable: true,
-				value: {
-					fileName: $v{fileName},
-					localName: $v{className}
-				}
-			});
+		var tag = macro if (untyped __REACT_HOT_LOADER__) untyped __REACT_HOT_LOADER__.register($i{className}, $v{className}, $v{fileName});
 		
 		// append tag to existing __init__
 		for (field in fields)
