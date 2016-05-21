@@ -191,7 +191,7 @@ class ReactMacro
 		var children = parseChildren(xml, pos);
 		
 		// inline declaration or createElement?
-		var useLiteral = canUseLiteral(ref);
+		var useLiteral = canUseLiteral(type, ref);
 		if (useLiteral)
 		{
 			if (children.length > 0) attrs.push({field:'children', expr:macro $a{children}});
@@ -229,11 +229,24 @@ class ReactMacro
 		return macro (untyped $obj : api.react.ReactComponent);
 	}
 	
-	static function canUseLiteral(ref:Expr) 
+	static function canUseLiteral(type:Expr, ref:Expr) 
 	{
 		#if (debug || react_no_inline)
 		return false;
 		#end
+		
+		// extern classes or classes requiring React context should not be inlined
+		var t = Context.typeof(type);
+		switch(t) {
+			case TType(_, _):
+				switch (Context.follow(t)) {
+					case TAnonymous(_.get() => {status: AClassStatics(_.get() => c)}):
+						if (c.isExtern || c.meta.has(':reactContext')) return false;
+					default:
+				}
+			default:
+		}
+		
 		if (ref == null) return true;
 		
 		// only refs as functions are allowed in literals, strings require the full createElement context 
@@ -397,7 +410,7 @@ class ReactMacro
 				{
 					if (field.field == 'ref') {
 						ref = field.expr;
-						if (!canUseLiteral(ref)) {
+						if (!canUseLiteral(type, ref)) {
 							deopt = true;
 							break;
 						}
