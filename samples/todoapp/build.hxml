@@ -1,7 +1,10 @@
+-js bin/index.js
 -cp src
 -main Main
 -lib react
 -lib msignal
 -D react_global
--js bin/index.js
--debug
+#-D react_no_inline
+#-D react_monomorphic
+#-debug
+-dce full

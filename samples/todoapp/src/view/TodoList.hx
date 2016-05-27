@@ -21,7 +21,7 @@ class TodoList extends ReactComponentOfProps<TodoListProps>
 	override public function render() 
 	{
 		return jsx('
-			<ul className="list" onClick=$toggleChecked>
+			<ul className="list" onClick=$toggleChecked {...props}>
 				${createChildren()}
 			</ul>
 		');

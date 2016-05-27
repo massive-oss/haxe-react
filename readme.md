@@ -6,6 +6,11 @@ compile time macros to offer a strongly typed language to work with the increasi
 
 	haxelib install react
 
+### What's included / not included 
+
+This library covers React core and ReactDOM.
+It does NOT cover: ReactAddOns, react-router or React Native.
+
 ## API
 
 Most of the regular React API is integrated (non-JSX example):
@@ -31,29 +36,7 @@ class App extends ReactComponent {
 }
 ```
 
-### TODO
-
-Externs for common. add-ons and react-router.
-
-## Components strict typing
-
-The default `ReactComponent` type is a shorthand for `ReactComponentOf<Dynamic, Dynamic, Dynamic>`,
-a fully untyped component.
-
-To fully benefit from Haxe's strict typing you should look into extending a stricter base class:
-
-```haxe
-typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Dynamic, Dynamic>;
-typedef ReactComponentOfState<TState> = ReactComponentOf<Dynamic, TState, Dynamic>;
-typedef ReactComponentOfRefs<TRefs> = ReactComponentOf<Dynamic, Dynamic, TRefs>;
-typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic>;
-typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, Dynamic, TRefs>;
-typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, TState, TRefs>;
-```
-
 ## JSX
-
-### The compromise 
 
 The Haxe compiler (and editors) doesn't allow to use exactly the JSX XML DSL, 
 so we had to compromise a bit...
@@ -98,6 +81,22 @@ class App extends ReactComponent {
 }
 ```
 
+## Components strict typing
+
+The default `ReactComponent` type is a shorthand for `ReactComponentOf<Dynamic, Dynamic, Dynamic>`,
+a fully untyped component.
+
+To fully benefit from Haxe's strict typing you should look into extending a stricter base class:
+
+```haxe
+typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Dynamic, Dynamic>;
+typedef ReactComponentOfState<TState> = ReactComponentOf<Dynamic, TState, Dynamic>;
+typedef ReactComponentOfRefs<TRefs> = ReactComponentOf<Dynamic, Dynamic, TRefs>;
+typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic>;
+typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, Dynamic, TRefs>;
+typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, TState, TRefs>;
+```
+
 ## React JS dependency
 
 There are 2 ways to link the React JS library:
@@ -131,3 +130,23 @@ and don't forget to add the following Haxe define to your build command:
 	-D react_global
 
 Look at `samples/todoapp` for an example of this approach.
+
+## JSX Optimizing Compiler
+
+### Inline ReactElements 
+
+By default, when building for release (eg. without `-debug`), calls to `React.createElement` are replaced by inline JS objects (if possible). 
+
+See: https://github.com/facebook/react/issues/3228
+
+```javascript
+// regular
+return React.createElement('div', {key:'bar', className:'foo'});
+
+// inlined (simplified)
+return {$$typeof:Symbol.for('react.element'), type:'div', props:{className:'foo'}, key:'bar'}
+```
+
+This behaviour can be **disabled** using `-D react_no_inline`.
+
+Additionally, setting `-D react_monomorphic` will include both `ref` and `key` fields even when they are null in order to create monomorphic inlined objects. 

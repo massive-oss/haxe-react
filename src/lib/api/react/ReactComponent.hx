@@ -23,7 +23,7 @@ typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, D
 #end
 @:native('React.Component')
 @:keepSub 
-@:autoBuild(api.react.ReactMacro.setDisplayName())
+@:autoBuild(api.react.ReactMacro.tagComponent())
 extern class ReactComponentOf<TProps, TState, TRefs>
 {
 	static var defaultProps:Dynamic;
@@ -38,7 +38,7 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 	**/
 	var refs(default, null):TRefs;
 
-	function new(props:TProps);
+	function new(?props:TProps);
 
 	/**
 		https://facebook.github.io/react/docs/component-api.html#forceupdate
@@ -89,4 +89,11 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 		https://facebook.github.io/react/docs/component-specs.html#updating-componentdidupdate
 	**/
 	function componentDidUpdate(prevProps:TProps, prevState:TState):Void;
+	
+	#if (js && !debug && !react_no_inline)
+	static function __init__():Void {
+		// required magic value to tag literal react elements
+		untyped __js__("var $$tre = (typeof Symbol === \"function\" && Symbol.for && Symbol.for(\"react.element\")) || 0xeac7");
+	}
+	#end
 }
