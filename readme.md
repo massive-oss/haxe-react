@@ -11,6 +11,9 @@ compile time macros to offer a strongly typed language to work with the increasi
 This library covers React core and ReactDOM.
 It does NOT cover: ReactAddOns, react-router or React Native.
 
+We recommend looking into / contributing to the following effort:
+https://github.com/tokomlabs/haxe-react-addons
+
 ## API
 
 Most of the regular React API is integrated (non-JSX example):
