@@ -21,7 +21,7 @@ typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, D
 #if (!react_global)
 @:jsRequire("react", "Component")
 #end
-@:native('React.Component')
+// @:native('React.Component')
 @:keepSub 
 @:autoBuild(api.react.ReactMacro.tagComponent())
 extern class ReactComponentOf<TProps, TState, TRefs>

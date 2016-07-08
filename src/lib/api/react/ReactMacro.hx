@@ -206,7 +206,7 @@ class ReactMacro
 			var props = makeProps(spread, attrs, pos);
 			
 			var args = [type, props].concat(children);
-			return macro untyped api.react.React._createElement($a{args});
+			return macro @:privateAccess api.react.React._createElement($a{args});
 		}
 	}
 	
@@ -433,7 +433,7 @@ class ReactMacro
 		{
 			// better keep unoptimized version
 			var args = [type, attrs].concat(children);
-			return macro untyped api.react.React._createElement($a{args});
+			return macro @:privateAccess api.react.React._createElement($a{args});
 		}
 		
 		// literal react element
