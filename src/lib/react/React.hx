@@ -1,6 +1,6 @@
-package api.react;
+package react;
 
-import api.react.ReactComponent.ReactElement;
+import react.ReactComponent.ReactElement;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 

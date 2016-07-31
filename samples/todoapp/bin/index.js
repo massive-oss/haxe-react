@@ -474,8 +474,8 @@ if(Array.prototype.filter == null) Array.prototype.filter = function(f1) {
 	}
 	return a1;
 };
-var $$tre = (typeof Symbol === "function" && Symbol.for && Symbol.for("react.element")) || 0xeac7;
 msignal_SlotList.NIL = new msignal_SlotList(null,null);
+var $$tre = (typeof Symbol === "function" && Symbol.for && Symbol.for("react.element")) || 0xeac7;
 store_TodoActions.addItem = new msignal_Signal1();
 store_TodoActions.toggleItem = new msignal_Signal1();
 Main.main();

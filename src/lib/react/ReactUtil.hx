@@ -1,6 +1,6 @@
-package api.react;
+package react;
 
-import api.react.ReactComponent;
+import react.ReactComponent;
 
 class ReactUtil
 {

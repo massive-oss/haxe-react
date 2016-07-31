@@ -1,4 +1,4 @@
-package api.react;
+package react;
 
 import js.html.EventTarget;
 
