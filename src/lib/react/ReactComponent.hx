@@ -1,4 +1,4 @@
-package api.react;
+package react;
 
 typedef ReactComponentProps = {
 	/**
@@ -23,7 +23,7 @@ typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, D
 #end
 @:native('React.Component')
 @:keepSub 
-@:autoBuild(api.react.ReactMacro.tagComponent())
+@:autoBuild(react.ReactMacro.tagComponent())
 extern class ReactComponentOf<TProps, TState, TRefs>
 {
 	static var defaultProps:Dynamic;

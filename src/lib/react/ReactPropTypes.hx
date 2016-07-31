@@ -1,4 +1,4 @@
-package api.react;
+package react;
 
 /**
 	https://facebook.github.io/react/docs/top-level-api.html#react.proptypes

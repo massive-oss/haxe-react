@@ -1,6 +1,6 @@
-package api.react;
+package react;
 
-import api.react.ReactComponent;
+import react.ReactComponent;
 import js.html.Element;
 
 /**
