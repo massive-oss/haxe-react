@@ -48,8 +48,8 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 	/**
 		https://facebook.github.io/react/docs/component-api.html#setstate
 	**/
-	@:overload(function(nextState: TState -> TProps -> TState, ?callback: Void -> Void): Void {})
-	@:overload(function(nextState: TState -> TState, ?callback: Void -> Void): Void {})
+	@:overload(function(nextState:TState -> TProps -> TState, ?callback:Void -> Void):Void {})
+	@:overload(function(nextState:TState -> TState, ?callback:Void -> Void):Void {})
 	function setState(nextState:TState, ?callback:Void -> Void):Void;
 
 	/**
