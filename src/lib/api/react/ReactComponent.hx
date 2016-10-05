@@ -51,7 +51,7 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 	@:overload(function(nextState: TState -> TProps -> TState, ?callback: Void -> Void): Void {})
 	@:overload(function(nextState: TState -> TState, ?callback: Void -> Void): Void {})
 	function setState(nextState:TState, ?callback:Void -> Void):Void;
-	
+
 	/**
 		https://facebook.github.io/react/docs/component-specs.html#render
 	**/
