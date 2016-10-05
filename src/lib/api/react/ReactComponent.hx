@@ -51,6 +51,11 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 	function setState(nextState:TState, ?callback:Void -> Void):Void;
 
 	/**
+		https://facebook.github.io/react/docs/component-api.html#setstate
+	**/
+	function setState((previousState:TState, ?currentProps:TProps):TState, ?callback:Void -> Void):Void;
+	
+	/**
 		https://facebook.github.io/react/docs/component-specs.html#render
 	**/
 	function render():ReactComponent;
