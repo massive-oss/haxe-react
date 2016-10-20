@@ -1,10 +1,10 @@
 package;
 
-import api.react.native.AppRegistry;
-import api.react.native.StyleSheet;
+import react.native.AppRegistry;
+import react.native.StyleSheet;
 import api.react.ReactComponent;
-import api.react.native.component.*;
-import api.react.native.component.ListView.ListViewDataSource;
+import react.native.component.*;
+import react.native.component.ListView.ListViewDataSource;
 import api.react.ReactMacro.jsx;
 
 class Main

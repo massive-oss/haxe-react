@@ -206,7 +206,7 @@ class ReactMacro
 			var props = makeProps(spread, attrs, pos);
 			
 			var args = [type, props].concat(children);
-			return macro @:privateAccess api.react.React._createElement($a{args});
+			return macro @:privateAccess react.React._createElement($a{args});
 		}
 	}
 	
