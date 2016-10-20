@@ -12,7 +12,7 @@ import haxe.macro.Expr;
 #elseif (!react_global)
 @:jsRequire("react")
 #end
-@:native('React')
+// @:native('React')
 extern class React
 {
 	#if !macro
