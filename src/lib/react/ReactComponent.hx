@@ -1,4 +1,4 @@
-package api.react;
+package react;
 
 typedef ReactComponentProps = {
 	/**
@@ -23,7 +23,7 @@ typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, D
 #end
 @:native('React.Component')
 @:keepSub 
-@:autoBuild(api.react.ReactMacro.tagComponent())
+@:autoBuild(react.ReactMacro.tagComponent())
 extern class ReactComponentOf<TProps, TState, TRefs>
 {
 	static var defaultProps:Dynamic;
@@ -55,7 +55,7 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 	/**
 		https://facebook.github.io/react/docs/component-specs.html#render
 	**/
-	function render():ReactComponent;
+	function render():ReactElement;
 
 	/**
 		https://facebook.github.io/react/docs/component-specs.html#mounting-componentwillmount
@@ -98,4 +98,11 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 		untyped __js__("var $$tre = (typeof Symbol === \"function\" && Symbol.for && Symbol.for(\"react.element\")) || 0xeac7");
 	}
 	#end
+}
+
+typedef ReactElement = {
+	type:Dynamic,
+	props:Dynamic,
+	?key:Dynamic,
+	?ref:Dynamic
 }
