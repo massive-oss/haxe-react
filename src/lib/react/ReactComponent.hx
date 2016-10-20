@@ -1,4 +1,4 @@
-package api.react;
+package react;
 
 typedef ReactComponentProps = {
 	/**
@@ -25,7 +25,7 @@ typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, D
 #end
 @:native('React.Component')
 @:keepSub 
-@:autoBuild(api.react.ReactMacro.setDisplayName())
+@:autoBuild(react.ReactMacro.tagComponent())
 extern class ReactComponentOf<TProps, TState, TRefs>
 {
 	static var defaultProps:Dynamic;
@@ -40,7 +40,7 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 	**/
 	var refs(default, null):TRefs;
 
-	function new(props:TProps);
+	function new(?props:TProps);
 
 	/**
 		https://facebook.github.io/react/docs/component-api.html#forceupdate
@@ -50,12 +50,14 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 	/**
 		https://facebook.github.io/react/docs/component-api.html#setstate
 	**/
+	@:overload(function(nextState:TState -> TProps -> TState, ?callback:Void -> Void):Void {})
+	@:overload(function(nextState:TState -> TState, ?callback:Void -> Void):Void {})
 	function setState(nextState:TState, ?callback:Void -> Void):Void;
 
 	/**
 		https://facebook.github.io/react/docs/component-specs.html#render
 	**/
-	function render():ReactComponent;
+	function render():ReactElement;
 
 	/**
 		https://facebook.github.io/react/docs/component-specs.html#mounting-componentwillmount
@@ -91,4 +93,18 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 		https://facebook.github.io/react/docs/component-specs.html#updating-componentdidupdate
 	**/
 	function componentDidUpdate(prevProps:TProps, prevState:TState):Void;
+	
+	#if (js && !debug && !react_no_inline)
+	static function __init__():Void {
+		// required magic value to tag literal react elements
+		untyped __js__("var $$tre = (typeof Symbol === \"function\" && Symbol.for && Symbol.for(\"react.element\")) || 0xeac7");
+	}
+	#end
+}
+
+typedef ReactElement = {
+	type:Dynamic,
+	props:Dynamic,
+	?key:Dynamic,
+	?ref:Dynamic
 }

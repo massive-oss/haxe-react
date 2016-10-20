@@ -1,7 +1,7 @@
 package view;
 
-import api.react.ReactComponent;
-import api.react.ReactMacro.jsx;
+import react.ReactComponent;
+import react.ReactMacro.jsx;
 import js.html.Element;
 import js.html.Event;
 import store.TodoActions;
@@ -21,7 +21,7 @@ class TodoList extends ReactComponentOfProps<TodoListProps>
 	override public function render() 
 	{
 		return jsx('
-			<ul className="list" onClick=$toggleChecked>
+			<ul className="list" onClick=$toggleChecked {...props}>
 				${createChildren()}
 			</ul>
 		');
