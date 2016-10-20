@@ -1,6 +1,6 @@
 package;
 
-import api.react.ReactMacro;
+import react.ReactMacro;
 import massive.munit.Assert;
 
 class ReactMacroTest

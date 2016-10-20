@@ -1,8 +1,8 @@
 package view;
 
-import api.react.React;
-import api.react.ReactComponent;
-import api.react.ReactMacro.jsx;
+import react.React;
+import react.ReactComponent;
+import react.ReactMacro.jsx;
 import js.html.InputElement;
 import store.TodoActions;
 import store.TodoItem;

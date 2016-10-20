@@ -1,7 +1,7 @@
 package;
 
-import api.react.ReactDOM;
-import api.react.ReactMacro.jsx;
+import react.ReactDOM;
+import react.ReactMacro.jsx;
 import js.Browser;
 import view.TodoApp;
 
