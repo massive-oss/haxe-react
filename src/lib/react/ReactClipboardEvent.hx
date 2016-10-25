@@ -1,4 +1,4 @@
-package api.react;
+package react;
 
 /**
 	https://facebook.github.io/react/docs/events.html

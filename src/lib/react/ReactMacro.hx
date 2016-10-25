@@ -1,4 +1,4 @@
-package api.react;
+package react;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -13,7 +13,7 @@ class ReactMacro
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
 		#if display
-		return macro (null : api.react.ReactComponent);
+		return macro (null : react.ReactComponent.ReactElement);
 		#else
 		return parseJsx(ExprTools.getValue(expr), expr.pos);
 		#end
@@ -206,7 +206,7 @@ class ReactMacro
 			var props = makeProps(spread, attrs, pos);
 			
 			var args = [type, props].concat(children);
-			return macro untyped api.react.React._createElement($a{args});
+			return macro untyped react.React._createElement($a{args});
 		}
 	}
 	
@@ -226,7 +226,7 @@ class ReactMacro
 		if (ref != null) fields.push({field: 'ref', expr: ref});
 		var obj = {expr: EObjectDecl(fields), pos: pos};
 		
-		return macro (untyped $obj : api.react.ReactComponent);
+		return macro (untyped $obj : react.ReactComponent.ReactElement);
 	}
 	
 	static function canUseLiteral(type:Expr, ref:Expr) 
@@ -433,7 +433,7 @@ class ReactMacro
 		{
 			// better keep unoptimized version
 			var args = [type, attrs].concat(children);
-			return macro untyped api.react.React._createElement($a{args});
+			return macro react.React._createElement($a{args});
 		}
 		
 		// literal react element

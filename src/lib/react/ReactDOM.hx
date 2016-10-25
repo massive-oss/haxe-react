@@ -1,5 +1,6 @@
-package api.react;
+package react;
 
+import react.ReactComponent;
 import js.html.Element;
 
 /**
@@ -14,7 +15,7 @@ extern class ReactDOM
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#reactdom.render
 	**/
-	public static function render(component:ReactComponent, container:Element, ?callback:Void -> Void):ReactComponent;
+	public static function render(element:ReactElement, container:Element, ?callback:Void -> Void):ReactElement;
 
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#reactdom.unmountcomponentatnode
@@ -24,5 +25,5 @@ extern class ReactDOM
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#react.finddomnode
 	**/
-	public static function findDOMNode(component:ReactComponent):Element;
+	public static function findDOMNode(element:ReactElement):Element;
 }
