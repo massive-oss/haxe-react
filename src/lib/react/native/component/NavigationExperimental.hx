@@ -1,5 +1,8 @@
 package react.native.component;
 
+import haxe.Constraints.Function;
+import react.ReactComponent.ReactElement;
+
 #if react_native
 
 @:jsRequire('react-native', 'NavigationExperimental')
@@ -25,13 +28,78 @@ extern class StateUtils {
 }
 
 
+// Types: 
+// https://github.com/facebook/react-native/blob/3a8c302ae815be0a9b1a6d14860ff8186d43fc07/Libraries/NavigationExperimental/NavigationTypeDefinition.js
+
+typedef NavigationAnimatedValue = Dynamic; // TODO: Animated.Value
+
+@:enum
+abstract NavigationGestureDirection(String) {
+	var Horizontal = 'horizontal';
+	var Vertical = 'vertical';
+}
+
+typedef NavigationRoute = {
+	key:String,
+	?title:String
+}
+
 typedef NavigationState = {
 	index:Int,
 	routes:Array<NavigationRoute>,
 }
 
-typedef NavigationRoute = {
-	key:String,
-	?title:String,
+typedef NavigationLayout = {
+	height:NavigationAnimatedValue,
+	initHeight:Int,
+	initWidth:Int,
+	isMeasured:Bool,
+	width:NavigationAnimatedValue,
 }
+
+typedef NavigationScene = {
+	index:Int,
+	isActive:Bool,
+	isStale:Bool,
+	key:String,
+	route:NavigationRoute,
+}
+
+typedef NavigationTransitionProps = {
+	layout:NavigationLayout,
+	navigationState:NavigationState,
+	position:NavigationAnimatedValue,
+	progress:NavigationAnimatedValue,
+	scenes:Array<NavigationScene>,
+	scene: NavigationScene,
+	?gestureResponseDistance:Float,
+}
+
+typedef NavigationSceneRendererProps = NavigationTransitionProps;
+
+typedef NavigationPanPanHandlers = {
+	onMoveShouldSetResponder:Function,
+	onMoveShouldSetResponderCapture:Function,
+	onResponderEnd:Function,
+	onResponderGrant:Function,
+	onResponderMove:Function,
+	onResponderReject:Function,
+	onResponderRelease:Function,
+	onResponderStart:Function,
+	onResponderTerminate:Function,
+	onResponderTerminationRequest:Function,
+	onStartShouldSetResponder:Function,
+	onStartShouldSetResponderCapture:Function,
+}
+
+typedef NavigationTransitionSpec = {
+	?duration:Float,
+	?easing:Void->Dynamic, // () => any,
+	?timing:NavigationAnimatedValue->Dynamic->Dynamic, // (value: NavigationAnimatedValue, config: any) => any,
+}
+
+typedef NavigationAnimationSetter = NavigationAnimatedValue->NavigationState->NavigationState->Void; // (position:NavigationAnimatedValue, newState:NavigationState, lastState:NavigationState) => void;
+
+typedef NavigationSceneRenderer = NavigationSceneRendererProps->ReactElement; // (props: NavigationSceneRendererProps,) => ?ReactElement<any>;
+
 #end
