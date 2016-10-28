@@ -38,7 +38,7 @@ class ReactMacro
 		}
 		catch (err:Dynamic)
 		{
-			Context.fatalError('Invalid JSX: ' + err, pos);
+			Context.fatalError('Invalid JSX: ' + err, err.pos);
 			return null;
 		}
 	}
