@@ -226,7 +226,7 @@ class ReactMacro
 		if (ref != null) fields.push({field: 'ref', expr: ref});
 		var obj = {expr: EObjectDecl(fields), pos: pos};
 		
-		return macro (untyped $obj : react.ReactComponent.ReactElement);
+		return macro ($obj : react.ReactComponent.ReactElement);
 	}
 	
 	static function canUseLiteral(type:Expr, ref:Expr) 
@@ -272,7 +272,7 @@ class ReactMacro
 		// combine using Object.assign
 		var args = [macro {}].concat(spread);
 		if (attrs.length > 0) args.push({pos:pos, expr:EObjectDecl(attrs)});
-		return macro untyped Object.assign($a{args});
+		return macro cast Object.assign($a{args});
 	}
 	
 	static function parseChildren(xml:Xml, pos:Position) 
