@@ -392,7 +392,8 @@ view_TodoApp.prototype = $extend(React.Component.prototype,{
 		var unchecked = this.state.items.filter(function(item) {
 			return !item.checked;
 		}).length;
-		return { '$$typeof' : $$tre, type : "div", props : { style : { margin : "10px"}, className : "app", children : [{ '$$typeof' : $$tre, type : "div", props : { className : "header", children : [React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),{ '$$typeof' : $$tre, type : "button", props : { onClick : $bind(this,this.addItem), className : "button-add", children : ["+"]}}]}},{ '$$typeof' : $$tre, type : "hr", props : { }},{ '$$typeof' : $$tre, type : view_TodoList, props : { data : this.state.items}, ref : $bind(this,this.mountList)},{ '$$typeof' : $$tre, type : "hr", props : { }},{ '$$typeof' : $$tre, type : "div", props : { className : "footer", children : [unchecked," task(s) left"]}}]}};
+		var listProps = { data : this.state.items};
+		return { '$$typeof' : $$tre, type : "div", props : { style : { margin : "10px"}, className : "app", children : [{ '$$typeof' : $$tre, type : "div", props : { className : "header", children : [React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),{ '$$typeof' : $$tre, type : "button", props : { onClick : $bind(this,this.addItem), className : "button-add", children : ["+"]}}]}},{ '$$typeof' : $$tre, type : "hr", props : { }},{ '$$typeof' : $$tre, type : view_TodoList, props : listProps, ref : $bind(this,this.mountList)},{ '$$typeof' : $$tre, type : "hr", props : { }},{ '$$typeof' : $$tre, type : "div", props : { className : "footer", children : [unchecked," task(s) left"]}}]}};
 	}
 	,mountList: function(comp) {
 		console.log("List mounted " + Std.string(comp.props));

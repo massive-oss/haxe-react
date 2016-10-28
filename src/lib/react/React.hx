@@ -28,7 +28,7 @@ extern class React
 	
 	@:noCompletion
 	@:native('createElement')
-	private static function _createElement(type:Dynamic, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactElement;
+	static function _createElement(type:Dynamic, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactElement;
 
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#react.cloneelement

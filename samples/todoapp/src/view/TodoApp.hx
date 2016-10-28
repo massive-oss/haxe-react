@@ -35,7 +35,7 @@ class TodoApp extends ReactComponentOfStateAndRefs<TodoAppState, TodoAppRefs>
 	{
 		var unchecked = state.items.filter(function(item) return !item.checked).length;
 		
-		/*var listProps = { data:state.items };
+		var listProps = { data:state.items };
 		return jsx('
 			<div className="app" style={{margin:"10px"}}>
 				<div className="header">
@@ -47,17 +47,7 @@ class TodoApp extends ReactComponentOfStateAndRefs<TodoAppState, TodoAppRefs>
 				<hr/>
 				<div className="footer">$unchecked task(s) left</div>
 			</div>
-		');*/
-		return React.createElement("div", { style : { margin : "10px"}, className : "app"},
-			React.createElement("div", { className : "header"},
-				React.createElement("input", { ref : "input", placeholder : "Enter new task description"}),
-				React.createElement("button", { onClick : addItem, className : "button-add"}, "+")
-			),
-			React.createElement("hr"),
-			React.createElement(TodoList, { ref : mountList, data:state.items }),
-			React.createElement("hr", { }),
-			React.createElement("div", { className : "footer"}, unchecked, " task(s) left")
-		);
+		');
 	}
 	
 	function mountList(comp:ReactComponent)
