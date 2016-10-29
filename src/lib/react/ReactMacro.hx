@@ -38,7 +38,7 @@ class ReactMacro
 		}
 		catch (err:Dynamic)
 		{
-			Context.fatalError('Invalid JSX: ' + err, err.pos);
+			Context.fatalError('Invalid JSX: ' + err, err.pos ? err.pos : pos);
 			return null;
 		}
 	}
@@ -194,7 +194,7 @@ class ReactMacro
 		var useLiteral = canUseLiteral(type, ref);
 		if (useLiteral)
 		{
-			if (children.length > 0) attrs.push({field:'children', expr:macro $a{children}});
+			if (children.length > 0) attrs.push({field:'children', expr:macro ($a{children} :Array<Dynamic>)});
 			var props = makeProps(spread, attrs, pos);
 			return genLiteral(type, props, ref, key, pos);
 		}
@@ -226,7 +226,7 @@ class ReactMacro
 		if (ref != null) fields.push({field: 'ref', expr: ref});
 		var obj = {expr: EObjectDecl(fields), pos: pos};
 		
-		return macro (untyped $obj : react.ReactComponent.ReactElement);
+		return macro ($obj : react.ReactComponent.ReactElement);
 	}
 	
 	static function canUseLiteral(type:Expr, ref:Expr) 
@@ -341,7 +341,7 @@ class ReactMacro
 	{
 		var className = inClass.name;
 		var fileName = Context.getPosInfos(inClass.pos).file;
-		var tag = macro if (untyped __REACT_HOT_LOADER__) untyped __REACT_HOT_LOADER__.register($i{className}, $v{className}, $v{fileName});
+		var tag = macro if (untyped window.__REACT_HOT_LOADER__) untyped __REACT_HOT_LOADER__.register($i{className}, $v{className}, $v{fileName});
 		
 		// append tag to existing __init__
 		for (field in fields)
