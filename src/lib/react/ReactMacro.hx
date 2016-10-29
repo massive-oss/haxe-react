@@ -290,7 +290,7 @@ class ReactMacro
 				for (line in lines)
 				{
 					if (line.length == 0) continue;
-					~/([^{]+|\{[^}]+\})/g.map(line, function (e){
+					~/([^{]+|{[^}]+})/g.map(line, function (e){
 						var token = e.matched(0);
 						children.push(parseJsxExpr(token, pos));
 						return '';
