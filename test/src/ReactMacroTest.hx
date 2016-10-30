@@ -107,4 +107,21 @@ class ReactMacroTest
 		var jsx = ReactMacro.escape('<Tag a="a" {...foo} b="b"/>');
 		Assert.areEqual("<Tag a=\"a\" .0=\"{foo}\" b=\"b\"/>", jsx);
 	}
+	
+	@Test
+	public function replace_entities()
+	{
+		var list = [
+			'&amp;' => '&',
+			'&amp;foo' => '&foo',
+			'foo&amp;' => 'foo&',
+			'&amp;&amp;' => '&&',
+			'&amp;foo&amp;' => '&foo&',
+			'&foo;' => '&foo;'
+		];
+		for (key in list.keys())
+		{
+			Assert.areEqual(list.get(key), ReactMacro.replaceEntities(key));
+		}
+	}
 }
