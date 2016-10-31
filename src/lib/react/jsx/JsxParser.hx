@@ -11,46 +11,6 @@ enum JsxAst
 
 class JsxParser
 {
-	static var htmlEntities:Map<String, String> = [
-		'amp' => '&', 'lt' => '<', 'gt' => '>', 'nbsp' => '\u00A0',
-		'iexcl' => '¡', 'cent' => '¢', 'pound' => '£', 'curren' => '¤',
-		'yen' => '¥', 'brvbar' => '¦', 'sect' => '§', 'uml' => '¨',
-		'copy' => '©', 'ordf' => 'ª', 'laquo' => '«', 'not' => '¬',
-		'shy' => '', 'reg' => '®', 'macr' => '¯', 'deg' => '°',
-		'plusmn' => '±', 'sup1' => '¹', 'sup2' => '²', 'sup3' => '³',
-		'acute' => '´', 'micro' => 'µ', 'para' => '¶', 'middot' => '·',
-		'cedil' => '¸', 'ordm' => 'º', 'raquo' => '»', 'frac14' => '¼',
-		'frac12' => '½', 'frac34' => '¾', 'iquest' => '¿', 'Agrave' => 'À',
-		'Aacute' => 'Á', 'Acirc' => 'Â', 'Atilde' => 'Ã', 'Auml' => 'Ä',
-		'Aring' => 'Å', 'AElig' => 'Æ', 'Ccedil' => 'Ç', 'Egrave' => 'È',
-		'Eacute' => 'É', 'Ecirc' => 'Ê', 'Euml' => 'Ë', 'Igrave' => 'Ì',
-		'Iacute' => 'Í', 'Icirc' => 'Î', 'Iuml' => 'Ï', 'ETH' => 'Ð',
-		'Ntilde' => 'Ñ', 'Ograve' => 'Ò', 'Oacute' => 'Ó', 'Ocirc' => 'Ô',
-		'Otilde' => 'Õ', 'Ouml' => 'Ö', 'times' => '×', 'Oslash' => 'Ø',
-		'Ugrave' => 'Ù', 'Uacute' => 'Ú', 'Ucirc' => 'Û', 'Uuml' => 'Ü',
-		'Yacute' => 'Ý', 'THORN' => 'Þ', 'szlig' => 'ß', 'agrave' => 'à',
-		'aacute' => 'á', 'acirc' => 'â', 'atilde' => 'ã', 'auml' => 'ä',
-		'aring' => 'å', 'aelig' => 'æ', 'ccedil' => 'ç', 'egrave' => 'è',
-		'eacute' => 'é', 'ecirc' => 'ê', 'euml' => 'ë', 'igrave' => 'ì',
-		'iacute' => 'í', 'icirc' => 'î', 'iuml' => 'ï', 'eth' => 'ð',
-		'ntilde' => 'ñ', 'ograve' => 'ò', 'oacute' => 'ó', 'ocirc' => 'ô',
-		'otilde' => 'õ', 'ouml' => 'ö', 'divide' => '÷', 'oslash' => 'ø',
-		'ugrave' => 'ù', 'uacute' => 'ú', 'ucirc' => 'û', 'uuml' => 'ü',
-		'yacute' => 'ý', 'thorn' => 'þ', 'yuml' => 'ÿ', 'fnof' => 'ƒ',
-		'Alpha' => 'Α', 'Beta' => 'Β', 'Gamma' => 'Γ', 'Delta' => 'Δ', 
-		'Epsilon' => 'Ε', 'Zeta' => 'Ζ', 'Eta' => 'Η', 'Theta' => 'Θ', 
-		'Iota' => 'Ι', 'Kappa' => 'Κ', 'Lambda' => 'Λ', 'Mu' => 'Μ', 
-		'Nu' => 'Ν', 'Xi' => 'Ξ', 'Omicron' => 'Ο', 'Pi' => 'Π', 
-		'Rho' => 'Ρ', 'Sigma' => 'Σ', 'Tau' => 'Τ', 'Upsilon' => 'Υ', 
-		'Phi' => 'Φ', 'Chi' => 'Χ', 'Psi' => 'Ψ', 'Omega' => 'Ω', 
-		'alpha' => 'α', 'beta' => 'β', 'gamma' => 'γ', 'delta' => 'δ', 
-		'epsilon' => 'ε', 'zeta' => 'ζ', 'eta' => 'η', 'theta' => 'θ', 
-		'iota' => 'ι', 'kappa' => 'κ', 'lambda' => 'λ', 'mu' => 'μ', 
-		'nu' => 'ν', 'xi' => 'ξ', 'omicron' => 'ο', 'pi' => 'π', 
-		'rho' => 'ρ', 'sigma' => 'σ', 'tau' => 'τ', 'upsilon' => 'υ', 
-		'phi' => 'φ', 'chi' => 'χ', 'psi' => 'ψ', 'omega' => 'ω'
-	];
-	
 	static public function process(xml:Xml):JsxAst
 	{
 		var entries = parseChildren(xml);
@@ -127,14 +87,15 @@ class JsxParser
 		if (value.indexOf('&') < 0) 
 			return value;
 		
-		var reEntity = ~/&([a-z0-9]+);/gi;
+		var reEntity = ~/&[a-z0-9]+;/gi;
+		var map = HtmlEntities.map;
 		var result = '';
 		while (reEntity.match(value))
 		{
 			result += reEntity.matchedLeft();
-			var entity = reEntity.matched(1);
-			if (htmlEntities.exists(entity)) result += htmlEntities.get(entity);
-			else result += '&$entity;'; // no match
+			var entity = reEntity.matched(0);
+			if (map.exists(entity)) result += map.get(entity);
+			else result += entity; // no match
 			value = reEntity.matchedRight();
 		}
 		return result + value;
