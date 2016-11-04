@@ -1,5 +1,6 @@
 package react.jsx;
 
+#if (macro || munit)
 class JsxSanitize
 {
 	static public function process(jsx:String) 
@@ -125,3 +126,4 @@ class JsxSanitize
 
 	
 }
+#end

@@ -2,6 +2,7 @@ package react.jsx;
 
 using StringTools;
 
+#if (macro || munit)
 enum JsxAst 
 {
 	Node(isHtml:Bool, path:Array<String>, attributes:Array<{name:String, value:String}>, children:Array<JsxAst>);
@@ -101,3 +102,4 @@ class JsxParser
 		return result + value;
 	}
 }
+#end
