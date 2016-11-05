@@ -65,12 +65,12 @@ extern interface ReactChildren
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#react.children.map
 	**/
-	function map(children:Dynamic, fn:ReactComponent->ReactComponent):Dynamic;
+	function map(children:Dynamic, fn:ReactElement->ReactElement):Dynamic;
 
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#react.children.foreach
 	**/
-	function foreach(children:Dynamic, fn:ReactComponent->Void):Void;
+	function foreach(children:Dynamic, fn:ReactElement->Void):Void;
 
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#react.children.count
@@ -80,7 +80,7 @@ extern interface ReactChildren
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#react.children.only
 	**/
-	function only(children:Dynamic):ReactComponent;
+	function only(children:Dynamic):ReactElement;
 
 	/**
 		https://facebook.github.io/react/docs/top-level-api.html#react.children.toarray
