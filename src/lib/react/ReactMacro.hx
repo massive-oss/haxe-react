@@ -15,7 +15,7 @@ class ReactMacro
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
 		#if display
-		return macro (null : react.ReactComponent.ReactElement);
+		return macro untyped ${expr};
 		#else
 		return parseJsx(ExprTools.getValue(expr), expr.pos);
 		#end
