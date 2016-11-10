@@ -45,7 +45,7 @@ class TodoApp extends ReactComponentOfStateAndRefs<TodoAppState, TodoAppRefs>
 				<hr/>
 				<$TodoList ref={mountList} {...listProps}/>
 				<hr/>
-				<div className="footer">$unchecked task(s) left</div>
+				<div className="footer"><b>$unchecked</b> task(s) left</div>
 			</div>
 		');
 	}

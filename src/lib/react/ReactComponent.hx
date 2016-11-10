@@ -8,7 +8,7 @@ typedef ReactComponentProps = {
 }
 
 /**
-	https://facebook.github.io/react/docs/component-api.html
+	https://facebook.github.io/react/docs/react-component.html
 **/
 typedef ReactComponent = ReactComponentOf<Dynamic, Dynamic, Dynamic>;
 typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Dynamic, Dynamic>;
@@ -34,61 +34,61 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 	var context(default, null):Dynamic;
 
 	/**
-		https://facebook.github.io/react/docs/more-about-refs.html
+		https://facebook.github.io/react/docs/refs-and-the-dom.html
 	**/
 	var refs(default, null):TRefs;
 
 	function new(?props:TProps);
 
 	/**
-		https://facebook.github.io/react/docs/component-api.html#forceupdate
+		https://facebook.github.io/react/docs/react-component.html#forceupdate
 	**/
 	function forceUpdate(?callback:Void -> Void):Void;
 
 	/**
-		https://facebook.github.io/react/docs/component-api.html#setstate
+		https://facebook.github.io/react/docs/react-component.html#setstate
 	**/
 	@:overload(function(nextState:TState -> TProps -> TState, ?callback:Void -> Void):Void {})
 	@:overload(function(nextState:TState -> TState, ?callback:Void -> Void):Void {})
 	function setState(nextState:TState, ?callback:Void -> Void):Void;
 
 	/**
-		https://facebook.github.io/react/docs/component-specs.html#render
+		https://facebook.github.io/react/docs/react-component.html#render
 	**/
 	function render():ReactElement;
 
 	/**
-		https://facebook.github.io/react/docs/component-specs.html#mounting-componentwillmount
+		https://facebook.github.io/react/docs/react-component.html#componentwillmount
 	**/
 	function componentWillMount():Void;
 
 	/**
-		https://facebook.github.io/react/docs/component-specs.html#mounting-componentdidmount
+		https://facebook.github.io/react/docs/react-component.html#componentdidmount
 	**/
 	function componentDidMount():Void;
 
 	/**
-		https://facebook.github.io/react/docs/component-specs.html#unmounting-componentwillunmount
+		https://facebook.github.io/react/docs/react-component.html#componentwillunmount
 	**/
 	function componentWillUnmount():Void;
 
 	/**
-		https://facebook.github.io/react/docs/component-specs.html#updating-componentwillreceiveprops
+		https://facebook.github.io/react/docs/react-component.html#componentwillreceiveprops
 	**/
 	function componentWillReceiveProps(nextProps:TProps):Void;
 
 	/**
-		https://facebook.github.io/react/docs/component-specs.html#updating-shouldcomponentupdate
+		https://facebook.github.io/react/docs/react-component.html#shouldcomponentupdate
 	**/
 	dynamic function shouldComponentUpdate(nextProps:TProps, nextState:TState):Bool;
 
 	/**
-		https://facebook.github.io/react/docs/component-specs.html#updating-componentwillupdate
+		https://facebook.github.io/react/docs/react-component.html#componentwillupdate
 	**/
 	function componentWillUpdate(nextProps:TProps, nextState:TState):Void;
 
 	/**
-		https://facebook.github.io/react/docs/component-specs.html#updating-componentdidupdate
+		https://facebook.github.io/react/docs/react-component.html#componentdidupdate
 	**/
 	function componentDidUpdate(prevProps:TProps, prevState:TState):Void;
 	

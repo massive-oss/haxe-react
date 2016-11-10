@@ -4,6 +4,8 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.ExprTools;
 import haxe.macro.Type;
+import react.jsx.JsxParser;
+import react.jsx.JsxSanitize;
 
 /**
 	Provides a simple macro for parsing jsx into Haxe expressions.
@@ -13,27 +15,28 @@ class ReactMacro
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
 		#if display
-		return macro (null : react.ReactComponent.ReactElement);
+		return macro untyped ${expr};
 		#else
 		return parseJsx(ExprTools.getValue(expr), expr.pos);
 		#end
 	}
 	
-	public static macro function escape(expr:ExprOf<String>):Expr
+	public static macro function sanitize(expr:ExprOf<String>):Expr
 	{
-		return macro $v{escapeJsx(ExprTools.getValue(expr))};
+		return macro $v{JsxSanitize.process(ExprTools.getValue(expr))};
 	}
+	
+	/* PARSER  */
 	
 	#if macro
 	static function parseJsx(jsx:String, pos:Position):Expr
 	{
 		try 
 		{
-			jsx = escapeJsx(jsx);
+			jsx = JsxSanitize.process(jsx);
 			var xml = Xml.parse(jsx);
-			var elems = xml.elements();
-			var expr = parseJsxNode(elems.next(), pos);
-			if (elems.hasNext()) throw('Syntax error: Adjacent JSX elements must be wrapped in an enclosing tag');
+			var ast = JsxParser.process(xml);
+			var expr = parseJsxNode(ast, pos);
 			return expr;
 		}
 		catch (err:Dynamic)
@@ -42,175 +45,76 @@ class ReactMacro
 			return null;
 		}
 	}
-	
-	static function escapeJsx(jsx:String) 
-	{
-		var reChar = ~/[a-zA-Z0-9_]/;
-		var buf = new StringBuf();
-		var chars = jsx.split('');
-		var len = chars.length;
-		var inTag = false;
-		var inAttrib = false;
-		var inExpr = false;
-		var braceCount = 0;
-		var spreadCount = 0;
-		var cp = '';
-		var ci = '';
-		var cn = chars[0];
-		var i = 0;
-		while (i < len) {
-			if (ci != ' ') cp = ci;
-			ci = cn;
-			cn = chars[++i];
-			
-			// inline blocks
-			if (ci == '{') {
-				// quote bidings
-				if (braceCount == 0 && inTag) {
-					if (cp == '=') {
-						inAttrib = true;
-						inExpr = true;
-						buf.add('"');
-					}
-					// spread attributes
-					else if (cn == '.' && chars[i] == '.' && chars[i + 1] == '.') {
-						inAttrib = true;
-						inExpr = true;
-						i += 3;
-						cn = chars[i];
-						buf.add('.');
-						buf.add(spreadCount++);
-						buf.add('="');
-					}
-				}
-				braceCount++;
-			}
-			if (braceCount > 0) {
-				// escape double-quotes inside attributes
-				if (inAttrib && ci == '"') buf.add('&quot;'); 
-				else buf.add(ci);
-				// close binding quote
-				if (ci == '}') {
-					braceCount--;
-					if (braceCount == 0 && inAttrib && inExpr) {
-						inAttrib = false;
-						inExpr = false;
-						buf.add('"');
-						ci = '"';
-					}
-				}
-				continue;
-			}
-			
-			// xml attributes
-			if (inAttrib) {
-				if (ci == '"' && cn != '\\') inAttrib = false;
-				buf.add(ci);
-				continue;
-			}
-			
-			// string interpolation
-			if (ci == '$') {
-				// drop $ of ${foo} or $$
-				if (cn == '{' || cn == '$') {
-					ci = cp;
-					continue; 
-				}
-				// <$MyTag>
-				if (inTag && cp == '<') {
-					continue;
-				}
-				// </$MyTag>
-				if (inTag && cp == '/' && chars[i - 3] == '<') {
-					continue;
-				}
-				// $foo -> {foo}
-				if (reChar.match(cn)) {
-					if (inTag && cp == '=') {
-						inAttrib = true;
-						buf.add('"');
-					}
-					ci = '{';
-					do {
-						buf.add(ci);
-						cp = ci;
-						ci = cn;
-						cn = chars[++i];
-					} 
-					while (i < len && reChar.match(ci));
-					buf.add('}');
-					if (inAttrib) {
-						inAttrib = false;
-						buf.add('"');
-					}
-					// retry last char
-					i--;
-					cn = ci;
-					ci = '}';
-					cp = '';
-					continue;
-				}
-			}
-			
-			// xml tags
-			if (inTag) {
-				if  (ci == '>') inTag = false;
-			}
-			else if (ci == '<') {
-				inTag = true;
-			}
-			buf.add(ci);
-		}
-		return buf.toString();
-	}
 
-	static function parseJsxNode(xml:Xml, pos:Position)
+	static function parseJsxNode(ast:JsxAst, pos:Position)
 	{
-		// parse type
-		var path = xml.nodeName.split('.');
-		var last = path[path.length - 1];
-		var isHtml = path.length == 1 && last.charAt(0) == last.charAt(0).toLowerCase();
-		var type = isHtml ? macro $v{path[0]} : macro $p{path};
-
-		// parse attributes
-		var attrs = [];
-		var spread = [];
-		var key = null;
-		var ref = null;
-		for (attr in xml.attributes())
+		switch (ast) 
 		{
-			var value = xml.get(attr);
-			var expr = parseJsxExpr(value, pos);
-			if (attr == 'key') key = expr;
-			else if (attr == 'ref') ref = expr;
-			else if (attr.charAt(0) == '.') spread.push(expr);
-			else attrs.push({field:attr, expr:expr});
-		}
-		
-		// parse children
-		var children = parseChildren(xml, pos);
-		
-		// inline declaration or createElement?
-		var useLiteral = canUseLiteral(type, ref);
-		if (useLiteral)
-		{
-			if (children.length > 0) attrs.push({field:'children', expr:macro ($a{children} :Array<Dynamic>)});
-			var props = makeProps(spread, attrs, pos);
-			return genLiteral(type, props, ref, key, pos);
-		}
-		else 
-		{
-			if (ref != null) attrs.unshift({field:'ref', expr:ref});
-			if (key != null) attrs.unshift({field:'key', expr:key});
+			case JsxAst.Text(value): 
+				return macro $v{value};
 			
-			var props = makeProps(spread, attrs, pos);
+			case JsxAst.Expr(value): 
+				return Context.parse(value, pos);
 			
-			var args = [type, props].concat(children);
-			return macro react.React._createElement($a{args});
+			case JsxAst.Node(isHtml, path, attributes, jsxChildren):
+				// parse type
+				var type = isHtml ? macro $v{path[0]} : macro $p{path};
+				
+				// parse attributes
+				var attrs = [];
+				var spread = [];
+				var key = null;
+				var ref = null;
+				for (attr in attributes)
+				{
+					var expr = parseJsxAttr(attr.value, pos);
+					var name = attr.name;
+					if (name == 'key') key = expr;
+					else if (name == 'ref') ref = expr;
+					else if (name.charAt(0) == '.') spread.push(expr);
+					else attrs.push({ field:name, expr:expr });
+				}
+				
+				// parse children
+				var children = [for (child in jsxChildren) parseJsxNode(child, pos)];
+				
+				// inline declaration or createElement?
+				var useLiteral = canUseLiteral(type, ref);
+				if (useLiteral)
+				{
+					if (children.length > 0) attrs.push({field:'children', expr:macro ($a{children} :Array<Dynamic>)});
+					var props = makeProps(spread, attrs, pos);
+					return genLiteral(type, props, ref, key, pos);
+				}
+				else 
+				{
+					if (ref != null) attrs.unshift({field:'ref', expr:ref});
+					if (key != null) attrs.unshift({field:'key', expr:key});
+					
+					var props = makeProps(spread, attrs, pos);
+					
+					var args = [type, props].concat(children);
+					return macro react.React._createElement($a{args});
+				}
 		}
 	}
 	
-	static private function genLiteral(type:Expr, props:Expr, ref:Expr, key:Expr, pos:Position) 
+	static function parseJsxAttr(value:String, pos:Position) 
+	{
+		var ast = JsxParser.parseText(value);
+		return switch (ast) 
+		{
+			case JsxAst.Text(value): 
+				return macro $v{value};
+			
+			case JsxAst.Expr(value): 
+				return Context.parse(value, pos);
+			
+			default: null;
+		}
+	}
+	
+	static function genLiteral(type:Expr, props:Expr, ref:Expr, key:Expr, pos:Position) 
 	{
 		#if react_monomorphic
 		if (key == null) key = macro null;
@@ -275,42 +179,7 @@ class ReactMacro
 		return macro untyped Object.assign($a{args});
 	}
 	
-	static function parseChildren(xml:Xml, pos:Position) 
-	{
-		var children = [];
-		for (node in xml)
-		{
-			if (node.nodeType == Xml.PCData)
-			{
-				var value = StringTools.trim(node.toString());
-				if (value.length == 0) continue;
-
-				var lines = ~/[\r\n]/g.split(value);
-				lines = lines.map(StringTools.trim);
-				for (line in lines)
-				{
-					if (line.length == 0) continue;
-					~/([^{]+|{[^}]+})/g.map(line, function (e){
-						var token = e.matched(0);
-						children.push(parseJsxExpr(token, pos));
-						return '';
-					});
-				}
-			}
-			else if (node.nodeType == Xml.Element)
-			{
-				children.push(parseJsxNode(node, pos));
-			}
-		}
-		return children;
-	}
-
-	static function parseJsxExpr(value:String, pos:Position)
-	{
-		return value.charAt(0) == '{' && value.charAt(value.length - 1) == '}'
-			? Context.parse(value.substr(1, value.length - 2), pos)
-			: macro $v{value};
-	}
+	/* METADATA */
 	
 	/**
 	 * Annotate React components for run-time JS reflection

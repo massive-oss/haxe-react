@@ -5,7 +5,7 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 
 /**
-	https://facebook.github.io/react/docs/top-level-api.html
+	https://facebook.github.io/react/docs/react-api.html
 **/
 #if (!react_global)
 @:jsRequire("react")
@@ -15,12 +15,12 @@ extern class React
 {
 	#if !macro
 	/**
-		https://facebook.github.io/react/docs/top-level-api.html#react.proptypes
+		https://facebook.github.io/react/docs/react-api.html#react.proptypes
 	**/
 	public static var PropTypes(default, null):ReactPropTypes;
 
 	/**
-		https://facebook.github.io/react/docs/top-level-api.html#react.createelement
+		https://facebook.github.io/react/docs/react-api.html#createelement
 	**/
 	#if (debug || react_no_inline)
 	public static function createElement(type:Dynamic, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactElement;
@@ -31,17 +31,17 @@ extern class React
 	static function _createElement(type:Dynamic, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactElement;
 
 	/**
-		https://facebook.github.io/react/docs/top-level-api.html#react.cloneelement
+		https://facebook.github.io/react/docs/react-api.html#cloneelement
 	**/
-	public static function cloneElement(element:ReactComponent, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactElement;
+	public static function cloneElement(element:ReactElement, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactElement;
 
 	/**
-		https://facebook.github.io/react/docs/top-level-api.html#react.isvalidelement
+		https://facebook.github.io/react/docs/react-api.html#isvalidelement
 	**/
 	public static function isValidElement(object:Dynamic):Bool;
 
 	/**
-		https://facebook.github.io/react/docs/top-level-api.html#react.children
+		https://facebook.github.io/react/docs/react-api.html#react.children
 	**/
 	public static var Children:ReactChildren;
 	
@@ -60,30 +60,33 @@ extern class React
 	#end
 }
 
+/**
+	https://facebook.github.io/react/docs/react-api.html#react.children
+**/
 extern interface ReactChildren
 {
 	/**
-		https://facebook.github.io/react/docs/top-level-api.html#react.children.map
+		https://facebook.github.io/react/docs/react-api.html#react.children.map
 	**/
-	function map(children:Dynamic, fn:ReactComponent->ReactComponent):Dynamic;
+	function map(children:Dynamic, fn:ReactElement->ReactElement):Dynamic;
 
 	/**
-		https://facebook.github.io/react/docs/top-level-api.html#react.children.foreach
+		https://facebook.github.io/react/docs/react-api.html#react.children.foreach
 	**/
-	function foreach(children:Dynamic, fn:ReactComponent->Void):Void;
+	function foreach(children:Dynamic, fn:ReactElement->Void):Void;
 
 	/**
-		https://facebook.github.io/react/docs/top-level-api.html#react.children.count
+		https://facebook.github.io/react/docs/react-api.html#react.children.count
 	**/
 	function count(children:Dynamic):Int;
 
 	/**
-		https://facebook.github.io/react/docs/top-level-api.html#react.children.only
+		https://facebook.github.io/react/docs/react-api.html#react.children.only
 	**/
-	function only(children:Dynamic):ReactComponent;
+	function only(children:Dynamic):ReactElement;
 
 	/**
-		https://facebook.github.io/react/docs/top-level-api.html#react.children.toarray
+		https://facebook.github.io/react/docs/react-api.html#react.children.toarray
 	**/
 	function toArray(children:Dynamic):Array<Dynamic>;
 }

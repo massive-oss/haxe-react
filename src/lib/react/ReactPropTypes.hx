@@ -11,6 +11,7 @@ extern class ReactPropTypes
 	var number:Dynamic;
 	var object:Dynamic;
 	var string:Dynamic;
+	var element:Dynamic;
 	var any:Dynamic;
 	var arrayOf:Dynamic;
 	var DOMElement:Dynamic;
