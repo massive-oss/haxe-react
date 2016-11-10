@@ -1,7 +1,7 @@
 package react;
 
 /**
-	https://facebook.github.io/react/docs/top-level-api.html
+	https://facebook.github.io/react/docs/react-dom-server.html
 **/
 #if (!react_global)
 @:jsRequire('react-dom/server')
@@ -10,12 +10,12 @@ package react;
 extern class ReactDOMServer
 {
 	/**
-		https://facebook.github.io/react/docs/top-level-api.html#reactdomserver.rendertostring
+		https://facebook.github.io/react/docs/react-dom-server.html#rendertostring
 	**/
 	public static function renderToString(component:ReactComponent):String;
 
 	/**
-		https://facebook.github.io/react/docs/top-level-api.html#reactdomserver.rendertostaticmarkup
+		https://facebook.github.io/react/docs/react-dom-server.html#rendertostaticmarkup
 	**/
 	public static function renderToStaticMarkup(component:ReactComponent):String;
 }
