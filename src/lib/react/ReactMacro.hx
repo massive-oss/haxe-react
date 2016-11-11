@@ -176,7 +176,7 @@ class ReactMacro
 		// combine using Object.assign
 		var args = [macro {}].concat(spread);
 		if (attrs.length > 0) args.push({pos:pos, expr:EObjectDecl(attrs)});
-		return macro untyped Object.assign($a{args});
+		return macro (untyped Object).assign($a{args});
 	}
 	
 	/* METADATA */
