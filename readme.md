@@ -16,6 +16,25 @@ We recommend looking into / contributing to the following efforts:
 - https://github.com/tokomlabs/haxe-react-addons
 - https://github.com/kevinresol/haxe-react-native
 
+### Application architecture examples
+
+React doesn't enforce any specific application architecture; here are a few approaches:
+
+**Redux**, a very popular new approach of Model-View-Intent architecture: global state object, 
+following immutability principles, but the wiring has been re-imagined to use the best of Haxe:
+
+- https://github.com/elsassph/haxe-react-redux
+
+**MMVC**, classic, battle tested, Model-View-Mediator with state of the art Dependency Injection:
+
+- https://github.com/elsassph/haxe-react-mmvc
+
+**Flux**, inspired by Facebook's suggested architecture for React; this is a very quick PoC 
+which probably won't scale well to complex apps, but it shows a good range of React features:
+
+- https://github.com/massiveinteractive/haxe-react/tree/master/samples/todoapp
+
+
 ## API
 
 Most of the regular React API is integrated (non-JSX example):
@@ -126,8 +145,8 @@ and a second build step to generate the final JS file, for instance using `brows
 The other common method is to download or reference the CDN files of React JS in your HTML page:
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-with-addons.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-with-addons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-dom.min.js"></script>
 ```
 
 and don't forget to add the following Haxe define to your build command:
@@ -135,6 +154,7 @@ and don't forget to add the following Haxe define to your build command:
 	-D react_global
 
 Look at `samples/todoapp` for an example of this approach.
+
 
 ## JSX Optimizing Compiler
 
