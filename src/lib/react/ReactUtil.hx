@@ -73,7 +73,7 @@ class ReactUtil
 		return !shallowCompare(component.props, nextProps) || !shallowCompare(component.state, nextState);
 	}
 
-	static function shallowCompare(a:Dynamic, b:Dynamic):Bool
+	public static function shallowCompare(a:Dynamic, b:Dynamic):Bool
 	{
 		var aFields = Reflect.fields(a);
 		var bFields = Reflect.fields(b);
