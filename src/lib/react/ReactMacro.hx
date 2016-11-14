@@ -82,7 +82,12 @@ class ReactMacro
 				var useLiteral = canUseLiteral(type, ref);
 				if (useLiteral)
 				{
-					if (children.length > 0) attrs.push({field:'children', expr:macro ($a{children} :Array<Dynamic>)});
+					if (children.length > 0) 
+					{
+						// single child should not be placed in an Array
+						if (children.length == 1) attrs.push({field:'children', expr:macro ${children[0]}});
+						else attrs.push({field:'children', expr:macro ($a{children} :Array<Dynamic>)});
+					}
 					var props = makeProps(spread, attrs, pos);
 					return genLiteral(type, props, ref, key, pos);
 				}
@@ -138,18 +143,6 @@ class ReactMacro
 		#if (debug || react_no_inline)
 		return false;
 		#end
-		
-		// extern classes or classes requiring React context should not be inlined
-		var t = Context.typeof(type);
-		switch(t) {
-			case TType(_, _):
-				switch (Context.follow(t)) {
-					case TAnonymous(_.get() => {status: AClassStatics(_.get() => c)}):
-						if (c.isExtern || c.meta.has(':reactContext')) return false;
-					default:
-				}
-			default:
-		}
 		
 		if (ref == null) return true;
 		
