@@ -32,9 +32,12 @@ class ReactMacro
 	static function parseJsx(jsx:String, pos:Position):Expr
 	{
 		jsx = JsxSanitize.process(jsx);
-		var xml = try Xml.parse(jsx) catch(err:Dynamic) {
-			if(Std.is(err, haxe.xml.Parser.XmlParserException)) {
-				var err:haxe.xml.Parser.XmlParserException = err;
+		var xml = 
+			try
+				Xml.parse(jsx)
+			#if (haxe_ver >= 3.3)
+			catch(err:haxe.xml.Parser.XmlParserException)
+			{
 				var posInfos = Context.getPosInfos(pos);
 				var realPos = Context.makePosition({
 					file: posInfos.file,
@@ -43,8 +46,10 @@ class ReactMacro
 				});
 				Context.fatalError('Invalid JSX: ' + err.message, realPos);
 			}
-			Context.fatalError('Invalid JSX: ' + err, err.pos ? err.pos : pos);
-		}
+			#end
+			catch(err:Dynamic)
+				Context.fatalError('Invalid JSX: ' + err, err.pos ? err.pos : pos);
+		
 		var ast = JsxParser.process(xml);
 		var expr = parseJsxNode(ast, pos);
 		return expr;
