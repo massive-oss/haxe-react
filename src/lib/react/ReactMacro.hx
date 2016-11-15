@@ -31,19 +31,28 @@ class ReactMacro
 	#if macro
 	static function parseJsx(jsx:String, pos:Position):Expr
 	{
-		try 
-		{
-			jsx = JsxSanitize.process(jsx);
-			var xml = Xml.parse(jsx);
-			var ast = JsxParser.process(xml);
-			var expr = parseJsxNode(ast, pos);
-			return expr;
-		}
-		catch (err:Dynamic)
-		{
-			Context.fatalError('Invalid JSX: ' + err, err.pos ? err.pos : pos);
-			return null;
-		}
+		jsx = JsxSanitize.process(jsx);
+		var xml = 
+			try
+				Xml.parse(jsx)
+			#if (haxe_ver >= 3.3)
+			catch(err:haxe.xml.Parser.XmlParserException)
+			{
+				var posInfos = Context.getPosInfos(pos);
+				var realPos = Context.makePosition({
+					file: posInfos.file,
+					min: posInfos.min + err.position,
+					max: posInfos.max + err.position,
+				});
+				Context.fatalError('Invalid JSX: ' + err.message, realPos);
+			}
+			#end
+			catch(err:Dynamic)
+				Context.fatalError('Invalid JSX: ' + err, err.pos ? err.pos : pos);
+		
+		var ast = JsxParser.process(xml);
+		var expr = parseJsxNode(ast, pos);
+		return expr;
 	}
 
 	static function parseJsxNode(ast:JsxAst, pos:Position)
@@ -59,6 +68,7 @@ class ReactMacro
 			case JsxAst.Node(isHtml, path, attributes, jsxChildren):
 				// parse type
 				var type = isHtml ? macro $v{path[0]} : macro $p{path};
+				type.pos = pos;
 				
 				// parse attributes
 				var attrs = [];
