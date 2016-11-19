@@ -109,7 +109,7 @@ class ReactMacro
 					var props = makeProps(spread, attrs, pos);
 					
 					var args = [type, props].concat(children);
-					return macro react.React._createElement($a{args});
+					return macro react.React.createElement($a{args});
 				}
 		}
 	}
@@ -261,58 +261,6 @@ class ReactMacro
 		}
 		fields.push(field);
 		return;
-	}
-	
-	/**
-	 * Generate inline react element from regular React.createElement() calls
-	 */
-	public static function inlineElement(type:Expr, attrs:Expr, children:Array<Expr>, pos:Position) 
-	{
-		var deopt = false;
-		var ref:Expr = null;
-		var key:Expr = null;
-		var fields = null;
-		if (attrs == null) attrs = macro {};
-		
-		// verify it's an object literal and extract `ref` and `key`
-		switch (attrs.expr) {
-			case EObjectDecl(f):
-				var copy = f.copy();
-				for (field in copy)
-				{
-					if (field.field == 'ref') {
-						ref = field.expr;
-						if (!canUseLiteral(type, ref)) {
-							deopt = true;
-							break;
-						}
-						copy.remove(field);
-					}
-					else if (field.field == 'key') {
-						key = field.expr;
-						copy.remove(field);
-					}
-				}
-				fields = copy;
-			case EBlock(b):
-				if (b.length == 0) fields = [];
-				else deopt = true;
-			default:
-				deopt = true;
-		}
-		
-		if (deopt)
-		{
-			// better keep unoptimized version
-			var args = [type, attrs].concat(children);
-			return macro react.React._createElement($a{args});
-		}
-		
-		// literal react element
-		if (children != null && children.length > 0) 
-			fields.push({ field:'children', expr:macro $a{children} });
-		var props = {pos:pos, expr:EObjectDecl(fields)};
-		return genLiteral(type, props, ref, key, pos);
 	}
 	#end
 }

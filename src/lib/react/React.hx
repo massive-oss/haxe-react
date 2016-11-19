@@ -13,7 +13,6 @@ import haxe.macro.Expr;
 @:native('React')
 extern class React
 {
-	#if !macro
 	/**
 		https://facebook.github.io/react/docs/react-api.html#react.proptypes
 	**/
@@ -22,13 +21,7 @@ extern class React
 	/**
 		https://facebook.github.io/react/docs/react-api.html#createelement
 	**/
-	#if (debug || react_no_inline)
 	public static function createElement(type:Dynamic, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactElement;
-	#end
-	
-	@:noCompletion
-	@:native('createElement')
-	static function _createElement(type:Dynamic, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactElement;
 
 	/**
 		https://facebook.github.io/react/docs/react-api.html#cloneelement
@@ -44,20 +37,6 @@ extern class React
 		https://facebook.github.io/react/docs/react-api.html#react.children
 	**/
 	public static var Children:ReactChildren;
-	
-	#end
-	
-	#if (!debug && !react_no_inline)
-	macro public static function createElement(type:Expr, rest:Array<Expr>):Expr {
-		var attrs = null;
-		var children = null;
-		if (rest != null && rest.length > 0) {
-			attrs = rest[0];
-			children = rest.slice(1);
-		}
-		return ReactMacro.inlineElement(type, attrs, children, Context.currentPos());
-	}
-	#end
 }
 
 /**
