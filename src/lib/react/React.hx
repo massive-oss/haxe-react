@@ -21,7 +21,7 @@ extern class React
 	/**
 		https://facebook.github.io/react/docs/react-api.html#createelement
 	**/
-	public static function createElement(type:Dynamic, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactElement;
+	public static function createElement(type:haxe.extern.EitherType<String, Class<ReactComponent>>, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactElement;
 
 	/**
 		https://facebook.github.io/react/docs/react-api.html#cloneelement
