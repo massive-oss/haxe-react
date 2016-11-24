@@ -21,7 +21,7 @@ extern class React
 	/**
 		https://facebook.github.io/react/docs/react-api.html#createelement
 	**/
-	public static function createElement(type:haxe.extern.EitherType<String, Class<ReactComponent>>, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactElement;
+	public static function createElement(type:CreateElementType, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactElement;
 
 	/**
 		https://facebook.github.io/react/docs/react-api.html#cloneelement
@@ -69,3 +69,5 @@ extern interface ReactChildren
 	**/
 	function toArray(children:Dynamic):Array<Dynamic>;
 }
+
+typedef CreateElementType = haxe.extern.EitherType<haxe.extern.EitherType<String, haxe.Constraints.Function>, Class<ReactComponent>>;
