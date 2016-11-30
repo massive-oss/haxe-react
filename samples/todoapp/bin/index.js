@@ -393,7 +393,7 @@ view_TodoApp.prototype = $extend(React.Component.prototype,{
 			return !item.checked;
 		}).length;
 		var listProps = { data : this.state.items};
-		return { '$$typeof' : $$tre, type : "div", props : { style : { margin : "10px"}, className : "app", children : [{ '$$typeof' : $$tre, type : "div", props : { className : "header", children : [React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),{ '$$typeof' : $$tre, type : "button", props : { onClick : $bind(this,this.addItem), className : "button-add", children : "+"}}]}},{ '$$typeof' : $$tre, type : "hr", props : { }},{ '$$typeof' : $$tre, type : view_TodoList, props : listProps, ref : $bind(this,this.mountList)},{ '$$typeof' : $$tre, type : "hr", props : { }},{ '$$typeof' : $$tre, type : "div", props : { className : "footer", children : [{ '$$typeof' : $$tre, type : "b", props : { children : unchecked}}," task(s) left"]}}]}};
+		return { '$$typeof' : $$tre, type : "div", props : { style : { margin : "10px"}, className : "app", children : [{ '$$typeof' : $$tre, type : "div", props : { className : "header", children : [React.createElement("input",{ ref : "input", placeholder : "Enter new task description"}),{ '$$typeof' : $$tre, type : "button", props : { onClick : $bind(this,this.addItem), className : "button-add", children : "+"}}]}},{ '$$typeof' : $$tre, type : "hr", props : { }},{ '$$typeof' : $$tre, type : view_TodoList, props : Object.assign({ },{ padding : "10px"},listProps,{ className : "list"}), ref : $bind(this,this.mountList)},{ '$$typeof' : $$tre, type : "hr", props : { }},{ '$$typeof' : $$tre, type : "div", props : { className : "footer", children : [{ '$$typeof' : $$tre, type : "b", props : { children : unchecked}}," task(s) left"]}}]}};
 	}
 	,mountList: function(comp) {
 		console.log("List mounted " + Std.string(comp.props));
@@ -413,7 +413,8 @@ view_TodoList.__name__ = true;
 view_TodoList.__super__ = React.Component;
 view_TodoList.prototype = $extend(React.Component.prototype,{
 	render: function() {
-		return { '$$typeof' : $$tre, type : "ul", props : Object.assign({ },this.props,{ onClick : $bind(this,this.toggleChecked), className : "list", children : this.createChildren()})};
+		var style = { padding : this.props.padding};
+		return { '$$typeof' : $$tre, type : "ul", props : { style : style, onClick : $bind(this,this.toggleChecked), className : this.props.className, children : this.createChildren()}};
 	}
 	,createChildren: function() {
 		var _g = [];
@@ -422,7 +423,7 @@ view_TodoList.prototype = $extend(React.Component.prototype,{
 		while(_g1 < _g2.length) {
 			var entry = _g2[_g1];
 			++_g1;
-			_g.push({ '$$typeof' : $$tre, type : view_TodoListItem, props : { data : entry}, key : entry.id});
+			_g.push({ '$$typeof' : $$tre, type : view_TodoListItem, props : { padding : "5px", data : entry, border : "solid 1px #363"}, key : entry.id});
 		}
 		return _g;
 	}
@@ -444,10 +445,11 @@ view_TodoListItem.prototype = $extend(React.Component.prototype,{
 		return nextProps.data.checked != this.checked;
 	}
 	,render: function() {
+		var style = { padding : this.props.padding, border : this.props.border};
 		var entry = this.props.data;
 		this.checked = entry.checked;
 		var id = "item-" + entry.id;
-		return { '$$typeof' : $$tre, type : "li", props : { id : id, className : this.checked?"checked":"", children : entry.label}};
+		return { '$$typeof' : $$tre, type : "li", props : { id : id, style : style, className : this.checked?"checked":"", children : entry.label}};
 	}
 });
 var $_, $fid = 0;
@@ -479,5 +481,10 @@ msignal_SlotList.NIL = new msignal_SlotList(null,null);
 var $$tre = (typeof Symbol === "function" && Symbol.for && Symbol.for("react.element")) || 0xeac7;
 store_TodoActions.addItem = new msignal_Signal1();
 store_TodoActions.toggleItem = new msignal_Signal1();
+view_TodoApp.displayName = "TodoApp";
+view_TodoList.defaultProps = { padding : "10px", className : "list"};
+view_TodoList.displayName = "TodoList";
+view_TodoListItem.defaultProps = { padding : "10px", border : "solid 1px #363"};
+view_TodoListItem.displayName = "TodoListItem";
 Main.main();
 })(typeof console != "undefined" ? console : {log:function(){}});

@@ -29,6 +29,8 @@ class ReactMacro
 	/* PARSER  */
 	
 	#if macro
+	static var defaultPropsMap:Map<String, Array<{field:String, expr:Expr}>> = new  Map();
+	
 	static function parseJsx(jsx:String, pos:Position):Expr
 	{
 		jsx = JsxSanitize.process(jsx);
@@ -98,6 +100,15 @@ class ReactMacro
 						if (children.length == 1) attrs.push({field:'children', expr:macro ${children[0]}});
 						else attrs.push({field:'children', expr:macro ($a{children} :Array<Dynamic>)});
 					}
+					if (!isHtml) 
+					{
+						var defaultProps = getDefaultProps(type, attrs);
+						if (defaultProps != null) 
+						{
+							var obj = {expr: EObjectDecl(defaultProps), pos: pos};
+							spread.unshift(obj);
+						}
+					}
 					var props = makeProps(spread, attrs, pos);
 					return genLiteral(type, props, ref, key, pos);
 				}
@@ -112,6 +123,31 @@ class ReactMacro
 					return macro react.React.createElement($a{args});
 				}
 		}
+	}
+	
+	/**
+	 * For a given type, resolve default props and filter user-defined props out
+	 */
+	static function getDefaultProps(type:Expr, attrs:Array<{field:String, expr:Expr}>) 
+	{
+		try {
+			var tp = Context.typeof(type);
+			switch (tp) 
+			{
+				case Type.TType(_.get() => t, _):
+					var defaultProps = defaultPropsMap.get(t.name);
+					if (defaultProps != null) 
+						return defaultProps.filter(function(defaultProp) {
+							var name = defaultProp.field;
+							for (prop in attrs) if (prop.field == name) return false;
+							return true;
+						});
+					else null;
+				default:
+			}
+		}
+		catch (err:Dynamic) {}
+		return null;
 	}
 	
 	static function parseJsxAttr(value:String, pos:Position) 
@@ -165,9 +201,30 @@ class ReactMacro
 	
 	static function makeProps(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position) 
 	{
+		#if (!debug && !react_no_inline)
+		flattenSpreadProps(spread, attrs);
+		#end
+		
 		return spread.length > 0
 			? makeSpread(spread, attrs, pos)
 			: attrs.length == 0 ? macro {} : {pos:pos, expr:EObjectDecl(attrs)}
+	}
+	
+	/**
+	 * Attempt flattening spread/default props into the user-defined props
+	 */
+	static function flattenSpreadProps(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>) 
+	{
+		function hasAttr(name:String) {
+			for (prop in attrs) if (prop.field == name) return true;
+			return false;
+		}
+		var mergeProps = getSpreadProps(spread, []);
+		if (mergeProps.length > 0) 
+		{
+			for (prop in mergeProps) 
+				if (!hasAttr(prop.field)) attrs.push(prop);
+		}
 	}
 	
 	static function makeSpread(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position) 
@@ -182,30 +239,78 @@ class ReactMacro
 		return macro (untyped Object).assign($a{args});
 	}
 	
+	/**
+	 * Flatten literal objects into the props
+	 */
+	static function getSpreadProps(spread:Array<Expr>, props:Array<{field:String, expr:Expr}>) 
+	{
+		if (spread.length == 0) return props;
+		var last = spread[spread.length - 1];
+		return switch (last.expr) {
+			case EObjectDecl(fields):
+				spread.pop();
+				var newProps = props.concat(fields);
+				// push props and recurse in case another literal object is in the list
+				getSpreadProps(spread, newProps);
+			default:
+				props;
+		}
+	}
+	
 	/* METADATA */
+	
+	/**
+	 * Process React components 
+	 */
+	public static macro function buildComponent():Array<Field>
+	{
+		var pos = Context.currentPos();
+		var inClass = Context.getLocalClass().get();
+		if (inClass.isExtern) 
+			return null;
+		var fields = Context.getBuildFields();
+		
+		#if (!debug && !react_no_inline)
+		storeDefaultProps(fields, inClass.pack.join('') + '.' + inClass.name, pos);
+		#end
+		
+		tagComponent(fields, inClass, pos);
+		
+		return fields;
+	}
+	
+	/**
+	 * Extract component default props
+	 */
+	static function storeDefaultProps(fields:Array<Field>, qname:String, pos:Position) 
+	{
+		for (field in fields)
+			if (field.name == 'defaultProps') 
+			{
+				switch (field.kind) {
+					case FieldType.FVar(_, _.expr => EObjectDecl(props)):
+						defaultPropsMap.set('Class<$qname>', props.copy());
+						return;
+					default:
+				}
+				return;
+			}
+		defaultPropsMap.set(qname, null);
+	}
 	
 	/**
 	 * Annotate React components for run-time JS reflection
 	 */
-	public static macro function tagComponent():Array<Field>
+	static function tagComponent(fields:Array<Field>, inClass:ClassType, pos:Position)
 	{
 		#if !debug
-		return null;
-		#else
-		
-		var pos = Context.currentPos();
-		var fields = Context.getBuildFields();
-		var inClass = Context.getLocalClass().get();
-		if (inClass.isExtern) 
-			return null;
+		return
+		#end
 		
 		addDisplayName(fields, inClass, pos);
 		
 		#if react_hot
 		addTagSource(fields, inClass, pos);
-		#end
-		
-		return fields;
 		#end
 	}
 	

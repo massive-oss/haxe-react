@@ -23,7 +23,7 @@ typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, D
 #end
 @:native('React.Component')
 @:keepSub 
-@:autoBuild(react.ReactMacro.tagComponent())
+@:autoBuild(react.ReactMacro.buildComponent())
 extern class ReactComponentOf<TProps, TState, TRefs>
 {
 	static var defaultProps:Dynamic;

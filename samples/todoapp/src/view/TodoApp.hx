@@ -43,7 +43,7 @@ class TodoApp extends ReactComponentOfStateAndRefs<TodoAppState, TodoAppRefs>
 					<button className="button-add" onClick=$addItem>+</button>
 				</div>
 				<hr/>
-				<$TodoList ref={mountList} {...listProps}/>
+				<$TodoList ref={mountList} {...listProps} className="list"/>
 				<hr/>
 				<div className="footer"><b>$unchecked</b> task(s) left</div>
 			</div>

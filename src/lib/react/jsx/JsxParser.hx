@@ -2,7 +2,7 @@ package react.jsx;
 
 using StringTools;
 
-#if (macro || munit)
+#if (macro || munit || display)
 enum JsxAst 
 {
 	Node(isHtml:Bool, path:Array<String>, attributes:Array<{name:String, value:String}>, children:Array<JsxAst>);
