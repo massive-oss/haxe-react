@@ -60,6 +60,15 @@ class App extends ReactComponent {
 }
 ```
 
+Note that `React.createElement` strictly expects either a `String`, a `Function`, or a class 
+extending `ReactComponent`. It includes when writing externs for 3rd party JS libraries you
+must specify `extends`:
+
+```haxe
+@:jsRequire('react-redux', 'Provider')
+extern class Provider extends react.ReactComponent { }
+```
+
 ## JSX
 
 The Haxe compiler (and editors) doesn't allow to use exactly the JSX XML DSL, 
