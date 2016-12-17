@@ -190,6 +190,17 @@ class ReactMacro
 		return false;
 		#end
 		
+		// do not use literals for externs: we don't know their defaultProps
+		switch(Context.typeof(type)) {
+			case TType(_.get() => t, _):
+				switch(Context.getType(t.module)) {
+					case TInst(_.get() => t, _):
+						if (t.isExtern) return false;
+					default:
+				}
+			default:
+		}
+		
 		if (ref == null) return true;
 		
 		// only refs as functions are allowed in literals, strings require the full createElement context 
