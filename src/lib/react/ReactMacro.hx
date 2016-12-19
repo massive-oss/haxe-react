@@ -191,15 +191,7 @@ class ReactMacro
 		#end
 		
 		// do not use literals for externs: we don't know their defaultProps
-		switch(Context.typeof(type)) {
-			case TType(_.get() => t, _):
-				switch(Context.getType(t.module)) {
-					case TInst(_.get() => t, _):
-						if (t.isExtern) return false;
-					default:
-				}
-			default:
-		}
+		if (isExternRef(type)) return false;
 		
 		if (ref == null) return true;
 		
@@ -208,6 +200,15 @@ class ReactMacro
 			case TFun(_): true; 
 			default: false; 
 		}
+	}
+	
+	static function isExternRef(type:Expr) 
+	{
+		return try switch(Context.getType(ExprTools.toString(type))) {
+			case TInst(_.get() => t, _): t.isExtern;
+			default: false;
+		}
+		catch (err:Dynamic) false;
 	}
 	
 	static function makeProps(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position) 
@@ -302,7 +303,6 @@ class ReactMacro
 				switch (field.kind) {
 					case FieldType.FVar(_, _.expr => EObjectDecl(props)):
 						defaultPropsMap.set('Class<$qname>', props.copy());
-						return;
 					default:
 				}
 				return;

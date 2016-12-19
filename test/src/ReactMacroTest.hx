@@ -3,6 +3,7 @@ package;
 import massive.munit.Assert;
 import react.ReactComponent;
 import react.ReactMacro.jsx;
+import support.sub.CompExternModule;
 import support.sub.CompModule;
 
 class CompBasic extends ReactComponent {	
@@ -13,12 +14,20 @@ class CompDefaults extends ReactComponent {
 		defB:42
 	}
 }
+extern class CompExtern extends ReactComponent {
+}
+
 
 class ReactMacroTest
 {
 
-	public function new() 
+	public function new() {}
+	
+	@BeforeClass
+	public function setup()
 	{
+		untyped window.CompExtern = function() {};
+		untyped window.CompExternModule = function() {};
 	}
 
 	@Test
@@ -60,6 +69,27 @@ class ReactMacroTest
 		var e = jsx('<CompBasic a="foo" />');
 		Assert.areEqual(CompBasic, e.type);
 		assertHasProps(e.props, ['a'], ['foo']);
+	}
+	
+	@Test
+	public function extern_component_qualified_module_should_DEOPT() 
+	{
+		var e = jsx('<support.sub.CompExternModule />');
+		Assert.areEqual('NATIVE', e.type);
+	}
+	
+	@Test
+	public function extern_component_module_should_DEOPT() 
+	{
+		var e = jsx('<CompExternModule />');
+		Assert.areEqual('NATIVE', e.type);
+	}
+	
+	@Test
+	public function extern_component_should_DEOPT() 
+	{
+		var e = jsx('<CompExtern />');
+		Assert.areEqual('NATIVE', e.type);
 	}
 	
 	@Test
@@ -110,6 +140,14 @@ class ReactMacroTest
 	public function component_in_sub_package_with_defaultProps() 
 	{
 		var e = jsx('<CompModule />');
+		Assert.areEqual(CompModule, e.type);
+		assertHasProps(e.props, ['defA', 'defB'], ['B', 43]);
+	}
+	
+	@Test
+	public function qualified_component_in_sub_package_with_defaultProps() 
+	{
+		var e = jsx('<support.sub.CompModule />');
 		Assert.areEqual(CompModule, e.type);
 		assertHasProps(e.props, ['defA', 'defB'], ['B', 43]);
 	}
