@@ -282,7 +282,8 @@ class ReactMacro
 		var fields = Context.getBuildFields();
 		
 		#if (!debug && !react_no_inline)
-		storeDefaultProps(fields, inClass.pack.join('') + '.' + inClass.name, pos);
+		var qname = inClass.pack.concat([inClass.name]).join('.');
+		storeDefaultProps(fields, qname, pos);
 		#end
 		
 		tagComponent(fields, inClass, pos);
@@ -330,6 +331,18 @@ class ReactMacro
 		var className = inClass.name;
 		var fileName = Context.getPosInfos(inClass.pos).file;
 		var tag = macro if (untyped window.__REACT_HOT_LOADER__) untyped __REACT_HOT_LOADER__.register($i{className}, $v{className}, $v{fileName});
+		var register = macro $p{[className, '__hot__']}();
+		
+		fields.push({
+			name:'__hot__',
+			access:[Access.AStatic],
+			kind:FieldType.FFun({
+				args:[],
+				ret:null,
+				expr:tag
+			}),
+			pos:pos
+		});
 		
 		// append tag to existing __init__
 		for (field in fields)
@@ -339,7 +352,7 @@ class ReactMacro
 					case FFun(f):
 						f.expr = macro {
 							${f.expr};
-							$tag;
+							$register;
 						}
 					default:
 						Context.warning('__init__ declaration not supported to hot-reload tagging', field.pos);
@@ -348,17 +361,16 @@ class ReactMacro
 			}
 		
 		// add new __init__ function with tag
-		var field:Field = {
+		fields.push({
 			name:'__init__',
 			access:[Access.AStatic, Access.APrivate],
 			kind:FieldType.FFun({
 				args:[],
 				ret:null,
-				expr:tag
+				expr:register
 			}),
 			pos:pos
-		}
-		fields.push(field);
+		});
 		return;
 	}
 	
