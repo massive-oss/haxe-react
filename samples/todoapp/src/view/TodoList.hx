@@ -8,11 +8,18 @@ import store.TodoActions;
 import store.TodoItem;
 
 typedef TodoListProps = {
-	data:Array<TodoItem>
+	?padding:String,
+	?className:String,
+	?data:Array<TodoItem>
 }
 
 class TodoList extends ReactComponentOfProps<TodoListProps>
 {
+	static var defaultProps:TodoListProps = {
+		padding: '10px',
+		className: 'list'
+	}
+	
 	public function new(props:TodoListProps)
 	{
 		super(props);
@@ -20,8 +27,12 @@ class TodoList extends ReactComponentOfProps<TodoListProps>
 	
 	override public function render() 
 	{
+		var style = {
+			padding: props.padding
+		};
+		
 		return jsx('
-			<ul className="list" onClick=$toggleChecked {...props}>
+			<ul className=${props.className} style=$style onClick=$toggleChecked>
 				${createChildren()}
 			</ul>
 		');
@@ -29,7 +40,7 @@ class TodoList extends ReactComponentOfProps<TodoListProps>
 	
 	function createChildren() 
 	{
-		return [for (entry in props.data) jsx('<TodoListItem key={entry.id} data={entry} />')];
+		return [for (entry in props.data) jsx('<TodoListItem key={entry.id} data={entry} padding="5px" />')];
 	}
 	
 	function toggleChecked(e:Event)
@@ -44,12 +55,19 @@ class TodoList extends ReactComponentOfProps<TodoListProps>
 }
 
 typedef TodoItemProps = {
-	data:TodoItem
+	?data:TodoItem,
+	?padding:String,
+	?border:String
 }
 
 class TodoListItem extends ReactComponentOfProps<TodoItemProps>
 {
 	var checked:Bool;
+	
+	static var defaultProps:TodoItemProps = {
+		padding: '10px',
+		border: 'solid 1px #363'
+	}
 	
 	public function new(props:TodoItemProps)
 	{
@@ -63,11 +81,15 @@ class TodoListItem extends ReactComponentOfProps<TodoItemProps>
 	
 	override public function render() 
 	{
+		var style = {
+			padding: props.padding,
+			border: props.border
+		};
 		var entry:TodoItem = props.data;
 		checked = entry.checked;
 		var id = 'item-${entry.id}';
 		return jsx('
-			<li id = $id className = ${checked ? "checked" : ""}>
+			<li id=$id className=${checked ? "checked" : ""} style=$style>
 				${entry.label}
 			</li>
 		');

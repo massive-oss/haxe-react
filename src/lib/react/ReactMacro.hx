@@ -7,6 +7,13 @@ import haxe.macro.Type;
 import react.jsx.JsxParser;
 import react.jsx.JsxSanitize;
 
+#if macro
+typedef ComponentInfo = {
+	isExtern:Bool,
+	props:Array<{field:String, expr:Expr}>
+}
+#end
+
 /**
 	Provides a simple macro for parsing jsx into Haxe expressions.
 **/
@@ -14,11 +21,10 @@ class ReactMacro
 {
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
-		#if display
-		return macro untyped ${expr};
-		#else
-		return parseJsx(ExprTools.getValue(expr), expr.pos);
-		#end
+		if (Context.defined('display'))
+			return macro untyped ${expr};
+		else
+			return parseJsx(ExprTools.getValue(expr), expr.pos);
 	}
 	
 	public static macro function sanitize(expr:ExprOf<String>):Expr
@@ -29,6 +35,8 @@ class ReactMacro
 	/* PARSER  */
 	
 	#if macro
+	static var componentsMap:Map<String, ComponentInfo> = new Map();
+	
 	static function parseJsx(jsx:String, pos:Position):Expr
 	{
 		jsx = JsxSanitize.process(jsx);
@@ -89,7 +97,8 @@ class ReactMacro
 				var children = [for (child in jsxChildren) parseJsxNode(child, pos)];
 				
 				// inline declaration or createElement?
-				var useLiteral = canUseLiteral(type, ref);
+				var typeInfo = getComponentInfo(type);
+				var useLiteral = canUseLiteral(typeInfo, ref);
 				if (useLiteral)
 				{
 					if (children.length > 0) 
@@ -97,6 +106,15 @@ class ReactMacro
 						// single child should not be placed in an Array
 						if (children.length == 1) attrs.push({field:'children', expr:macro ${children[0]}});
 						else attrs.push({field:'children', expr:macro ($a{children} :Array<Dynamic>)});
+					}
+					if (!isHtml) 
+					{
+						var defaultProps = getDefaultProps(typeInfo, attrs);
+						if (defaultProps != null) 
+						{
+							var obj = {expr: EObjectDecl(defaultProps), pos: pos};
+							spread.unshift(obj);
+						}
 					}
 					var props = makeProps(spread, attrs, pos);
 					return genLiteral(type, props, ref, key, pos);
@@ -148,12 +166,16 @@ class ReactMacro
 		return macro ($obj : react.ReactComponent.ReactElement);
 	}
 	
-	static function canUseLiteral(type:Expr, ref:Expr) 
+	static function canUseLiteral(typeInfo:ComponentInfo, ref:Expr) 
 	{
 		#if (debug || react_no_inline)
 		return false;
 		#end
 		
+		// do not use literals for externs: we don't know their defaultProps
+		if (typeInfo != null && typeInfo.isExtern) return false;
+		
+		// no ref is always ok
 		if (ref == null) return true;
 		
 		// only refs as functions are allowed in literals, strings require the full createElement context 
@@ -165,9 +187,30 @@ class ReactMacro
 	
 	static function makeProps(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position) 
 	{
+		#if (!debug && !react_no_inline)
+		flattenSpreadProps(spread, attrs);
+		#end
+		
 		return spread.length > 0
 			? makeSpread(spread, attrs, pos)
 			: attrs.length == 0 ? macro {} : {pos:pos, expr:EObjectDecl(attrs)}
+	}
+	
+	/**
+	 * Attempt flattening spread/default props into the user-defined props
+	 */
+	static function flattenSpreadProps(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>) 
+	{
+		function hasAttr(name:String) {
+			for (prop in attrs) if (prop.field == name) return true;
+			return false;
+		}
+		var mergeProps = getSpreadProps(spread, []);
+		if (mergeProps.length > 0) 
+		{
+			for (prop in mergeProps) 
+				if (!hasAttr(prop.field)) attrs.push(prop);
+		}
 	}
 	
 	static function makeSpread(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position) 
@@ -182,30 +225,100 @@ class ReactMacro
 		return macro (untyped Object).assign($a{args});
 	}
 	
+	/**
+	 * Flatten literal objects into the props
+	 */
+	static function getSpreadProps(spread:Array<Expr>, props:Array<{field:String, expr:Expr}>) 
+	{
+		if (spread.length == 0) return props;
+		var last = spread[spread.length - 1];
+		return switch (last.expr) {
+			case EObjectDecl(fields):
+				spread.pop();
+				var newProps = props.concat(fields);
+				// push props and recurse in case another literal object is in the list
+				getSpreadProps(spread, newProps);
+			default:
+				props;
+		}
+	}
+	
 	/* METADATA */
+	
+	/**
+	 * Process React components 
+	 */
+	public static macro function buildComponent():Array<Field>
+	{
+		var pos = Context.currentPos();
+		var inClass = Context.getLocalClass().get();
+		var fields = Context.getBuildFields();
+		
+		#if (!debug && !react_no_inline)
+		storeComponentInfos(fields, inClass, pos);
+		#end
+		
+		if (!inClass.isExtern)
+			tagComponent(fields, inClass, pos);
+		
+		return fields;
+	}
+	
+	/**
+	 * Extract component default props
+	 */
+	static function storeComponentInfos(fields:Array<Field>, inClass:ClassType, pos:Position) 
+	{
+		var key = getClassKey(inClass);
+		for (field in fields)
+			if (field.name == 'defaultProps') 
+			{
+				switch (field.kind) {
+					case FieldType.FVar(_, _.expr => EObjectDecl(props)):
+						componentsMap.set(key, {
+							isExtern: inClass.isExtern,
+							props: props.copy()
+						});
+						return;
+					default:
+						break;
+				}
+			}
+		componentsMap.set(key, {
+			props:null,
+			isExtern:inClass.isExtern
+		});
+	}
+	
+	/**
+	 * For a given type, resolve default props and filter user-defined props out
+	 */
+	static function getDefaultProps(typeInfo:ComponentInfo, attrs:Array<{field:String, expr:Expr}>) 
+	{
+		if (typeInfo == null) return null;
+		
+		if (typeInfo.props != null) 
+			return typeInfo.props.filter(function(defaultProp) {
+				var name = defaultProp.field;
+				for (prop in attrs) if (prop.field == name) return false;
+				return true;
+			});
+		return null;
+	}
 	
 	/**
 	 * Annotate React components for run-time JS reflection
 	 */
-	public static macro function tagComponent():Array<Field>
+	static function tagComponent(fields:Array<Field>, inClass:ClassType, pos:Position)
 	{
 		#if !debug
-		return null;
-		#else
-		
-		var pos = Context.currentPos();
-		var fields = Context.getBuildFields();
-		var inClass = Context.getLocalClass().get();
-		if (inClass.isExtern) 
-			return null;
+		return
+		#end
 		
 		addDisplayName(fields, inClass, pos);
 		
 		#if react_hot
 		addTagSource(fields, inClass, pos);
-		#end
-		
-		return fields;
 		#end
 	}
 	
@@ -214,6 +327,18 @@ class ReactMacro
 		var className = inClass.name;
 		var fileName = Context.getPosInfos(inClass.pos).file;
 		var tag = macro if (untyped window.__REACT_HOT_LOADER__) untyped __REACT_HOT_LOADER__.register($i{className}, $v{className}, $v{fileName});
+		var register = macro $p{[className, '__hot__']}();
+		
+		fields.push({
+			name:'__hot__',
+			access:[Access.AStatic],
+			kind:FieldType.FFun({
+				args:[],
+				ret:null,
+				expr:tag
+			}),
+			pos:pos
+		});
 		
 		// append tag to existing __init__
 		for (field in fields)
@@ -223,7 +348,7 @@ class ReactMacro
 					case FFun(f):
 						f.expr = macro {
 							${f.expr};
-							$tag;
+							$register;
 						}
 					default:
 						Context.warning('__init__ declaration not supported to hot-reload tagging', field.pos);
@@ -232,17 +357,16 @@ class ReactMacro
 			}
 		
 		// add new __init__ function with tag
-		var field:Field = {
+		fields.push({
 			name:'__init__',
 			access:[Access.AStatic, Access.APrivate],
 			kind:FieldType.FFun({
 				args:[],
 				ret:null,
-				expr:tag
+				expr:register
 			}),
 			pos:pos
-		}
-		fields.push(field);
+		});
 		return;
 	}
 	
@@ -261,6 +385,26 @@ class ReactMacro
 		}
 		fields.push(field);
 		return;
+	}
+	
+	static function getComponentInfo(expr:Expr):ComponentInfo
+	{
+		var key = getExprKey(expr);
+		return key != null ? componentsMap.get(key) : null;
+	}
+	
+	static function getClassKey(inClass:ClassType) 
+	{
+		var qname = inClass.pack.concat([inClass.name]).join('.');
+		return 'Class<$qname>';
+	}
+	
+	static function getExprKey(expr:Expr) 
+	{
+		return try switch (Context.typeof(expr)) {
+			case Type.TType(_.get() => t, _): t.name;
+			default: null;
+		}
 	}
 	#end
 }
