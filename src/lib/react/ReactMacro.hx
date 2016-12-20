@@ -7,6 +7,13 @@ import haxe.macro.Type;
 import react.jsx.JsxParser;
 import react.jsx.JsxSanitize;
 
+#if macro
+typedef ComponentInfo = {
+	isExtern:Bool,
+	props:Array<{field:String, expr:Expr}>
+}
+#end
+
 /**
 	Provides a simple macro for parsing jsx into Haxe expressions.
 **/
@@ -14,11 +21,10 @@ class ReactMacro
 {
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
-		#if display
-		return macro untyped ${expr};
-		#else
-		return parseJsx(ExprTools.getValue(expr), expr.pos);
-		#end
+		if (Context.defined('display'))
+			return macro untyped ${expr};
+		else
+			return parseJsx(ExprTools.getValue(expr), expr.pos);
 	}
 	
 	public static macro function sanitize(expr:ExprOf<String>):Expr
@@ -29,7 +35,7 @@ class ReactMacro
 	/* PARSER  */
 	
 	#if macro
-	static var defaultPropsMap:Map<String, Array<{field:String, expr:Expr}>> = new  Map();
+	static var componentsMap:Map<String, ComponentInfo> = new Map();
 	
 	static function parseJsx(jsx:String, pos:Position):Expr
 	{
@@ -91,7 +97,8 @@ class ReactMacro
 				var children = [for (child in jsxChildren) parseJsxNode(child, pos)];
 				
 				// inline declaration or createElement?
-				var useLiteral = canUseLiteral(type, ref);
+				var typeInfo = getComponentInfo(type);
+				var useLiteral = canUseLiteral(typeInfo, ref);
 				if (useLiteral)
 				{
 					if (children.length > 0) 
@@ -102,7 +109,7 @@ class ReactMacro
 					}
 					if (!isHtml) 
 					{
-						var defaultProps = getDefaultProps(type, attrs);
+						var defaultProps = getDefaultProps(typeInfo, attrs);
 						if (defaultProps != null) 
 						{
 							var obj = {expr: EObjectDecl(defaultProps), pos: pos};
@@ -123,31 +130,6 @@ class ReactMacro
 					return macro react.React.createElement($a{args});
 				}
 		}
-	}
-	
-	/**
-	 * For a given type, resolve default props and filter user-defined props out
-	 */
-	static function getDefaultProps(type:Expr, attrs:Array<{field:String, expr:Expr}>) 
-	{
-		try {
-			var tp = Context.typeof(type);
-			switch (tp) 
-			{
-				case Type.TType(_.get() => t, _):
-					var defaultProps = defaultPropsMap.get(t.name);
-					if (defaultProps != null) 
-						return defaultProps.filter(function(defaultProp) {
-							var name = defaultProp.field;
-							for (prop in attrs) if (prop.field == name) return false;
-							return true;
-						});
-					else null;
-				default:
-			}
-		}
-		catch (err:Dynamic) {}
-		return null;
 	}
 	
 	static function parseJsxAttr(value:String, pos:Position) 
@@ -184,15 +166,16 @@ class ReactMacro
 		return macro ($obj : react.ReactComponent.ReactElement);
 	}
 	
-	static function canUseLiteral(type:Expr, ref:Expr) 
+	static function canUseLiteral(typeInfo:ComponentInfo, ref:Expr) 
 	{
 		#if (debug || react_no_inline)
 		return false;
 		#end
 		
 		// do not use literals for externs: we don't know their defaultProps
-		if (isExternRef(type)) return false;
+		if (typeInfo != null && typeInfo.isExtern) return false;
 		
+		// no ref is always ok
 		if (ref == null) return true;
 		
 		// only refs as functions are allowed in literals, strings require the full createElement context 
@@ -200,15 +183,6 @@ class ReactMacro
 			case TFun(_): true; 
 			default: false; 
 		}
-	}
-	
-	static function isExternRef(type:Expr) 
-	{
-		return try switch(Context.getType(ExprTools.toString(type))) {
-			case TInst(_.get() => t, _): t.isExtern;
-			default: false;
-		}
-		catch (err:Dynamic) false;
 	}
 	
 	static function makeProps(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position) 
@@ -278,16 +252,14 @@ class ReactMacro
 	{
 		var pos = Context.currentPos();
 		var inClass = Context.getLocalClass().get();
-		if (inClass.isExtern) 
-			return null;
 		var fields = Context.getBuildFields();
 		
 		#if (!debug && !react_no_inline)
-		var qname = inClass.pack.concat([inClass.name]).join('.');
-		storeDefaultProps(fields, qname, pos);
+		storeComponentInfos(fields, inClass, pos);
 		#end
 		
-		tagComponent(fields, inClass, pos);
+		if (!inClass.isExtern)
+			tagComponent(fields, inClass, pos);
 		
 		return fields;
 	}
@@ -295,19 +267,43 @@ class ReactMacro
 	/**
 	 * Extract component default props
 	 */
-	static function storeDefaultProps(fields:Array<Field>, qname:String, pos:Position) 
+	static function storeComponentInfos(fields:Array<Field>, inClass:ClassType, pos:Position) 
 	{
+		var key = getClassKey(inClass);
 		for (field in fields)
 			if (field.name == 'defaultProps') 
 			{
 				switch (field.kind) {
 					case FieldType.FVar(_, _.expr => EObjectDecl(props)):
-						defaultPropsMap.set('Class<$qname>', props.copy());
+						componentsMap.set(key, {
+							isExtern: inClass.isExtern,
+							props: props.copy()
+						});
+						return;
 					default:
+						break;
 				}
-				return;
 			}
-		defaultPropsMap.set(qname, null);
+		componentsMap.set(key, {
+			props:null,
+			isExtern:inClass.isExtern
+		});
+	}
+	
+	/**
+	 * For a given type, resolve default props and filter user-defined props out
+	 */
+	static function getDefaultProps(typeInfo:ComponentInfo, attrs:Array<{field:String, expr:Expr}>) 
+	{
+		if (typeInfo == null) return null;
+		
+		if (typeInfo.props != null) 
+			return typeInfo.props.filter(function(defaultProp) {
+				var name = defaultProp.field;
+				for (prop in attrs) if (prop.field == name) return false;
+				return true;
+			});
+		return null;
 	}
 	
 	/**
@@ -389,6 +385,26 @@ class ReactMacro
 		}
 		fields.push(field);
 		return;
+	}
+	
+	static function getComponentInfo(expr:Expr):ComponentInfo
+	{
+		var key = getExprKey(expr);
+		return key != null ? componentsMap.get(key) : null;
+	}
+	
+	static function getClassKey(inClass:ClassType) 
+	{
+		var qname = inClass.pack.concat([inClass.name]).join('.');
+		return 'Class<$qname>';
+	}
+	
+	static function getExprKey(expr:Expr) 
+	{
+		return try switch (Context.typeof(expr)) {
+			case Type.TType(_.get() => t, _): t.name;
+			default: null;
+		}
 	}
 	#end
 }
