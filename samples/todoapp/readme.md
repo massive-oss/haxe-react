@@ -12,21 +12,23 @@ The classic Todo app done using Haxe React and a Flux-like store.
 
 We believe Haxe+React is an excellent combination; here's the render function of the main view:
 
-	override public function render() 
-	{
-		var unchecked = state.items.filter(function(item) return !item.checked).length;
-		
-		return jsx('
-			<div className="app">
-				<div className="header">
-					<input ref="input" placeholder="Enter new task description" />
-					<button className="button-add" onClick=$addItem>+</button>
-				</div>
-				<$TodoList data=${state.items}/>
-				<div className="footer">$unchecked task(s) left</div>
+```haxe
+override public function render() 
+{
+	var unchecked = state.items.filter(function(item) return !item.checked).length;
+
+	return jsx('
+		<div className="app">
+			<div className="header">
+				<input ref="input" placeholder="Enter new task description" />
+				<button className="button-add" onClick=$addItem>+</button>
 			</div>
-		');
-	}
+			<$TodoList data=${state.items}/>
+			<div className="footer">$unchecked task(s) left</div>
+		</div>
+	');
+}
+```
 
 The JSX transformation is implemented as a `jsx()` macro, producing code which will be verified 
 by the Haxe compiler. You can use both classic `{}` syntax or Haxe string interpolation for improved
