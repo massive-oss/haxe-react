@@ -324,50 +324,16 @@ class ReactMacro
 	
 	static function addTagSource(fields:Array<Field>, inClass:ClassType, pos:Position)
 	{
+		// add a __fileName__ static field
 		var className = inClass.name;
 		var fileName = Context.getPosInfos(inClass.pos).file;
-		var tag = macro if (untyped window.__REACT_HOT_LOADER__) untyped __REACT_HOT_LOADER__.register($i{className}, $v{className}, $v{fileName});
-		var register = macro $p{[className, '__hot__']}();
 		
 		fields.push({
-			name:'__hot__',
+			name:'__fileName__',
 			access:[Access.AStatic],
-			kind:FieldType.FFun({
-				args:[],
-				ret:null,
-				expr:tag
-			}),
+			kind:FieldType.FVar(null, macro $v{fileName}),
 			pos:pos
 		});
-		
-		// append tag to existing __init__
-		for (field in fields)
-			if (field.name == '__init__')
-			{
-				switch (field.kind) {
-					case FFun(f):
-						f.expr = macro {
-							${f.expr};
-							$register;
-						}
-					default:
-						Context.warning('__init__ declaration not supported to hot-reload tagging', field.pos);
-				}
-				return;
-			}
-		
-		// add new __init__ function with tag
-		fields.push({
-			name:'__init__',
-			access:[Access.AStatic, Access.APrivate],
-			kind:FieldType.FFun({
-				args:[],
-				ret:null,
-				expr:register
-			}),
-			pos:pos
-		});
-		return;
 	}
 	
 	static function addDisplayName(fields:Array<Field>, inClass:ClassType, pos:Position)
