@@ -25,5 +25,5 @@ extern class ReactDOM
 	/**
 		https://facebook.github.io/react/docs/react-dom.html#finddomnode
 	**/
-	public static function findDOMNode(element:ReactElement):Element;
+	public static function findDOMNode(component:ReactComponent):Element;
 }
