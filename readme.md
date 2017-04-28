@@ -184,3 +184,14 @@ return {$$typeof:Symbol.for('react.element'), type:'div', props:{className:'foo'
 This behaviour can be **disabled** using `-D react_no_inline`.
 
 Additionally, setting `-D react_monomorphic` will include both `ref` and `key` fields even when they are null in order to create monomorphic inlined objects. 
+
+
+## Optimization tools
+
+### Avoidable renders warning
+
+Setting `-D react_render_warning` will enable runtime warnings for avoidable renders.
+
+This will add a `componentDidUpdate` (or update the existing one) where a **shallowCompare** is done on current and previous props and state. If both did not change, a warning will be displayed in the console.
+
+False positives can happen if your props are not flat, due to the shallowCompare.

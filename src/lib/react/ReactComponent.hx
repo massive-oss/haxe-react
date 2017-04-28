@@ -5,7 +5,7 @@ typedef ReactComponentProps = {
 	/**
 		Children have to be manipulated using React.Children.*
 	**/
-	@:optional var children:Dynamic; 
+	@:optional var children:Dynamic;
 }
 
 /**
@@ -23,9 +23,12 @@ typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, D
 @:jsRequire("react", "Component")
 #end
 @:native('React.Component')
-@:keepSub 
+@:keepSub
 @:autoBuild(react.ReactMacro.buildComponent())
 @:autoBuild(react.ReactTypeMacro.alterComponentSignatures())
+#if (debug && react_render_warning)
+@:autoBuild(react.ReactDebugMacro.buildComponent())
+#end
 extern class ReactComponentOf<TProps, TState, TRefs>
 {
 	var props(default, null):TProps;
@@ -88,7 +91,7 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 		https://facebook.github.io/react/docs/react-component.html#componentdidupdate
 	**/
 	function componentDidUpdate(prevProps:TProps, prevState:TState):Void;
-	
+
 	#if (js && !debug && !react_no_inline)
 	static function __init__():Void {
 		// required magic value to tag literal react elements
