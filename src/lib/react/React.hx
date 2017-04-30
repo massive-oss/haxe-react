@@ -11,10 +11,7 @@ import react.ReactComponent.ReactElement;
 @:native('React')
 extern class React
 {
-	/**
-		https://facebook.github.io/react/docs/react-api.html#react.proptypes
-	**/
-	public static var PropTypes(default, null):ReactPropTypes;
+	// Warning: react.React.PropTypes is deprecated, reference as react.ReactPropTypes
 
 	/**
 		https://facebook.github.io/react/docs/react-api.html#createelement
