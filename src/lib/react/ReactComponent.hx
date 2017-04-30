@@ -1,4 +1,5 @@
 package react;
+import haxe.extern.EitherType;
 
 typedef ReactComponentProps = {
 	/**
@@ -24,6 +25,7 @@ typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, D
 @:native('React.Component')
 @:keepSub 
 @:autoBuild(react.ReactMacro.buildComponent())
+@:autoBuild(react.ReactTypeMacro.alterComponentSignatures())
 extern class ReactComponentOf<TProps, TState, TRefs>
 {
 	var props(default, null):TProps;
@@ -45,9 +47,7 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 	/**
 		https://facebook.github.io/react/docs/react-component.html#setstate
 	**/
-	@:overload(function(nextState:TState -> TProps -> TState, ?callback:Void -> Void):Void {})
-	@:overload(function(nextState:TState -> TState, ?callback:Void -> Void):Void {})
-	function setState(nextState:TState, ?callback:Void -> Void):Void;
+	function setState(nextState:EitherType<TState -> TState, EitherType<TState -> TProps -> TState, TState>>, ?callback:Void -> Void):Void;
 
 	/**
 		https://facebook.github.io/react/docs/react-component.html#render
