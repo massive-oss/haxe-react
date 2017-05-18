@@ -1,6 +1,8 @@
 /*
 	From a gist by George Corney:
 	https://gist.github.com/haxiomic/ad4f5d329ac616543819395f42037aa1
+
+	A Partial<T>, where T is a typedef, is T where all the fields are optional
 */
 package react;
 

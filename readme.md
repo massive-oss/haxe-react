@@ -1,26 +1,27 @@
 # Haxe React
 
-A Haxe library offering externs and tool functions leveraging Haxe's excellent type system and 
-compile time macros to offer a strongly typed language to work with the increasingly popular 
+A Haxe library offering externs and tool functions leveraging Haxe's excellent type system and
+compile time macros to offer a strongly typed language to work with the increasingly popular
 [React](https://facebook.github.io/react/) library.
 
 	haxelib install react
 
-### What's included / not included 
+### What's included / not included
 
 This library covers React core and ReactDOM.
 It does NOT cover: ReactAddOns, react-router or React Native.
 
 We recommend looking into / contributing to the following efforts:
 
-- https://github.com/tokomlabs/haxe-react-addons
-- https://github.com/kevinresol/haxe-react-native
+- https://github.com/haxe-react (React native and others libs)
+- https://github.com/tokomlabs/haxe-react-addons (various externs to pick)
+
 
 ### Application architecture examples
 
 React doesn't enforce any specific application architecture; here are a few approaches:
 
-**Redux**, a very popular new approach of Model-View-Intent architecture: global state object, 
+**Redux**, a very popular new approach of Model-View-Intent architecture: global state object,
 following immutability principles, but the wiring has been re-imagined to use the best of Haxe:
 
 - https://github.com/elsassph/haxe-react-redux
@@ -29,7 +30,7 @@ following immutability principles, but the wiring has been re-imagined to use th
 
 - https://github.com/elsassph/haxe-react-mmvc
 
-**Flux**, inspired by Facebook's suggested architecture for React; this is a very quick PoC 
+**Flux**, inspired by Facebook's suggested architecture for React; this is a very quick PoC
 which probably won't scale well to complex apps, but it shows a good range of React features:
 
 - https://github.com/massiveinteractive/haxe-react/tree/master/samples/todoapp
@@ -60,7 +61,7 @@ class App extends ReactComponent {
 }
 ```
 
-Note that `React.createElement` strictly expects either a `String`, a `Function`, or a class 
+Note that `React.createElement` strictly expects either a `String`, a `Function`, or a class
 extending `ReactComponent`. It includes when writing externs for 3rd party JS libraries you
 must specify `extends`:
 
@@ -71,13 +72,13 @@ extern class Provider extends react.ReactComponent { }
 
 ## JSX
 
-The Haxe compiler (and editors) doesn't allow to use exactly the JSX XML DSL, 
+The Haxe compiler (and editors) doesn't allow to use exactly the JSX XML DSL,
 so we had to compromise a bit...
 
 This library's take on JSX is to use a compile-time macro to parse JSX as a string to generate
 the same kind of code that Facebook's JSX, Babel and Typescript will generate.
 
-Both classic JSX `{}` binding and Haxe string interpolation `$var` / `${expression}` / `<$Comp>` 
+Both classic JSX `{}` binding and Haxe string interpolation `$var` / `${expression}` / `<$Comp>`
 are allowed. The advantage of string interpolation is Haxe editor supports for completion and
 code navigation.
 
@@ -107,7 +108,7 @@ class App extends ReactComponent {
 			</div>
 		');
 	}
-	
+
 	static function statelessComponent(props:Dynamic) {
 		return jsx('<div {...props}/>');
 	}
@@ -136,7 +137,7 @@ There are 2 ways to link the React JS library:
 
 ### Require method (default)
 
-By default the library uses `require('react')` to reference React JS. 
+By default the library uses `require('react')` to reference React JS.
 
 This means you are expected to use `npm` to install this dependency:
 
@@ -147,7 +148,7 @@ and a second build step to generate the final JS file, for instance using `brows
 	npm install browserify
 	browserify haxe-output.js -o final-output.js
 
-(note that you can use `watchify` to automatically run this build step) 
+(note that you can use `watchify` to automatically run this build step)
 
 ### Global JS
 
@@ -167,9 +168,9 @@ Look at `samples/todoapp` for an example of this approach.
 
 ## JSX Optimizing Compiler
 
-### Inline ReactElements 
+### Inline ReactElements
 
-By default, when building for release (eg. without `-debug`), calls to `React.createElement` are replaced by inline JS objects (if possible). 
+By default, when building for release (eg. without `-debug`), calls to `React.createElement` are replaced by inline JS objects (if possible).
 
 See: https://github.com/facebook/react/issues/3228
 
@@ -183,7 +184,7 @@ return {$$typeof:Symbol.for('react.element'), type:'div', props:{className:'foo'
 
 This behaviour can be **disabled** using `-D react_no_inline`.
 
-Additionally, setting `-D react_monomorphic` will include both `ref` and `key` fields even when they are null in order to create monomorphic inlined objects. 
+Additionally, setting `-D react_monomorphic` will include both `ref` and `key` fields even when they are null in order to create monomorphic inlined objects.
 
 
 ## Optimization tools
@@ -195,3 +196,12 @@ Setting `-D react_render_warning` will enable runtime warnings for avoidable ren
 This will add a `componentDidUpdate` (or update the existing one) where a **shallowCompare** is done on current and previous props and state. If both did not change, a warning will be displayed in the console.
 
 False positives can happen if your props are not flat, due to the shallowCompare.
+
+
+## Changes
+
+### 1.2.0
+
+- `setState` now accepts `Partial<T>`; where `T` is a `typedef`, `Partial<T>` is `T` will all the fields made optional
+- `react.React.PropTypes` removed in favor of `react.ReactPropTypes`
+- added `-D react_render_warning` option
