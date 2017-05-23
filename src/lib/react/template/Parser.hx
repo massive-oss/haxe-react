@@ -335,12 +335,12 @@ class Parser {
 					if (data.content != null) {
 						if (emptyChildren) {
 							if (emptyAttrs)
-								vnode = macro react.React.createElement(${tag}, ${data.content});
+								vnode = macro react.React.createElement(${tag}, { }, ${data.content});
 							else
 								vnode = macro react.React.createElement(${tag}, ${attrs}, ${data.content});
 						} else {
 							if (emptyAttrs)
-								vnode = macro react.React.createElement(${tag}, ([${data.content}]:Array<Dynamic>).concat(${children}));
+								vnode = macro react.React.createElement(${tag}, { }, ([${data.content}]:Array<Dynamic>).concat(${children}));
 							else
 								vnode = macro react.React.createElement(${tag}, ${attrs}, ([${data.content}]:Array<Dynamic>).concat(${children}));
 						}
@@ -349,7 +349,7 @@ class Parser {
 							vnode = macro react.React.createElement(${tag}, ${attrs});
 						} else {
 							if (emptyAttrs)
-								vnode = macro react.React.createElement(${tag}, ${children});
+								vnode = macro react.React.createElement(${tag}, { }, ${children});
 							else
 								vnode = macro react.React.createElement(${tag}, ${attrs}, ${children});
 						}
@@ -384,7 +384,7 @@ class Parser {
 						}
 					} else {
 						if (emptyAttrs) {
-							exprList.push(macro @:pos(pos.pos) react.React.createElement($i{name}, $children));
+							exprList.push(macro @:pos(pos.pos) react.React.createElement($i{name}, { }, $children));
 						} else {
 							exprList.push(macro @:pos(pos.pos) react.React.createElement($i{name}, $attrs, $children));
 						}
