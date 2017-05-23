@@ -19,6 +19,14 @@ typedef ComponentInfo = {
 **/
 class ReactMacro
 {
+#if !macro
+	macro static public inline function template(func:haxe.macro.Expr) { }
+#else
+	macro static public inline function template(func:haxe.macro.Expr) {
+		react.template.Parser.parseFunction(func);
+		return func;
+	}
+#end
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
 		if (Context.defined('display'))
