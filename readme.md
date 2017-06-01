@@ -115,6 +115,30 @@ class App extends ReactComponent {
 }
 ```
 
+### Gotchas
+
+JSX is not String magic! Do not concatenate Strings to construct the JSX expression.
+
+In JavaScript:
+```javascript
+<div>{ 
+    isA ? <A/> : <B/> 
+}</div>
+```
+is transformed (at build time) into:
+```javascript
+React.createElement('div', null, [
+    isA ? React.createElement(A) : React.createElement(B)
+]);
+```
+
+While in Haxe, for the same result, you must write:
+```haxe
+jsx('<div>{
+    isA ? jsx('<A/>') : jsx('<B/>')
+}</div>');
+```
+
 ## Components strict typing
 
 The default `ReactComponent` type is a shorthand for `ReactComponentOf<Dynamic, Dynamic, Dynamic>`,
