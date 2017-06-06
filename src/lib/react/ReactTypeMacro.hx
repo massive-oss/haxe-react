@@ -118,7 +118,7 @@ class ReactTypeMacro
 				// Add @:extern meta so that this code only exist at compile time
 				name: ':extern',
 				params: null,
-				pos: inClass.pos
+				pos: Context.currentPos()
 			}],
 			kind: FFun(setState),
 			pos: inClass.pos
