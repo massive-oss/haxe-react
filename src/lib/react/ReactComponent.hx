@@ -24,6 +24,7 @@ typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, D
 #end
 @:native('React.Component')
 @:keepSub
+@:autoBuild(react.template.Parser.build())
 @:autoBuild(react.ReactMacro.buildComponent())
 @:autoBuild(react.ReactTypeMacro.alterComponentSignatures())
 #if (debug && react_render_warning)

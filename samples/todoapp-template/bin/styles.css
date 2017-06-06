@@ -1,0 +1,40 @@
+body {
+    font: 12px Arial;
+}
+
+ul, li {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.app {
+	width: 250px;
+}
+
+.header {
+	display: flex;
+}
+.header > input {
+	flex: 1;
+	margin-right: 4px;
+}
+
+.list > li {
+	display: block;
+	padding: 4px;
+	margin-top: 2px;
+	border: solid 1px #ccc;
+	background: #eee;
+	user-select: none;
+	-webkit-user-select: none;
+}
+.list > li.checked {
+	background: #3a3;
+	color: #fff;
+}
+
+.footer {
+	margin-top: 4px;
+	color: #666;
+}
