@@ -121,8 +121,8 @@ JSX is not String magic! Do not concatenate Strings to construct the JSX express
 
 In JavaScript:
 ```javascript
-<div>{ 
-    isA ? <A/> : <B/> 
+<div>{
+    isA ? <A/> : <B/>
 }</div>
 ```
 is transformed (at build time) into:
@@ -132,11 +132,10 @@ React.createElement('div', null, [
 ]);
 ```
 
-While in Haxe, for the same result, you must write:
+While in Haxe, as nested JSX isn't yet supported, you must write:
 ```haxe
-jsx('<div>{
-    isA ? jsx('<A/>') : jsx('<B/>')
-}</div>');
+var content = isA ? jsx('<A/>') : jsx('<B/>');
+jsx('<div>{content}</div>');
 ```
 
 ## Components strict typing
@@ -223,6 +222,10 @@ False positives can happen if your props are not flat, due to the shallowCompare
 
 
 ## Changes
+
+### 1.2.1
+
+- fixed auto-complete issue on `this.state` caused by the `1.2.0` changes
 
 ### 1.2.0
 

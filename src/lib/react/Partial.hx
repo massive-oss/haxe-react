@@ -39,10 +39,10 @@ class PartialMacro {
 		// Handle Null<T> and optional fields already parsed by the compiler
 		var kind = switch (field.kind) {
 			case FVar(TPath({
-				name: 'StdTypes',
-				sub: 'Null',
-				params: [TPType(TPath(tpath))]
-			}), write):
+					name: 'StdTypes',
+					sub: 'Null',
+					params: [TPType(TPath(tpath))]
+				}), write):
 				FVar(TPath(tpath), write);
 
 			default:
