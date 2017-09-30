@@ -18,6 +18,11 @@ extern class ReactDOM
 	public static function render(element:ReactElement, container:Element, ?callback:Void -> Void):ReactElement;
 
 	/**
+		https://facebook.github.io/react/docs/react-dom.html#hydrate
+	**/
+	public static function hydrate(element:ReactElement, container:Element, ?callback:Void -> Void):ReactElement;
+
+	/**
 		https://facebook.github.io/react/docs/react-dom.html#unmountcomponentatnode
 	**/
 	public static function unmountComponentAtNode(container:Element):Bool;
