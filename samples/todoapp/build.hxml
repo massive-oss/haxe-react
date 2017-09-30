@@ -5,6 +5,5 @@
 -lib msignal
 -D react_global
 #-D react_no_inline
-#-D react_monomorphic
 #-debug
 -dce full
