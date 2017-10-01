@@ -31,4 +31,9 @@ extern class ReactDOM
 		https://facebook.github.io/react/docs/react-dom.html#finddomnode
 	**/
 	public static function findDOMNode(component:ReactComponent):Element;
+
+	/**
+		https://reactjs.org/docs/react-dom.html#createportal
+	**/
+	public static function createPortal(child:ReactElement, container:Element):Element;
 }
