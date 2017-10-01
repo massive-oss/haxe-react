@@ -3,7 +3,7 @@ package react;
 /**
 	https://facebook.github.io/react/docs/top-level-api.html#react.proptypes
 **/
-@:jsRequire('react', 'PropTypes')
+@:jsRequire('prop-types')
 extern class ReactPropTypes
 {
 	static var array:Dynamic;
