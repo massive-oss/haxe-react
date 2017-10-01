@@ -1,5 +1,6 @@
 package react;
 import haxe.extern.EitherType;
+import js.Error;
 
 typedef ReactComponentProps = {
 	/**
@@ -91,6 +92,11 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 		https://facebook.github.io/react/docs/react-component.html#componentdidupdate
 	**/
 	function componentDidUpdate(prevProps:TProps, prevState:TState):Void;
+
+	/**
+		https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html
+	**/
+	function componentDidCatch(error:Error, info:{ componentStack:String }):Void;
 
 	#if (js && !debug && !react_no_inline)
 	static function __init__():Void {
