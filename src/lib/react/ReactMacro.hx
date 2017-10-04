@@ -78,6 +78,9 @@ class ReactMacro
 				var type = isHtml ? macro $v{path[0]} : macro $p{path};
 				type.pos = pos;
 
+				// handle @:jsxStatic
+				if (!isHtml) handleJsxStatic(type);
+
 				// parse attributes
 				var attrs = [];
 				var spread = [];
@@ -144,6 +147,23 @@ class ReactMacro
 				return Context.parse(value, pos);
 
 			default: null;
+		}
+	}
+
+	static function handleJsxStatic(type:Expr)
+	{
+		var typedExpr = Context.typeExpr(type);
+
+		switch (typedExpr.expr)
+		{
+			case TTypeExpr(TClassDecl(_.get() => c)):
+				if (c.meta.has(":jsxStatic"))
+					type.expr = EField(
+						{expr: EConst(CIdent(c.name)), pos: type.pos},
+						extractMetaString(c.meta, ':jsxStatic')
+					);
+
+			default:
 		}
 	}
 
@@ -239,6 +259,19 @@ class ReactMacro
 			default:
 				props;
 		}
+	}
+
+	static function extractMetaString(meta:MetaAccess, name:String):String
+	{
+		if (!meta.has(name)) return null;
+
+		var metas = meta.extract(name);
+		if (metas.length == 0) return null;
+
+		var params = metas.pop().params;
+		if (params.length == 0) return null;
+
+		return ExprTools.getValue(params.pop());
 	}
 
 	/* METADATA */
