@@ -26,21 +26,21 @@ class ReactMacro
 		else
 			return parseJsx(ExprTools.getValue(expr), expr.pos);
 	}
-	
+
 	public static macro function sanitize(expr:ExprOf<String>):Expr
 	{
 		return macro $v{JsxSanitize.process(ExprTools.getValue(expr))};
 	}
-	
+
 	/* PARSER  */
-	
+
 	#if macro
 	static var componentsMap:Map<String, ComponentInfo> = new Map();
-	
+
 	static function parseJsx(jsx:String, pos:Position):Expr
 	{
 		jsx = JsxSanitize.process(jsx);
-		var xml = 
+		var xml =
 			try
 				Xml.parse(jsx)
 			#if (haxe_ver >= 3.3)
@@ -57,7 +57,7 @@ class ReactMacro
 			#end
 			catch(err:Dynamic)
 				Context.fatalError('Invalid JSX: ' + err, err.pos ? err.pos : pos);
-		
+
 		var ast = JsxParser.process(xml);
 		var expr = parseJsxNode(ast, pos);
 		return expr;
@@ -65,19 +65,22 @@ class ReactMacro
 
 	static function parseJsxNode(ast:JsxAst, pos:Position)
 	{
-		switch (ast) 
+		switch (ast)
 		{
-			case JsxAst.Text(value): 
+			case JsxAst.Text(value):
 				return macro $v{value};
-			
-			case JsxAst.Expr(value): 
+
+			case JsxAst.Expr(value):
 				return Context.parse(value, pos);
-			
+
 			case JsxAst.Node(isHtml, path, attributes, jsxChildren):
 				// parse type
 				var type = isHtml ? macro $v{path[0]} : macro $p{path};
 				type.pos = pos;
-				
+
+				// handle @:jsxStatic
+				if (!isHtml) handleJsxStatic(type);
+
 				// parse attributes
 				var attrs = [];
 				var spread = [];
@@ -92,25 +95,25 @@ class ReactMacro
 					else if (name.charAt(0) == '.') spread.push(expr);
 					else attrs.push({ field:name, expr:expr });
 				}
-				
+
 				// parse children
 				var children = [for (child in jsxChildren) parseJsxNode(child, pos)];
-				
+
 				// inline declaration or createElement?
 				var typeInfo = getComponentInfo(type);
 				var useLiteral = canUseLiteral(typeInfo, ref);
 				if (useLiteral)
 				{
-					if (children.length > 0) 
+					if (children.length > 0)
 					{
 						// single child should not be placed in an Array
 						if (children.length == 1) attrs.push({field:'children', expr:macro ${children[0]}});
 						else attrs.push({field:'children', expr:macro ($a{children} :Array<Dynamic>)});
 					}
-					if (!isHtml) 
+					if (!isHtml)
 					{
 						var defaultProps = getDefaultProps(typeInfo, attrs);
-						if (defaultProps != null) 
+						if (defaultProps != null)
 						{
 							var obj = {expr: EObjectDecl(defaultProps), pos: pos};
 							spread.unshift(obj);
@@ -119,41 +122,56 @@ class ReactMacro
 					var props = makeProps(spread, attrs, pos);
 					return genLiteral(type, props, ref, key, pos);
 				}
-				else 
+				else
 				{
 					if (ref != null) attrs.unshift({field:'ref', expr:ref});
 					if (key != null) attrs.unshift({field:'key', expr:key});
-					
+
 					var props = makeProps(spread, attrs, pos);
-					
+
 					var args = [type, props].concat(children);
 					return macro react.React.createElement($a{args});
 				}
 		}
 	}
-	
-	static function parseJsxAttr(value:String, pos:Position) 
+
+	static function parseJsxAttr(value:String, pos:Position)
 	{
 		var ast = JsxParser.parseText(value);
-		return switch (ast) 
+		return switch (ast)
 		{
-			case JsxAst.Text(value): 
+			case JsxAst.Text(value):
 				return macro $v{value};
-			
-			case JsxAst.Expr(value): 
+
+			case JsxAst.Expr(value):
 				return Context.parse(value, pos);
-			
+
 			default: null;
 		}
 	}
-	
-	static function genLiteral(type:Expr, props:Expr, ref:Expr, key:Expr, pos:Position) 
+
+	static function handleJsxStatic(type:Expr)
 	{
-		#if react_monomorphic
+		var typedExpr = Context.typeExpr(type);
+
+		switch (typedExpr.expr)
+		{
+			case TTypeExpr(TClassDecl(_.get() => c)):
+				if (c.meta.has(":jsxStatic"))
+					type.expr = EField(
+						{expr: EConst(CIdent(c.name)), pos: type.pos},
+						extractMetaString(c.meta, ':jsxStatic')
+					);
+
+			default:
+		}
+	}
+
+	static function genLiteral(type:Expr, props:Expr, ref:Expr, key:Expr, pos:Position)
+	{
 		if (key == null) key = macro null;
 		if (ref == null) ref = macro null;
-		#end
-		
+
 		var fields = [
 			{field: "@$__hx__$$typeof", expr: macro untyped __js__("$$tre")},
 			{field: 'type', expr: type},
@@ -162,73 +180,73 @@ class ReactMacro
 		if (key != null) fields.push({field: 'key', expr: key});
 		if (ref != null) fields.push({field: 'ref', expr: ref});
 		var obj = {expr: EObjectDecl(fields), pos: pos};
-		
+
 		return macro ($obj : react.ReactComponent.ReactElement);
 	}
-	
-	static function canUseLiteral(typeInfo:ComponentInfo, ref:Expr) 
+
+	static function canUseLiteral(typeInfo:ComponentInfo, ref:Expr)
 	{
 		#if (debug || react_no_inline)
 		return false;
 		#end
-		
+
 		// do not use literals for externs: we don't know their defaultProps
 		if (typeInfo != null && typeInfo.isExtern) return false;
-		
+
 		// no ref is always ok
 		if (ref == null) return true;
-		
-		// only refs as functions are allowed in literals, strings require the full createElement context 
+
+		// only refs as functions are allowed in literals, strings require the full createElement context
 		return switch (Context.typeof(ref)) {
-			case TFun(_): true; 
-			default: false; 
+			case TFun(_): true;
+			default: false;
 		}
 	}
-	
-	static function makeProps(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position) 
+
+	static function makeProps(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position)
 	{
 		#if (!debug && !react_no_inline)
 		flattenSpreadProps(spread, attrs);
 		#end
-		
+
 		return spread.length > 0
 			? makeSpread(spread, attrs, pos)
 			: attrs.length == 0 ? macro {} : {pos:pos, expr:EObjectDecl(attrs)}
 	}
-	
+
 	/**
 	 * Attempt flattening spread/default props into the user-defined props
 	 */
-	static function flattenSpreadProps(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>) 
+	static function flattenSpreadProps(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>)
 	{
 		function hasAttr(name:String) {
 			for (prop in attrs) if (prop.field == name) return true;
 			return false;
 		}
 		var mergeProps = getSpreadProps(spread, []);
-		if (mergeProps.length > 0) 
+		if (mergeProps.length > 0)
 		{
-			for (prop in mergeProps) 
+			for (prop in mergeProps)
 				if (!hasAttr(prop.field)) attrs.push(prop);
 		}
 	}
-	
-	static function makeSpread(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position) 
+
+	static function makeSpread(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position)
 	{
 		// single spread, no props
 		if (spread.length == 1 && attrs.length == 0)
 			return spread[0];
-		
+
 		// combine using Object.assign
 		var args = [macro {}].concat(spread);
 		if (attrs.length > 0) args.push({pos:pos, expr:EObjectDecl(attrs)});
 		return macro (untyped Object).assign($a{args});
 	}
-	
+
 	/**
 	 * Flatten literal objects into the props
 	 */
-	static function getSpreadProps(spread:Array<Expr>, props:Array<{field:String, expr:Expr}>) 
+	static function getSpreadProps(spread:Array<Expr>, props:Array<{field:String, expr:Expr}>)
 	{
 		if (spread.length == 0) return props;
 		var last = spread[spread.length - 1];
@@ -242,36 +260,49 @@ class ReactMacro
 				props;
 		}
 	}
-	
+
+	static function extractMetaString(meta:MetaAccess, name:String):String
+	{
+		if (!meta.has(name)) return null;
+
+		var metas = meta.extract(name);
+		if (metas.length == 0) return null;
+
+		var params = metas.pop().params;
+		if (params.length == 0) return null;
+
+		return ExprTools.getValue(params.pop());
+	}
+
 	/* METADATA */
-	
+
 	/**
-	 * Process React components 
+	 * Process React components
 	 */
 	public static macro function buildComponent():Array<Field>
 	{
 		var pos = Context.currentPos();
 		var inClass = Context.getLocalClass().get();
 		var fields = Context.getBuildFields();
-		
+
 		#if (!debug && !react_no_inline)
 		storeComponentInfos(fields, inClass, pos);
 		#end
-		
+
 		if (!inClass.isExtern)
 			tagComponent(fields, inClass, pos);
-		
+
 		return fields;
 	}
-	
+
 	/**
 	 * Extract component default props
 	 */
-	static function storeComponentInfos(fields:Array<Field>, inClass:ClassType, pos:Position) 
+	static function storeComponentInfos(fields:Array<Field>, inClass:ClassType, pos:Position)
 	{
 		var key = getClassKey(inClass);
 		for (field in fields)
-			if (field.name == 'defaultProps') 
+			if (field.name == 'defaultProps')
 			{
 				switch (field.kind) {
 					case FieldType.FVar(_, _.expr => EObjectDecl(props)):
@@ -289,15 +320,15 @@ class ReactMacro
 			isExtern:inClass.isExtern
 		});
 	}
-	
+
 	/**
 	 * For a given type, resolve default props and filter user-defined props out
 	 */
-	static function getDefaultProps(typeInfo:ComponentInfo, attrs:Array<{field:String, expr:Expr}>) 
+	static function getDefaultProps(typeInfo:ComponentInfo, attrs:Array<{field:String, expr:Expr}>)
 	{
 		if (typeInfo == null) return null;
-		
-		if (typeInfo.props != null) 
+
+		if (typeInfo.props != null)
 			return typeInfo.props.filter(function(defaultProp) {
 				var name = defaultProp.field;
 				for (prop in attrs) if (prop.field == name) return false;
@@ -305,7 +336,7 @@ class ReactMacro
 			});
 		return null;
 	}
-	
+
 	/**
 	 * Annotate React components for run-time JS reflection
 	 */
@@ -314,20 +345,20 @@ class ReactMacro
 		#if !debug
 		return
 		#end
-		
+
 		addDisplayName(fields, inClass, pos);
-		
+
 		#if react_hot
 		addTagSource(fields, inClass, pos);
 		#end
 	}
-	
+
 	static function addTagSource(fields:Array<Field>, inClass:ClassType, pos:Position)
 	{
 		// add a __fileName__ static field
 		var className = inClass.name;
 		var fileName = Context.getPosInfos(inClass.pos).file;
-		
+
 		fields.push({
 			name:'__fileName__',
 			access:[Access.AStatic],
@@ -335,12 +366,12 @@ class ReactMacro
 			pos:pos
 		});
 	}
-	
+
 	static function addDisplayName(fields:Array<Field>, inClass:ClassType, pos:Position)
 	{
-		for (field in fields) 
+		for (field in fields)
 			if (field.name == 'displayName') return;
-		
+
 		// add 'displayName' static property to see class names in React inspector panel
 		var className = macro $v{inClass.name};
 		var field:Field = {
@@ -352,20 +383,20 @@ class ReactMacro
 		fields.push(field);
 		return;
 	}
-	
+
 	static function getComponentInfo(expr:Expr):ComponentInfo
 	{
 		var key = getExprKey(expr);
 		return key != null ? componentsMap.get(key) : null;
 	}
-	
-	static function getClassKey(inClass:ClassType) 
+
+	static function getClassKey(inClass:ClassType)
 	{
 		var qname = inClass.pack.concat([inClass.name]).join('.');
 		return 'Class<$qname>';
 	}
-	
-	static function getExprKey(expr:Expr) 
+
+	static function getExprKey(expr:Expr)
 	{
 		return try switch (Context.typeof(expr)) {
 			case Type.TType(_.get() => t, _): t.name;
