@@ -18,6 +18,11 @@ extern class ReactDOM
 	public static function render(element:ReactElement, container:Element, ?callback:Void -> Void):ReactElement;
 
 	/**
+		https://facebook.github.io/react/docs/react-dom.html#hydrate
+	**/
+	public static function hydrate(element:ReactElement, container:Element, ?callback:Void -> Void):ReactElement;
+
+	/**
 		https://facebook.github.io/react/docs/react-dom.html#unmountcomponentatnode
 	**/
 	public static function unmountComponentAtNode(container:Element):Bool;
@@ -26,4 +31,9 @@ extern class ReactDOM
 		https://facebook.github.io/react/docs/react-dom.html#finddomnode
 	**/
 	public static function findDOMNode(component:ReactComponent):Element;
+
+	/**
+		https://reactjs.org/docs/react-dom.html#createportal
+	**/
+	public static function createPortal(child:ReactElement, container:Element):Element;
 }

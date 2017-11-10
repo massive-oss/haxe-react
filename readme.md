@@ -207,9 +207,6 @@ return {$$typeof:Symbol.for('react.element'), type:'div', props:{className:'foo'
 
 This behaviour can be **disabled** using `-D react_no_inline`.
 
-Additionally, setting `-D react_monomorphic` will include both `ref` and `key` fields even when they are null in order to create monomorphic inlined objects.
-
-
 ## Optimization tools
 
 ### Avoidable renders warning
