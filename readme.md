@@ -220,6 +220,13 @@ False positives can happen if your props are not flat, due to the shallowCompare
 
 ## Changes
 
+### 1.3.0
+
+- React 16 support; React 15 is still compatible but won't support new APIs (`componentDidCatch`, `createPortal`)
+- added missing `ReactDOM.hydrate` method (server-side rendering)
+- added `@:jsxStatic` optional meta
+- breaking: `react.ReactPropTypes` now requires the NPM `prop-types` module
+
 ### 1.2.1
 
 - fixed auto-complete issue on `this.state` caused by the `1.2.0` changes
