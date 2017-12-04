@@ -105,6 +105,7 @@ class ReactMacro
 
 				// inline declaration or createElement?
 				var typeInfo = getComponentInfo(type);
+				JsxStaticMacro.injectDisplayNames(type);
 				var useLiteral = canUseLiteral(typeInfo, ref);
 				if (useLiteral)
 				{
@@ -265,7 +266,7 @@ class ReactMacro
 		}
 	}
 
-	static function extractMetaString(meta:MetaAccess, name:String):String
+	public static function extractMetaString(meta:MetaAccess, name:String):String
 	{
 		if (!meta.has(name)) return null;
 
