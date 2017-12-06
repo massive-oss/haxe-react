@@ -1,9 +1,8 @@
-package react;
+package react.jsx;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
-import react.ReactMacro.extractMetaString;
 
 using haxe.macro.Tools;
 
@@ -79,6 +78,36 @@ class JsxStaticMacro
 				// Unknown type, not handled
 				// trace(typedExpr);
 		}
+	}
+
+	static public function handleJsxStaticProxy(type:Expr)
+	{
+		var typedExpr = Context.typeExpr(type);
+
+		switch (typedExpr.expr)
+		{
+			case TTypeExpr(TClassDecl(_.get() => c)):
+				if (c.meta.has(META_NAME))
+					type.expr = EField(
+						{expr: EConst(CIdent(c.name)), pos: type.pos},
+						extractMetaString(c.meta, META_NAME)
+					);
+
+			default:
+		}
+	}
+
+	static function extractMetaString(meta:MetaAccess, name:String):String
+	{
+		if (!meta.has(name)) return null;
+
+		var metas = meta.extract(name);
+		if (metas.length == 0) return null;
+
+		var params = metas.pop().params;
+		if (params.length == 0) return null;
+
+		return params.pop().getValue();
 	}
 
 	static function handleJsxStaticMeta(clsType:ClassType, displayName:String)

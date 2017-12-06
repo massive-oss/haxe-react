@@ -1,17 +1,19 @@
 package react;
 
+import react.jsx.JsxParser;
+import react.jsx.JsxSanitize;
+
+#if macro
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.ExprTools;
 import haxe.macro.Type;
-import react.jsx.JsxParser;
-import react.jsx.JsxSanitize;
+import react.jsx.JsxStaticMacro;
 
 #if (haxe_ver < 4)
 typedef ObjectField = {field:String, expr:Expr};
 #end
 
-#if macro
 typedef ComponentInfo = {
 	isExtern:Bool,
 	props:Array<ObjectField>
@@ -83,7 +85,7 @@ class ReactMacro
 				type.pos = pos;
 
 				// handle @:jsxStatic
-				if (!isHtml) handleJsxStatic(type);
+				if (!isHtml) JsxStaticMacro.handleJsxStaticProxy(type);
 
 				// parse attributes
 				var attrs = [];
@@ -152,23 +154,6 @@ class ReactMacro
 				return Context.parse(value, pos);
 
 			default: null;
-		}
-	}
-
-	static function handleJsxStatic(type:Expr)
-	{
-		var typedExpr = Context.typeExpr(type);
-
-		switch (typedExpr.expr)
-		{
-			case TTypeExpr(TClassDecl(_.get() => c)):
-				if (c.meta.has(":jsxStatic"))
-					type.expr = EField(
-						{expr: EConst(CIdent(c.name)), pos: type.pos},
-						extractMetaString(c.meta, ':jsxStatic')
-					);
-
-			default:
 		}
 	}
 
@@ -264,19 +249,6 @@ class ReactMacro
 			default:
 				props;
 		}
-	}
-
-	public static function extractMetaString(meta:MetaAccess, name:String):String
-	{
-		if (!meta.has(name)) return null;
-
-		var metas = meta.extract(name);
-		if (metas.length == 0) return null;
-
-		var params = metas.pop().params;
-		if (params.length == 0) return null;
-
-		return ExprTools.getValue(params.pop());
 	}
 
 	/* METADATA */
