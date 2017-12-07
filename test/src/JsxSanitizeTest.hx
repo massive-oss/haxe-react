@@ -114,4 +114,11 @@ class JsxSanitizeTest
 		var jsx = ReactMacro.sanitize('<Tag a="a" {...foo} b="b"/>');
 		Assert.areEqual("<Tag a=\"a\" .0=\"{foo}\" b=\"b\"/>", jsx);
 	}
+
+	@Test
+	public function sanitize_replaces_empty_tags_with_fragments()
+	{
+		var jsx = ReactMacro.sanitize('<>Text</>');
+		Assert.areEqual("<react.Fragment>Text</react.Fragment>", jsx);
+	}
 }

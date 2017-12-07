@@ -32,6 +32,8 @@ extern class React
 		https://facebook.github.io/react/docs/react-api.html#react.children
 	**/
 	public static var Children:ReactChildren;
+
+	public static var version:String;
 }
 
 /**

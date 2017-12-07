@@ -114,9 +114,11 @@ class JsxSanitize
 			
 			// xml tags
 			if (inTag) {
-				if  (ci == '>') inTag = false;
+				if (ci == '>') inTag = false;
 			}
 			else if (ci == '<') {
+				if (cn == '>') ci = '<react.Fragment';
+				else if (cn == '/' && chars[i + 1] == '>') cn = '/react.Fragment';
 				inTag = true;
 			}
 			buf.add(ci);
