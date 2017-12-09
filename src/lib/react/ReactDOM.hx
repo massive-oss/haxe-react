@@ -35,5 +35,5 @@ extern class ReactDOM
 	/**
 		https://reactjs.org/docs/react-dom.html#createportal
 	**/
-	public static function createPortal(child:ReactElement, container:Element):Element;
+	public static function createPortal(child:ReactElement, container:Element):ReactElement;
 }
