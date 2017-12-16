@@ -7,10 +7,14 @@ import haxe.macro.Type;
 import react.jsx.JsxParser;
 import react.jsx.JsxSanitize;
 
+#if (haxe_ver < 4)
+typedef ObjectField = {field:String, expr:Expr};
+#end
+
 #if macro
 typedef ComponentInfo = {
 	isExtern:Bool,
-	props:Array<{field:String, expr:Expr}>
+	props:Array<ObjectField>
 }
 #end
 
@@ -203,7 +207,7 @@ class ReactMacro
 		}
 	}
 
-	static function makeProps(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position)
+	static function makeProps(spread:Array<Expr>, attrs:Array<ObjectField>, pos:Position)
 	{
 		#if (!debug && !react_no_inline)
 		flattenSpreadProps(spread, attrs);
@@ -217,7 +221,7 @@ class ReactMacro
 	/**
 	 * Attempt flattening spread/default props into the user-defined props
 	 */
-	static function flattenSpreadProps(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>)
+	static function flattenSpreadProps(spread:Array<Expr>, attrs:Array<ObjectField>)
 	{
 		function hasAttr(name:String) {
 			for (prop in attrs) if (prop.field == name) return true;
@@ -231,7 +235,7 @@ class ReactMacro
 		}
 	}
 
-	static function makeSpread(spread:Array<Expr>, attrs:Array<{field:String, expr:Expr}>, pos:Position)
+	static function makeSpread(spread:Array<Expr>, attrs:Array<ObjectField>, pos:Position)
 	{
 		// single spread, no props
 		if (spread.length == 1 && attrs.length == 0)
@@ -246,7 +250,7 @@ class ReactMacro
 	/**
 	 * Flatten literal objects into the props
 	 */
-	static function getSpreadProps(spread:Array<Expr>, props:Array<{field:String, expr:Expr}>)
+	static function getSpreadProps(spread:Array<Expr>, props:Array<ObjectField>)
 	{
 		if (spread.length == 0) return props;
 		var last = spread[spread.length - 1];
@@ -324,7 +328,7 @@ class ReactMacro
 	/**
 	 * For a given type, resolve default props and filter user-defined props out
 	 */
-	static function getDefaultProps(typeInfo:ComponentInfo, attrs:Array<{field:String, expr:Expr}>)
+	static function getDefaultProps(typeInfo:ComponentInfo, attrs:Array<ObjectField>)
 	{
 		if (typeInfo == null) return null;
 
