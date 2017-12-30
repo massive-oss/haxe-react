@@ -13,6 +13,12 @@ private typedef JsxStaticDecl = {
 	var fieldName:String;
 }
 
+private enum MetaValueType {
+	NoMeta;
+	NoParams(meta:MetadataEntry);
+	WithParams(meta:MetadataEntry, params:Array<Expr>);
+}
+
 class JsxStaticMacro
 {
 	static public var META_NAME = ':jsxStatic';
@@ -67,10 +73,10 @@ class JsxStaticMacro
 
 			case TLocal({name: varName}):
 				// Local vars not handled at the moment
-			
+
 			case TField(_, FInstance(_, _, _)):
 				// Instance fields not handled at the moment
-			
+
 			case TField(_, FStatic(_, _)):
 				// Static variables not handled at the moment
 
@@ -97,17 +103,31 @@ class JsxStaticMacro
 		}
 	}
 
-	static function extractMetaString(meta:MetaAccess, name:String):String
+	static function extractMeta(meta:MetaAccess, name:String):MetaValueType
 	{
-		if (!meta.has(name)) return null;
+		if (!meta.has(name)) return NoMeta;
 
 		var metas = meta.extract(name);
-		if (metas.length == 0) return null;
+		if (metas.length == 0) return NoMeta;
 
-		var params = metas.pop().params;
-		if (params.length == 0) return null;
+		var meta = metas.pop();
+		var params = meta.params;
+		if (params.length == 0) return NoParams(meta);
 
-		return params.pop().getValue();
+		return WithParams(meta, params);
+	}
+
+	static public function extractMetaString(meta:MetaAccess, name:String):String
+	{
+		return switch(extractMeta(meta, name)) {
+			case NoMeta: null;
+			case WithParams(_, params): params.pop().getValue();
+			case NoParams(meta):
+				Context.fatalError(
+					"Parameter required for @:jsxStatic('name-of-static-function')",
+					meta.pos
+				);
+		};
 	}
 
 	static function handleJsxStaticMeta(clsType:ClassType, displayName:String)
@@ -139,7 +159,7 @@ class JsxStaticMacro
 			var exprs = decls.map(function(decl) {
 				var fName = decl.fieldName;
 				return macro {
-					untyped $i{decl.className}.$fName.displayName = 
+					untyped $i{decl.className}.$fName.displayName =
 					$i{decl.className}.$fName.displayName || $v{decl.displayName};
 				};
 			});
