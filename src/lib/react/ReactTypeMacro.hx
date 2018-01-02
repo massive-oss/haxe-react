@@ -38,37 +38,6 @@ class ReactTypeMacro
 		return fields;
 	}
 
-	public static function getSetStateArgType(propsType:ComplexType, stateType:ComplexType)
-	{
-		var partialStateType = switch (ComplexTypeTools.toType(stateType)) {
-			case TType(_):
-				TPath({
-					name: 'Partial',
-					pack: ['react'],
-					params: [TPType(stateType)]
-				});
-
-			default:
-				macro :Dynamic;
-		}
-
-		return TPath({
-			name: 'EitherType',
-			pack: ['haxe', 'extern'],
-			params: [
-				TPType(TFunction([stateType], partialStateType)),
-				TPType(TPath({
-					name: 'EitherType',
-					pack: ['haxe', 'extern'],
-					params: [
-						TPType(TFunction([stateType, propsType], partialStateType)),
-						TPType(partialStateType)
-					]
-				}))
-			]
-		});
-	}
-
 	static function hasSetState(fields:Array<Field>) {
 		for (field in fields)
 		{
@@ -90,39 +59,89 @@ class ReactTypeMacro
 		propsType:ComplexType,
 		stateType:ComplexType
 	) {
-		var setState = {
-			args: [
-				{
-					meta: [],
-					name: 'nextState',
-					type: getSetStateArgType(propsType, stateType),
-					opt: false,
-					value: null
-				},
-				{
-					meta: [],
-					name: 'callback',
-					type: macro :Void->Void,
-					opt: true,
-					value: null
-				}
-			],
-			ret: macro :Void,
-			expr: macro {super.setState(nextState, callback);}
+		var partialStateType = switch (ComplexTypeTools.toType(stateType)) {
+			case TType(_):
+				TPath({
+					name: 'Partial',
+					pack: ['react'],
+					params: [TPType(stateType)]
+				});
+
+			default:
+				macro :Dynamic;
 		};
+
+		var setStateArgs:Array<FunctionArg> = [
+			{
+				name: 'nextState',
+				// TState -> Partial<TState>
+				type: TFunction([stateType], partialStateType),
+				opt: false
+			},
+			{
+				name: 'callback',
+				type: macro :Void->Void,
+				opt: true
+			}
+		];
 
 		fields.push({
 			name: 'setState',
 			access: [APublic, AOverride],
-			meta: [{
-				// Add @:extern meta so that this code only exist at compile time
-				name: ':extern',
-				params: null,
-				pos: Context.currentPos()
-			}],
-			kind: FFun(setState),
+			meta: [
+				{
+					// Add @:extern meta so that this code only exist at compile time
+					name: ':extern',
+					params: null,
+					pos: Context.currentPos()
+				},
+				{
+					// First overload:
+					// function(nextState:TState -> TProps -> Partial<TState>, ?callback:Void -> Void):Void {}
+					name: ':overload',
+					params: [generateSetStateOverload(
+						TFunction([stateType, propsType], partialStateType)
+					)],
+					pos: Context.currentPos()
+				},
+				{
+					// Second overload:
+					// function(nextState:Partial<TState>, ?callback:Void -> Void):Void {}
+					name: ':overload',
+					params: [generateSetStateOverload(partialStateType)],
+					pos: Context.currentPos()
+				}
+			],
+			kind: FFun({
+				args: setStateArgs,
+				ret: macro :Void,
+				expr: macro { super.setState(nextState, callback); }
+			}),
 			pos: inClass.pos
 		});
+	}
+
+	static function generateSetStateOverload(nextStateType:ComplexType) {
+		return {
+			expr: EFunction(null, {
+				args: [
+					{
+						name: 'nextState',
+						type: nextStateType,
+						opt: false
+					},
+					{
+						name: 'callback',
+						type: macro :Void->Void,
+						opt: true
+					}
+				],
+				expr: macro {},
+				params: null,
+				ret: macro :Void
+			}),
+			pos: Context.currentPos()
+		};
 	}
 	#end
 }
