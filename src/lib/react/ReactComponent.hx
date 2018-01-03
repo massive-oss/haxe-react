@@ -1,5 +1,4 @@
 package react;
-import haxe.extern.EitherType;
 import js.Error;
 
 typedef ReactComponentProps = {
@@ -51,7 +50,9 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 	/**
 		https://facebook.github.io/react/docs/react-component.html#setstate
 	**/
-	function setState(nextState:EitherType<TState -> TState, EitherType<TState -> TProps -> TState, TState>>, ?callback:Void -> Void):Void;
+	@:overload(function(nextState:TState, ?callback:Void -> Void):Void {})
+	@:overload(function(nextState:TState -> TProps -> TState, ?callback:Void -> Void):Void {})
+	function setState(nextState:TState -> TState, ?callback:Void -> Void):Void;
 
 	/**
 		https://facebook.github.io/react/docs/react-component.html#render
