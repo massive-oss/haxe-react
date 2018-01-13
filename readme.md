@@ -36,6 +36,11 @@ which probably won't scale well to complex apps, but it shows a good range of Re
 - https://github.com/massiveinteractive/haxe-react/tree/master/samples/todoapp
 
 
+### Support / discussions
+
+If you have questions / issues, join [haxe-react on Gitter.im](https://gitter.im/haxe-react/Lobby)
+
+
 ## API
 
 Most of the regular React API is integrated (non-JSX example):
