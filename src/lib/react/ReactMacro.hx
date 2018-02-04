@@ -59,6 +59,7 @@ class ReactMacro
 				Context.fatalError('Invalid JSX: ' + err, err.pos ? err.pos : pos);
 
 		var ast = JsxParser.process(xml);
+		if (ast == null) return macro null;
 		var expr = parseJsxNode(ast, pos);
 		return expr;
 	}
