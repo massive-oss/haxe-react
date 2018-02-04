@@ -63,6 +63,7 @@ class ReactMacro
 				Context.fatalError('Invalid JSX: ' + err, err.pos ? err.pos : pos);
 
 		var ast = JsxParser.process(xml);
+		if (ast == null) return macro null;
 		var expr = parseJsxNode(ast, pos);
 		return expr;
 	}
@@ -292,6 +293,9 @@ class ReactMacro
 		#if (!debug && !react_no_inline)
 		storeComponentInfos(fields, inClass, pos);
 		#end
+
+		if (inClass.meta.has(":pure"))
+			PureComponentMacro.build(inClass, fields);
 
 		if (!inClass.isExtern)
 			tagComponent(fields, inClass, pos);
