@@ -290,6 +290,9 @@ class ReactMacro
 		storeComponentInfos(fields, inClass, pos);
 		#end
 
+		if (inClass.meta.has(":pure"))
+			PureComponentMacro.build(inClass, fields);
+
 		if (!inClass.isExtern)
 			tagComponent(fields, inClass, pos);
 
