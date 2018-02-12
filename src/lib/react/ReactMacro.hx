@@ -40,6 +40,7 @@ class ReactMacro
 
 	#if macro
 	static var componentsMap:Map<String, ComponentInfo> = new Map();
+	static var classRegex = ~/Class<([^>]+)>/;
 
 	static function parseJsx(jsx:String, pos:Position):Expr
 	{
@@ -87,6 +88,7 @@ class ReactMacro
 
 				// parse attributes
 				var attrs = [];
+				var addAttrs = [];
 				var spread = [];
 				var key = null;
 				var ref = null;
@@ -97,6 +99,7 @@ class ReactMacro
 					if (name == 'key') key = expr;
 					else if (name == 'ref') ref = expr;
 					else if (name.charAt(0) == '.') spread.push(expr);
+					else if (name.charAt(0) == ':') addAttrs.push({ field:name, expr:expr });
 					else attrs.push({ field:name, expr:expr });
 				}
 
@@ -128,15 +131,116 @@ class ReactMacro
 				}
 				else
 				{
+					var checkExpr:Expr = macro {};
+
+					#if react_strict_typing
+					if (!isHtml) {
+						var typedProps = makeProps(spread, attrs.slice(0), pos);
+
+						checkExpr = switch(Context.typeof(type)) {
+							// React component class
+							case TType(_.get() => cls, _):
+								if (componentPropsNeedsChildren(cls))
+									addChildrenToProps(typedProps, children);
+
+								macro react.ReactUtil.checkCompPropsType(${type}, ${typedProps});
+
+							// Functional component without props
+							case TFun([], _):
+								switch (typedProps.expr) {
+									case EBlock([]), EObjectDecl([]):
+										macro {};
+
+									default:
+										macro react.ReactUtil.checkFunNoPropsType(${type}, ${typedProps});
+								}
+
+							// Functional component with props
+							case TFun(args, _):
+								if (args.length > 0 && propsNeedsChildren(args[0].t))
+									addChildrenToProps(typedProps, children);
+
+								macro react.ReactUtil.checkFunPropsType(${type}, ${typedProps});
+
+							default: macro {};
+						};
+					}
+					#end
+
 					if (ref != null) attrs.unshift({field:'ref', expr:ref});
 					if (key != null) attrs.unshift({field:'key', expr:key});
+					attrs = attrs.concat(addAttrs);
 
 					var props = makeProps(spread, attrs, pos);
 
 					var args = [type, props].concat(children);
-					return macro react.React.createElement($a{args});
+					return macro {
+						${checkExpr};
+						react.React.createElement($a{args});
+					};
 				}
 		}
+	}
+
+	static function addChildrenToProps(props:Expr, children:Array<Expr>)
+	{
+		// Note: this will not type check props.children, as this one is tricky
+		var childrenField = {field: 'children', expr: macro null};
+
+		props.expr = switch (props.expr) {
+			case EObjectDecl(attrs):
+				EObjectDecl(attrs.concat([childrenField]));
+
+			case EBlock([]):
+				EObjectDecl([childrenField]);
+
+			default: props.expr;
+		};
+	}
+
+	static function extractTProps(cls:DefType):Type
+	{
+		if (classRegex.match(cls.name))
+		{
+			var t = Context.getType(classRegex.matched(1));
+
+			switch (t)
+			{
+				case TInst(_.get() => c, _):
+					switch (c.superClass)
+					{
+						case {params: params, t: _.toString() => 'react.ReactComponentOf'}:
+							return params[0];
+
+						default:
+					}
+				default:
+			}
+		}
+
+		return null;
+	}
+
+	static function componentPropsNeedsChildren(cls:DefType):Bool
+	{
+		var tprops = extractTProps(cls);
+		if (tprops == null) return false;
+
+		return propsNeedsChildren(tprops);
+	}
+
+	static function propsNeedsChildren(propsType:Type):Bool
+	{
+		switch (propsType)
+		{
+			case TType(_.get() => _.type => TAnonymous(_.get() => anon), _):
+				var children = Lambda.find(anon.fields, function(field) return field.name == 'children');
+				return children != null;
+
+			default:
+		}
+
+		return false;
 	}
 
 	static function parseJsxAttr(value:String, pos:Position)

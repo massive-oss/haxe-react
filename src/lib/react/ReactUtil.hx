@@ -95,4 +95,19 @@ class ReactUtil
 				return false;
 		return true;
 	}
+
+	public static inline function checkFunPropsType<TProps>(
+		fun:TProps->haxe.extern.EitherType<ReactElement, Array<ReactElement>>,
+		props:TProps
+	):Void {}
+
+	public static inline function checkFunNoPropsType(
+		fun:Void->haxe.extern.EitherType<ReactElement, Array<ReactElement>>,
+		props:EVoid
+	):Void {}
+
+	public static inline function checkCompPropsType<TProps, TState>(
+		component:Class<ReactComponentOf<TProps, TState>>,
+		props:TProps
+	):Void {}
 }
