@@ -12,5 +12,6 @@
 	"classPath": "src/lib",
 	"dependencies":
 	{
+		"tink_hxx": ""
 	}
 }

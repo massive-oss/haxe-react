@@ -5,7 +5,7 @@ import react.ReactComponent.ReactElement;
 /**
 	STUB
 **/
-class React
+extern class React
 {
 	/**
 		https://facebook.github.io/react/docs/react-api.html#react.proptypes
@@ -15,7 +15,7 @@ class React
 	/**
 		https://facebook.github.io/react/docs/react-api.html#createelement
 	**/
-	public static function createElement(type:CreateElementType, ?attrs:Dynamic, ?children:Dynamic):ReactElement
+	public inline static function createElement(type:CreateElementType, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactElement
 	{
 		return untyped { type:'NATIVE' };
 	}
@@ -23,7 +23,7 @@ class React
 	/**
 		https://facebook.github.io/react/docs/react-api.html#cloneelement
 	**/
-	public static function cloneElement(element:ReactElement, ?attrs:Dynamic, ?children:Dynamic):ReactElement
+	public inline static function cloneElement(element:ReactElement, ?attrs:Dynamic, children:haxe.extern.Rest<Dynamic>):ReactElement
 	{
 		return untyped { type:'NATIVE' };
 	}
@@ -31,7 +31,7 @@ class React
 	/**
 		https://facebook.github.io/react/docs/react-api.html#isvalidelement
 	**/
-	public static function isValidElement(object:Dynamic):Bool
+	public static inline function isValidElement(object:Dynamic):Bool
 	{
 		return true;
 	}

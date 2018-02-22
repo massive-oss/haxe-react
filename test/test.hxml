@@ -1,6 +1,7 @@
 -main TestMain
 -lib munit
 -lib hamcrest
+-lib tink_hxx
 -cp src/lib
 
 -cp test/src

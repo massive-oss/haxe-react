@@ -1,13 +1,12 @@
 package react;
 
-import react.jsx.JsxParser;
-import react.jsx.JsxSanitize;
-
 #if macro
+import react.jsx.HtmlEntities;
 import haxe.macro.Context;
 import haxe.macro.Expr;
-import haxe.macro.ExprTools;
 import haxe.macro.Type;
+import tink.hxx.Node;
+using tink.MacroApi;
 import react.jsx.JsxStaticMacro;
 
 #if (haxe_ver < 4)
@@ -27,95 +26,99 @@ class ReactMacro
 {
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
-		if (Context.defined('display'))
-			return macro untyped ${expr};
-		else
-			return parseJsx(ExprTools.getValue(expr), expr.pos);
+		return switch tink.hxx.Parser.parseRoot(expr, { fragment: 'react.Fragment', noControlStructures: true, defaultExtension: 'html' }).value {
+			case [v]: child(v);
+			case []: expr.reject('empty jsx');
+			default: expr.reject('only one node allowed here');
+		};
 	}
-
-	public static macro function sanitize(expr:ExprOf<String>):Expr
-	{
-		return macro $v{JsxSanitize.process(ExprTools.getValue(expr))};
-	}
-
-	/* PARSER  */
 
 	#if macro
-	static var componentsMap:Map<String, ComponentInfo> = new Map();
-
-	static function parseJsx(jsx:String, pos:Position):Expr
+	static public function replaceEntities(value:String, pos:Position)
 	{
-		jsx = JsxSanitize.process(jsx);
-		var xml =
-			try
-				Xml.parse(jsx)
-			#if (haxe_ver >= 3.3)
-			catch(err:haxe.xml.Parser.XmlParserException)
-			{
-				var posInfos = Context.getPosInfos(pos);
-				var realPos = Context.makePosition({
-					file: posInfos.file,
-					min: posInfos.min + err.position,
-					max: posInfos.max + err.position,
-				});
-				Context.fatalError('Invalid JSX: ' + err.message, realPos);
-			}
-			#end
-			catch(err:Dynamic)
-				Context.fatalError('Invalid JSX: ' + err, err.pos ? err.pos : pos);
-
-		var ast = JsxParser.process(xml);
-		var expr = parseJsxNode(ast, pos);
-		return expr;
-	}
-
-	static function parseJsxNode(ast:JsxAst, pos:Position)
-	{
-		switch (ast)
+		if (value.indexOf('&') < 0) 
+			return value;
+		
+		var reEntity = ~/&[a-z0-9]+;/gi,
+				result = '',
+				index = 0;
+		
+		while (reEntity.matchSub(value, index))
 		{
-			case JsxAst.Text(value):
-				return macro $v{value};
+			result += reEntity.matchedLeft();
+			var entity = reEntity.matched(0);
+			index = result.length + entity.length;
 
-			case JsxAst.Expr(value):
-				return Context.parse(value, pos);
+			result += switch HtmlEntities.map[entity] {
+				case null:
+					var infos = Context.getPosInfos(pos);
+					infos.max = infos.min + index;
+					infos.min = infos.min + index - entity.length;
+					Context.makePosition(infos).warning('unknown entity $entity');
+					entity;
+				case e: e;
+			}
+			
+		}
+		
+		result += value.substr(index);
+		//TODO: consider giving warnings for isolated `&`
+		return result;
+	}
+	static function children(a:Array<Child>) 
+		return [for (c in tink.hxx.Generator.normalize(a)) child(c)];		
 
-			case JsxAst.Node(isHtml, path, attributes, jsxChildren):
-				// parse type
-				var type = isHtml ? macro $v{path[0]} : macro $p{path};
-				type.pos = pos;
+	static function child(c:Child) 
+		return switch c.value {
+			case CText(s): macro @:pos(s.pos) $v{replaceEntities(s.value, s.pos)};
+			case CExpr(e): e;
+			case CNode(n): 
+				var type = 
+					switch n.name.value.split('.') {
+						case [tag] if (tag.charAt(0) == tag.charAt(0).toLowerCase()):
+							macro @:pos(n.name.pos) $v{tag};
+						case parts:
+							macro @:pos(n.name.pos) $p{parts};
+					}
 
-				// handle @:jsxStatic
+				var isHtml = type.getString().isSuccess();//TODO: this is a little awkward
 				if (!isHtml) JsxStaticMacro.handleJsxStaticProxy(type);
-
-				// parse attributes
-				var attrs = [];
-				var spread = [];
-				var key = null;
-				var ref = null;
-				for (attr in attributes)
-				{
-					var expr = parseJsxAttr(attr.value, pos);
-					var name = attr.name;
-					if (name == 'key') key = expr;
-					else if (name == 'ref') ref = expr;
-					else if (name.charAt(0) == '.') spread.push(expr);
-					else attrs.push({ field:name, expr:expr });
-				}
-
+				
+				var attrs = [],
+						spread = [],
+						key = null,
+						ref = null,
+						pos = n.name.pos;
+				for (attr in n.attributes) switch attr {
+					case Splat(e): spread.push(e);
+					case Empty(invalid = { value: 'key' | 'ref'}): invalid.pos.error('attribute ${invalid.value} must have a value');
+					case Empty(name): attrs.push({ field:name.value, expr: macro @:pos(name.pos) true });
+  				case Regular(name, value):
+						var expr = value.getString().map(function (s) return macro $v{replaceEntities(s, value.pos)}).orUse(value);
+						switch name.value {
+							case 'key': key = expr;
+							case 'ref': ref = expr;
+							case field:
+							 	attrs.push({ field:field, expr:expr });
+						}
+				}	
 				// parse children
-				var children = [for (child in jsxChildren) parseJsxNode(child, pos)];
+				var children = 
+					if (n.children == null) [] 
+					else children(n.children.value);
 
 				// inline declaration or createElement?
 				var typeInfo = getComponentInfo(type);
 				JsxStaticMacro.injectDisplayNames(type);
 				var useLiteral = canUseLiteral(typeInfo, ref);
+
 				if (useLiteral)
 				{
 					if (children.length > 0)
 					{
 						// single child should not be placed in an Array
-						if (children.length == 1) attrs.push({field:'children', expr:macro ${children[0]}});
-						else attrs.push({field:'children', expr:macro ($a{children} :Array<Dynamic>)});
+						if (children.length == 1) attrs.push({field:'children', expr: macro ${children[0]}});
+						else attrs.push({field:'children', expr: macro ($a{children} :Array<Dynamic>)});
 					}
 					if (!isHtml)
 					{
@@ -127,7 +130,7 @@ class ReactMacro
 						}
 					}
 					var props = makeProps(spread, attrs, pos);
-					return genLiteral(type, props, ref, key, pos);
+					genLiteral(type, props, ref, key, pos);
 				}
 				else
 				{
@@ -136,26 +139,16 @@ class ReactMacro
 
 					var props = makeProps(spread, attrs, pos);
 
+					
+
 					var args = [type, props].concat(children);
-					return macro react.React.createElement($a{args});
+					macro @:pos(n.name.pos) react.React.createElement($a{args});
 				}
+			case CSplat(_): c.pos.error('jsx does not support child splats');
+			default: c.pos.error('jsx does not support control structures');//already disabled at parser level anyway
 		}
-	}
-
-	static function parseJsxAttr(value:String, pos:Position)
-	{
-		var ast = JsxParser.parseText(value);
-		return switch (ast)
-		{
-			case JsxAst.Text(value):
-				return macro $v{value};
-
-			case JsxAst.Expr(value):
-				return Context.parse(value, pos);
-
-			default: null;
-		}
-	}
+	
+	static var componentsMap:Map<String, ComponentInfo> = new Map();
 
 	static function genLiteral(type:Expr, props:Expr, ref:Expr, key:Expr, pos:Position)
 	{
@@ -171,7 +164,7 @@ class ReactMacro
 		if (ref != null) fields.push({field: 'ref', expr: ref});
 		var obj = {expr: EObjectDecl(fields), pos: pos};
 
-		return macro ($obj : react.ReactComponent.ReactElement);
+		return macro @:pos(pos) ($obj : react.ReactComponent.ReactElement);
 	}
 
 	static function canUseLiteral(typeInfo:ComponentInfo, ref:Expr)

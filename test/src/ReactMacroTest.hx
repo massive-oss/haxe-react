@@ -70,7 +70,13 @@ class ReactMacroTest
 		Assert.areEqual(CompBasic, e.type);
 		assertHasProps(e.props, ['a'], ['foo']);
 	}
-	
+	@Test
+	public function fragments() 
+	{
+		var e = jsx('<><div/><div/></>');
+		Assert.areEqual(react.Fragment, e.type);
+		Assert.areEqual(2, e.props.children.length);
+	}	
 	@Test
 	public function extern_component_qualified_module_should_DEOPT() 
 	{
@@ -258,7 +264,17 @@ class ReactMacroTest
 		Assert.areEqual('div', e.type);
 		assertHasProps(e.props, ['children'], [o]);
 	}
-
+	@Test
+	public function entities() {
+		assertHasProps(
+			jsx('<div title="a < b">hello &world; &lt;3</div>').props, 
+			['title', 'children'], ["a < b", "hello &world; <3"]
+		);
+		assertHasProps(
+			jsx('<div title={"a &lt; b"}>{"hello &world; &lt;3"}</div>').props, 
+			['title', 'children'], ["a &lt; b", "hello &world; &lt;3"]
+		);
+	}
 	@Test
 	public function DOM_with_children_should_be_array() 
 	{
