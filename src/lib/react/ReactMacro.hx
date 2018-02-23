@@ -5,7 +5,9 @@ import react.jsx.HtmlEntities;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
+import haxe.ds.Option;
 import tink.hxx.Node;
+import tink.hxx.StringAt;
 using tink.MacroApi;
 import react.jsx.JsxStaticMacro;
 
@@ -68,6 +70,39 @@ class ReactMacro
 	static function children(a:Array<Child>) 
 		return [for (c in tink.hxx.Generator.normalize(a)) child(c)];		
 
+	static function typeChecker(type:Expr, isHtml:Bool) {
+		function propsFor(placeholder:Expr):StringAt->Expr->Void {
+			placeholder = Context.storeTypedExpr(Context.typeExpr(placeholder));
+			return function (name:StringAt, value:Expr) {
+				var field = name.value;
+				var target = macro @:pos(name.pos) $placeholder.$field;
+				Context.typeof(macro @:pos(value.pos) $target = $value);
+			}
+		}
+		return 
+			if (isHtml) function (_, _) {}
+			else switch type.typeof().sure() {
+				case TFun(args, _):
+					
+					switch args {
+						case []: function (_, e:Expr) e.reject('no props allowed here');
+						case [v]: propsFor(macro @:pos(type.pos) {
+							var o = null;
+							$type(o);
+							o;
+						});
+						case v: throw 'assert';//TODO: do something meaningful here
+					}
+				default:
+					propsFor(macro @:pos(type.pos) {
+						function get<T>(c:Class<T>):T {
+							return null;
+						}
+						@:privateAccess get($type).props;
+					});
+			} 
+	}
+
 	static function child(c:Child) 
 		return switch c.value {
 			case CText(s): macro @:pos(s.pos) $v{replaceEntities(s.value, s.pos)};
@@ -84,22 +119,28 @@ class ReactMacro
 				var isHtml = type.getString().isSuccess();//TODO: this is a little awkward
 				if (!isHtml) JsxStaticMacro.handleJsxStaticProxy(type);
 				
-				var attrs = [],
+				var checkProp = typeChecker(type, isHtml),
+						attrs = [],
 						spread = [],
 						key = null,
 						ref = null,
 						pos = n.name.pos;
+
+				function add(name:StringAt, e:Expr) {
+					checkProp(name, e);
+					attrs.push({ field: name.value, expr: e });
+				}
+
 				for (attr in n.attributes) switch attr {
 					case Splat(e): spread.push(e);
 					case Empty(invalid = { value: 'key' | 'ref'}): invalid.pos.error('attribute ${invalid.value} must have a value');
-					case Empty(name): attrs.push({ field:name.value, expr: macro @:pos(name.pos) true });
+					case Empty(name): add(name, macro @:pos(name.pos) true);
   				case Regular(name, value):
 						var expr = value.getString().map(function (s) return macro $v{replaceEntities(s, value.pos)}).orUse(value);
 						switch name.value {
 							case 'key': key = expr;
 							case 'ref': ref = expr;
-							case field:
-							 	attrs.push({ field:field, expr:expr });
+							default: add(name, value);
 						}
 				}	
 				// parse children
@@ -138,8 +179,6 @@ class ReactMacro
 					if (key != null) attrs.unshift({field:'key', expr:key});
 
 					var props = makeProps(spread, attrs, pos);
-
-					
 
 					var args = [type, props].concat(children);
 					macro @:pos(n.name.pos) react.React.createElement($a{args});

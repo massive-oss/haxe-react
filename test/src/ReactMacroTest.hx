@@ -301,8 +301,8 @@ class ReactMacroTest
 				Assert.areEqual(values[i], Reflect.field(o, name));
 		}
 	}
-	
-	function RenderFunction() 
+
+	function RenderFunction(props:{ a:String }) 
 	{
 		return jsx('<div/>');
 	}
