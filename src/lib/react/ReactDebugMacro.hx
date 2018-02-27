@@ -10,12 +10,9 @@ class ReactDebugMacro
 	public static var firstRenderWarning:Bool = true;
 
 	#if macro
-	public static macro function buildComponent():Array<Field>
+	public static function buildComponent(inClass:ClassType, fields:Array<Field>):Array<Field>
 	{
 		var pos = Context.currentPos();
-		var inClass = Context.getLocalClass().get();
-		var fields = Context.getBuildFields();
-
 		var propsType:ComplexType = macro :Dynamic;
 		var stateType:ComplexType = macro :Dynamic;
 

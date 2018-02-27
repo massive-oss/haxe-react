@@ -9,11 +9,8 @@ import haxe.macro.TypeTools;
 class ReactTypeMacro
 {
 	#if macro
-	public static macro function alterComponentSignatures():Array<Field>
+	public static function alterComponentSignatures(inClass:ClassType, fields:Array<Field>):Array<Field>
 	{
-		var inClass = Context.getLocalClass().get();
-		var fields = Context.getBuildFields();
-
 		var propsType:ComplexType = macro :Dynamic;
 		var stateType:ComplexType = macro :Dynamic;
 

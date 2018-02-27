@@ -24,11 +24,7 @@ typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, D
 #end
 @:native('React.Component')
 @:keepSub
-@:autoBuild(react.ReactMacro.buildComponent())
-@:autoBuild(react.ReactTypeMacro.alterComponentSignatures())
-#if (debug && react_render_warning)
-@:autoBuild(react.ReactDebugMacro.buildComponent())
-#end
+@:autoBuild(react.ReactComponentMacro.build())
 extern class ReactComponentOf<TProps, TState, TRefs>
 {
 	var props(default, null):TProps;
