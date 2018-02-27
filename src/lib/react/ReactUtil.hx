@@ -47,6 +47,19 @@ class ReactUtil
 		return target;
 	}
 
+	public static function copyWithout(source1:Dynamic, source2:Dynamic, fields:Array<String>)
+	{
+		var target = {};
+		for (field in Reflect.fields(source1))
+			if (!Lambda.has(fields, field))
+				Reflect.setField(target, field, Reflect.field(source1, field));
+		if (source2 != null)
+			for (field in Reflect.fields(source2))
+				if (!Lambda.has(fields, field))
+					Reflect.setField(target, field, Reflect.field(source2, field));
+		return target;
+	}
+
 	public static function mapi<A, B>(items:Array<A>, map:Int -> A -> B):Array<B>
 	{
 		if (items == null) return null;
