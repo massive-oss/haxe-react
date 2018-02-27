@@ -283,11 +283,9 @@ class ReactMacro
 	/**
 	 * Process React components
 	 */
-	public static macro function buildComponent():Array<Field>
+	public static function buildComponent(inClass:ClassType, fields:Array<Field>):Array<Field>
 	{
 		var pos = Context.currentPos();
-		var inClass = Context.getLocalClass().get();
-		var fields = Context.getBuildFields();
 
 		#if (!debug && !react_no_inline)
 		storeComponentInfos(fields, inClass, pos);
