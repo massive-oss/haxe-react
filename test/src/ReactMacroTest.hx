@@ -275,6 +275,39 @@ class ReactMacroTest
 			['title', 'children'], ["a &lt; b", "hello &world; &lt;3"]
 		);
 	}
+
+	@Test
+	public function control_structures() {
+		for (flag in [true, false]) {
+			var counter = 0;
+			for (i in 0...5) {
+				var inner = 0;
+				jsx('
+					<div>
+						<if {flag}>
+							<div>Foo</div>
+							<for {j in 0...i}>
+								<p>Test ${inner += j}</p>
+							</for>
+						<else>
+							<switch {i}>
+								<case {0}>
+									<input />
+								<case {1}>
+									<$CompBasic />
+									<button />
+								<case {v}>
+									{counter+=v}
+							</switch>
+						</if>
+					</div>
+				');
+				Assert.areSame(if (flag) (i * (i - 1)) >> 1 else 0, inner);
+			}
+			Assert.areSame(if (flag) 0 else 9, counter);
+		}
+	}
+
 	@Test
 	public function DOM_with_children_should_be_array() 
 	{

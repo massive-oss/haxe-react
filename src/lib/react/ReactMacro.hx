@@ -2,6 +2,7 @@ package react;
 
 #if macro
 import react.jsx.HtmlEntities;
+import tink.hxx.Parser;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
@@ -19,6 +20,16 @@ typedef ComponentInfo = {
 	isExtern:Bool,
 	props:Array<ObjectField>
 }
+
+private class JsxParser extends tink.hxx.Parser {
+	public function new(source) {
+		super(source, JsxParser.new, { fragment: 'react.Fragment', defaultExtension: 'html' });
+	}
+	override function tagName() {
+		allow("$");
+		return super.tagName();
+	}
+}
 #end
 
 /**
@@ -28,7 +39,7 @@ class ReactMacro
 {
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
-		return switch tink.hxx.Parser.parseRoot(expr, { fragment: 'react.Fragment', noControlStructures: true, defaultExtension: 'html' }).value {
+		return switch tink.hxx.Parser.parseRootWith(expr, JsxParser.new).value {
 			case [v]: child(v);
 			case []: expr.reject('empty jsx');
 			default: expr.reject('only one node allowed here');
@@ -67,16 +78,31 @@ class ReactMacro
 		//TODO: consider giving warnings for isolated `&`
 		return result;
 	}
-	static function children(a:Array<Child>) 
-		return [for (c in tink.hxx.Generator.normalize(a)) child(c)];		
-
+	static function children(c:tink.hxx.Children) {
+		var exprs = switch c {
+			case null | { value: null }: [];
+			default: [for (c in tink.hxx.Generator.normalize(c.value)) child(c)];
+		} 
+		return {
+			individual: exprs,
+			compound: switch exprs {
+				case []: null;
+				case [v]: v;
+				case a: macro @:pos(c.pos) ($a{a}:Array<Dynamic>);
+			}
+		}
+	}
+	
 	static function typeChecker(type:Expr, isHtml:Bool) {
 		function propsFor(placeholder:Expr):StringAt->Expr->Void {
 			placeholder = Context.storeTypedExpr(Context.typeExpr(placeholder));
 			return function (name:StringAt, value:Expr) {
 				var field = name.value;
 				var target = macro @:pos(name.pos) $placeholder.$field;
-				Context.typeof(macro @:pos(value.pos) $target = $value);
+				Context.typeof(macro @:pos(value.pos) {
+					var __pseudo = $target;
+					__pseudo = $value;
+				});
 			}
 		}
 		return 
@@ -120,11 +146,11 @@ class ReactMacro
 				if (!isHtml) JsxStaticMacro.handleJsxStaticProxy(type);
 				
 				var checkProp = typeChecker(type, isHtml),
-						attrs = [],
-						spread = [],
-						key = null,
-						ref = null,
-						pos = n.name.pos;
+				    attrs = new Array<ObjectField>(),
+				    spread = [],
+				    key = null,
+				    ref = null,
+				    pos = n.name.pos;
 
 				function add(name:StringAt, e:Expr) {
 					checkProp(name, e);
@@ -135,7 +161,7 @@ class ReactMacro
 					case Splat(e): spread.push(e);
 					case Empty(invalid = { value: 'key' | 'ref'}): invalid.pos.error('attribute ${invalid.value} must have a value');
 					case Empty(name): add(name, macro @:pos(name.pos) true);
-  				case Regular(name, value):
+					case Regular(name, value):
 						var expr = value.getString().map(function (s) return macro $v{replaceEntities(s, value.pos)}).orUse(value);
 						switch name.value {
 							case 'key': key = expr;
@@ -144,9 +170,7 @@ class ReactMacro
 						}
 				}	
 				// parse children
-				var children = 
-					if (n.children == null) [] 
-					else children(n.children.value);
+				var children = children(n.children);
 
 				// inline declaration or createElement?
 				var typeInfo = getComponentInfo(type);
@@ -155,11 +179,9 @@ class ReactMacro
 
 				if (useLiteral)
 				{
-					if (children.length > 0)
+					if (children.compound != null)
 					{
-						// single child should not be placed in an Array
-						if (children.length == 1) attrs.push({field:'children', expr: macro ${children[0]}});
-						else attrs.push({field:'children', expr: macro ($a{children} :Array<Dynamic>)});
+						attrs.push({field:'children', expr: children.compound });
 					}
 					if (!isHtml)
 					{
@@ -180,12 +202,26 @@ class ReactMacro
 
 					var props = makeProps(spread, attrs, pos);
 
-					var args = [type, props].concat(children);
+					var args = [type, props].concat(children.individual);
 					macro @:pos(n.name.pos) react.React.createElement($a{args});
 				}
-			case CSplat(_): c.pos.error('jsx does not support child splats');
+			case CSplat(_): 
+				c.pos.error('jsx does not support child splats');
+			case CIf(cond, cons, alt): 
+				macro @:pos(cond.pos) if ($cond) ${body(cons)} else ${body(alt)};
+			case CFor(head, expr):
+				macro @:pos(head.pos) ([for ($head) ${body(expr)}]:Array<Dynamic>);
+			case CSwitch(target, cases):
+				ESwitch(target, [for (c in cases) {
+					guard: c.guard,
+					values: c.values,
+					expr: body(c.children)
+				}], null).at(target.pos);
 			default: c.pos.error('jsx does not support control structures');//already disabled at parser level anyway
 		}
+
+	static function body(c:Children)
+		return macro ($a{children(c).individual}:Array<Dynamic>);
 	
 	static var componentsMap:Map<String, ComponentInfo> = new Map();
 
@@ -194,8 +230,8 @@ class ReactMacro
 		if (key == null) key = macro null;
 		if (ref == null) ref = macro null;
 
-		var fields = [
-			{field: "@$__hx__$$typeof", expr: macro untyped __js__("$$tre")},
+		var fields:Array<ObjectField> = [
+			{field: #if (haxe_ver < 4) "@$__hx__$$typeof" #else "$$typeof", quotes: DoubleQuotes #end, expr: macro untyped __js__("$$tre")},
 			{field: 'type', expr: type},
 			{field: 'props', expr: props}
 		];
