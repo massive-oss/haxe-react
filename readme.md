@@ -1,5 +1,9 @@
 # Haxe React
 
+[![TravisCI Build Status](https://travis-ci.org/massiveinteractive/haxe-react.svg?branch=master)](https://travis-ci.org/massiveinteractive/haxe-react)
+[![Haxelib Version](https://img.shields.io/github/tag/massiveinteractive/haxe-react.svg?label=haxelib)](http://lib.haxe.org/p/react)
+[![Join the chat at https://gitter.im/haxe-react](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/haxe-react/Lobby)
+
 A Haxe library offering externs and tool functions leveraging Haxe's excellent type system and
 compile time macros to offer a strongly typed language to work with the increasingly popular
 [React](https://facebook.github.io/react/) library.
