@@ -1,0 +1,25 @@
+language: haxe
+
+haxe:
+  - 3.4.4
+  - stable
+  - development
+
+matrix:
+  allow_failures:
+    - haxe: development
+
+install:
+  - haxelib install munit
+  - haxelib install hamcrest
+  - haxelib install hxnodejs
+
+script:
+  - haxelib run munit test -js
+
+deploy:
+  - provider: script
+    haxe: 3.4.4
+    script: bash ./releaseHaxelib.sh $HAXELIB_PWD
+    on:
+      tags: true
