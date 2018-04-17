@@ -30,15 +30,15 @@ class TestMain
 			var httpClient = new HTTPClient(new SummaryReportClient());
 		#end
 
-		var runner:TestRunner = new TestRunner(client); 
+		var runner:TestRunner = new TestRunner(client);
 		runner.addResultClient(httpClient);
 		//runner.addResultClient(new HTTPClient(new JUnitReportClient()));
-		
+
 		runner.completionHandler = completionHandler;
-		
-		#if js
+
+		#if (js && !nodejs)
 		var seconds = 0; // edit here to add some startup delay
-		function delayStartup() 
+		function delayStartup()
 		{
 			if (seconds > 0) {
 				seconds--;

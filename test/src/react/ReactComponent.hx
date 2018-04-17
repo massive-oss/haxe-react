@@ -4,7 +4,7 @@ typedef ReactComponentProps = {
 	/**
 		Children have to be manipulated using React.Children.*
 	**/
-	@:optional var children:Dynamic; 
+	@:optional var children:Dynamic;
 }
 
 /**
@@ -18,7 +18,7 @@ typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, 
 typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic>;
 typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, Dynamic, TRefs>;
 
-@:autoBuild(react.ReactMacro.buildComponent())
+@:autoBuild(react.ReactComponentMacro.build())
 class ReactComponentOf<TProps, TState, TRefs>
 {
 	static var defaultProps:Dynamic;
