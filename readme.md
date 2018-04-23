@@ -225,23 +225,3 @@ Setting `-D react_render_warning` will enable runtime warnings for avoidable ren
 This will add a `componentDidUpdate` (or update the existing one) where a **shallowCompare** is done on current and previous props and state. If both did not change, a warning will be displayed in the console.
 
 False positives can happen if your props are not flat, due to the shallowCompare.
-
-
-## Changes
-
-### 1.3.0
-
-- React 16 support; React 15 is still compatible but won't support new APIs (`componentDidCatch`, `createPortal`)
-- added missing `ReactDOM.hydrate` method (server-side rendering)
-- added `@:jsxStatic` optional meta
-- breaking: `react.ReactPropTypes` now requires the NPM `prop-types` module
-
-### 1.2.1
-
-- fixed auto-complete issue on `this.state` caused by the `1.2.0` changes
-
-### 1.2.0
-
-- `setState` now accepts `Partial<T>`; where `T` is a `typedef`, `Partial<T>` is `T` will all the fields made optional
-- `react.React.PropTypes` removed in favor of `react.ReactPropTypes`
-- added `-D react_render_warning` option
