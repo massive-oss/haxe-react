@@ -20,6 +20,6 @@ script:
 deploy:
   - provider: script
     haxe: 3.4.4
-    script: bash ./releaseHaxelib.sh $HAXELIB_PWD
+    script: bash ./releaseHaxelib.sh $HAXELIB_USER $HAXELIB_PWD
     on:
       tags: true
