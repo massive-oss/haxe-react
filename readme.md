@@ -124,28 +124,45 @@ class App extends ReactComponent {
 }
 ```
 
-### Gotchas
+### JSX Fragments
 
-JSX is not String magic! Do not concatenate Strings to construct the JSX expression.
+[Fragments](https://reactjs.org/docs/fragments.html) (React 16.2+) let you group 
+a list of children without adding extra nodes to the DOM. 
 
-In JavaScript:
-```javascript
-<div>{
-    isA ? <A/> : <B/>
-}</div>
-```
-is transformed (at build time) into:
-```javascript
-React.createElement('div', null, [
-    isA ? React.createElement(A) : React.createElement(B)
-]);
+Two syntaxes are supported:
+```jsx
+<Fragment>
+    Text
+    <span>more text</span>
+    Still more text
+</Fragment>
+
+// or short syntax:
+<>
+    Text
+    <span>more text</span>
+    Still more text
+</>
 ```
 
-While in Haxe, as nested JSX isn't yet supported, you must write:
-```haxe
-var content = isA ? jsx('<A/>') : jsx('<B/>');
-jsx('<div>{content}</div>');
-```
+### JSX gotchas
+
+1. JSX is not String magic! **Do not concatenate Strings** to construct the JSX expression
+
+2. Haxe's JSX parser is not "re-entrant"
+
+	In JavaScript you can nest JSX inside curly-brace expressions:
+	```javascript
+	return (
+	    <div>{ isA ? <A/> : <B/> }</div>
+	);
+	```
+
+	However this isn't allowed in Haxe, so you must extract nested JSX into variables:
+	```haxe
+	var content = isA ? jsx('<A/>') : jsx('<B/>');
+	return jsx('<div>{content}</div>');
+	```
 
 ## Components strict typing
 
