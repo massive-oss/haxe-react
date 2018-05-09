@@ -43,7 +43,7 @@ class ReactWrapperMacro
 			fields.push({
 				access: [APublic, AStatic],
 				name: fieldName,
-				kind: FVar(null, wrapperExpr),
+				kind: FVar(macro :react.React.CreateElementType, wrapperExpr),
 				doc: null,
 				meta: null,
 				pos: inClass.pos
