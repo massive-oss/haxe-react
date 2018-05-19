@@ -22,9 +22,35 @@ private enum MetaValueType {
 class JsxStaticMacro
 {
 	static public var META_NAME = ':jsxStatic';
+	static public var FIELD_NAME = '__jsxStatic';
 
 	static var hasBeenHooked = false;
 	static var decls:Array<JsxStaticDecl> = [];
+
+	static public function build():Array<Field>
+	{
+		var fields = Context.getBuildFields();
+		var cls = Context.getLocalClass();
+		if (cls == null) return fields;
+		var inClass = cls.get();
+
+		if (inClass.meta.has(META_NAME))
+		{
+			for (f in fields) if (f.name == FIELD_NAME) return fields;
+
+			var proxyName = extractMetaString(inClass.meta, META_NAME);
+			fields.push({
+				access: [APublic, AStatic],
+				name: FIELD_NAME,
+				kind: FVar(macro :react.React.CreateElementType, macro $i{proxyName}),
+				doc: null,
+				meta: null,
+				pos: inClass.pos
+			});
+		}
+
+		return fields;
+	}
 
 	static public function injectDisplayNames(type:Expr)
 	{

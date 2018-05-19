@@ -1,0 +1,2 @@
+--macro addGlobalMetadata('', '@:build(react.jsx.JsxStaticMacro.build())')
+
