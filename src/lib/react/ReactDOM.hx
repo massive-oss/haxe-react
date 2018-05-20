@@ -15,12 +15,12 @@ extern class ReactDOM
 	/**
 		https://facebook.github.io/react/docs/react-dom.html#render
 	**/
-	public static function render(element:ReactElement, container:Element, ?callback:Void -> Void):ReactElement;
+	public static function render(element:ReactFragment, container:Element, ?callback:Void -> Void):ReactFragment;
 
 	/**
 		https://facebook.github.io/react/docs/react-dom.html#hydrate
 	**/
-	public static function hydrate(element:ReactElement, container:Element, ?callback:Void -> Void):ReactElement;
+	public static function hydrate(element:ReactFragment, container:Element, ?callback:Void -> Void):ReactFragment;
 
 	/**
 		https://facebook.github.io/react/docs/react-dom.html#unmountcomponentatnode
@@ -35,5 +35,5 @@ extern class ReactDOM
 	/**
 		https://reactjs.org/docs/react-dom.html#createportal
 	**/
-	public static function createPortal(child:ReactElement, container:Element):ReactElement;
+	public static function createPortal(child:ReactFragment, container:Element):ReactFragment;
 }

@@ -84,8 +84,14 @@ class ReactMacro
 				var type = isHtml ? macro $v{path[0]} : macro $p{path};
 				type.pos = pos;
 
-				// handle @:jsxStatic
-				if (!isHtml) JsxStaticMacro.handleJsxStaticProxy(type);
+				if (!isHtml) {
+					// handle @:jsxStatic
+					JsxStaticMacro.handleJsxStaticProxy(type);
+
+					// Check type of node to avoid runtime error
+					if (!Context.unify(Context.typeof(type), Context.getType('react.React.CreateElementType')))
+						Context.error('JSX error: invalid node "${ExprTools.toString(type)}"', pos);
+				}
 
 				// parse attributes
 				var attrs = [];

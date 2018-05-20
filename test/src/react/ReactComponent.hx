@@ -48,7 +48,7 @@ class ReactComponentOf<TProps, TState, TRefs>
 	/**
 		https://facebook.github.io/react/docs/react-component.html#render
 	**/
-	function render():ReactElement { return null; }
+	function render():ReactFragment { return null; }
 
 	/**
 		https://facebook.github.io/react/docs/react-component.html#componentwillmount
@@ -97,3 +97,11 @@ typedef ReactElement = {
 	?key:Dynamic,
 	?ref:Dynamic
 }
+
+typedef ReactFragment = EitherType<
+	ReactElement,
+	EitherType<
+		Array<ReactFragment>,
+		EitherType<String, Float>
+	>
+>;
