@@ -75,21 +75,21 @@ class ReactMacroTest
 	@Test
 	public function extern_component_qualified_module_should_DEOPT()
 	{
-		var e = jsx('<support.sub.CompExternModule />');
+		var e:ReactElement = cast jsx('<support.sub.CompExternModule />');
 		Assert.areEqual('NATIVE', e.type);
 	}
 
 	@Test
 	public function extern_component_module_should_DEOPT()
 	{
-		var e = jsx('<CompExternModule />');
+		var e:ReactElement = cast jsx('<CompExternModule />');
 		Assert.areEqual('NATIVE', e.type);
 	}
 
 	@Test
 	public function extern_component_should_DEOPT()
 	{
-		var e = jsx('<CompExtern />');
+		var e:ReactElement = cast jsx('<CompExtern />');
 		Assert.areEqual('NATIVE', e.type);
 	}
 
@@ -210,7 +210,7 @@ class ReactMacroTest
 	@Test
 	public function DOM_with_ref_const_string_should_be_DEOPT()
 	{
-		var e = jsx('<div ref="myref" />');
+		var e:ReactElement = cast jsx('<div ref="myref" />');
 		Assert.areEqual('NATIVE', e.type);
 	}
 
@@ -218,7 +218,7 @@ class ReactMacroTest
 	public function DOM_with_ref_string_should_be_DEOPT()
 	{
 		var setRef = 'myRef';
-		var e = jsx('<div ref=$setRef />');
+		var e:ReactElement = cast jsx('<div ref=$setRef />');
 		Assert.areEqual('NATIVE', e.type);
 	}
 
@@ -226,7 +226,7 @@ class ReactMacroTest
 	public function DOM_with_ref_unknown_should_be_DEOPT()
 	{
 		var setRef:Dynamic = function() {};
-		var e = jsx('<div ref=$setRef />');
+		var e:ReactElement = cast jsx('<div ref=$setRef />');
 		Assert.areEqual('NATIVE', e.type);
 	}
 

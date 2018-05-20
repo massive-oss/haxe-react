@@ -1,7 +1,7 @@
 import massive.munit.TestSuite;
 
-import JsxParserTest;
 import JsxSanitizeTest;
+import JsxParserTest;
 import ReactMacroTest;
 
 /**
@@ -14,8 +14,8 @@ class TestSuite extends massive.munit.TestSuite
 	{
 		super();
 
-		add(JsxParserTest);
 		add(JsxSanitizeTest);
+		add(JsxParserTest);
 		add(ReactMacroTest);
 	}
 }

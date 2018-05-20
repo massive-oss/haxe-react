@@ -1,4 +1,5 @@
 package react;
+import haxe.extern.EitherType;
 
 typedef ReactComponentProps = {
 	/**
