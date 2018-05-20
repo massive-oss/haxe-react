@@ -29,13 +29,13 @@ class JsxStaticMacro
 
 	static public function build():Array<Field>
 	{
-		var fields = Context.getBuildFields();
 		var cls = Context.getLocalClass();
-		if (cls == null) return fields;
+		if (cls == null) return null;
 		var inClass = cls.get();
 
 		if (inClass.meta.has(META_NAME))
 		{
+			var fields = Context.getBuildFields();
 			for (f in fields) if (f.name == FIELD_NAME) return fields;
 
 			var proxyName = extractMetaString(inClass.meta, META_NAME);
@@ -47,9 +47,11 @@ class JsxStaticMacro
 				meta: null,
 				pos: inClass.pos
 			});
+
+			return fields;
 		}
 
-		return fields;
+		return null;
 	}
 
 	static public function injectDisplayNames(type:Expr)
