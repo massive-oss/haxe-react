@@ -1,5 +1,6 @@
 package react;
 
+#if !macro
 import react.ReactComponent.ReactElement;
 import react.ReactComponent.ReactFragment;
 
@@ -69,9 +70,18 @@ extern interface ReactChildren
 }
 
 private typedef CET = haxe.extern.EitherType<haxe.extern.EitherType<String, haxe.Constraints.Function>, Class<ReactComponent>>;
+#end
 
+#if macro
+import haxe.macro.Expr;
+import haxe.macro.Context;
+
+abstract CreateElementType(Dynamic)
+#else
 abstract CreateElementType(CET) to CET
+#end
 {
+	#if !macro
 	@:from
 	static public function fromString(s:String):CreateElementType
 	{
@@ -97,5 +107,43 @@ abstract CreateElementType(CET) to CET
 			return untyped cls.__jsxStatic;
 
 		return cast cls;
+	}
+	#end
+
+	@:from
+	static public macro function fromExpr(expr:Expr)
+	{
+		switch (Context.typeof(expr)) {
+			case TType(_.get() => def, _):
+				try {
+					var module = ReactMacro.resolveDefModule(def);
+
+					switch (Context.getType(module)) {
+						case TInst(_.get() => clsType, _):
+							if (!clsType.meta.has(react.jsx.JsxStaticMacro.META_NAME))
+								Context.error(
+									'Incompatible class for CreateElementType: expected a ReactComponent or a @:jsxStatic component',
+									expr.pos
+								);
+							else
+								return macro $expr.__jsxStatic;
+
+						default: throw '';
+					}
+				} catch (e:Dynamic) {
+					Context.error(
+						'Incompatible expression for CreateElementType',
+						expr.pos
+					);
+				}
+
+			default:
+				Context.error(
+					'Incompatible expression for CreateElementType',
+					expr.pos
+				);
+		}
+
+		return null;
 	}
 }

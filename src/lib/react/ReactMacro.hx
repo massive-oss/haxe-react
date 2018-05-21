@@ -89,8 +89,12 @@ class ReactMacro
 					JsxStaticMacro.handleJsxStaticProxy(type);
 
 					// Check type of node to avoid runtime error
-					if (!Context.unify(Context.typeof(type), Context.getType('react.React.CreateElementType')))
+					try {
+						if (!Context.unify(Context.typeof(type), Context.getType('react.React.CreateElementType')))
+							Context.error('JSX error: invalid node "${ExprTools.toString(type)}"', pos);
+					} catch (e:Dynamic) {
 						Context.error('JSX error: invalid node "${ExprTools.toString(type)}"', pos);
+					}
 				}
 
 				// parse attributes
@@ -383,6 +387,22 @@ class ReactMacro
 			case Type.TType(_.get() => t, _): t.name;
 			default: null;
 		}
+	}
+
+	static var defReg = ~/(?|Class|Enum)<(?>[a-z_]+[a-zA-Z0-9_]*\.)*([A-Z_]+[a-zA-Z0-9_]*)>/;
+	static var moduleReg = ~/(?>[a-z_]+[a-zA-Z0-9_]*\.)*([A-Z_]+[a-zA-Z0-9_]*)/;
+
+	public static function resolveDefModule(def:haxe.macro.DefType):String
+	{
+		var module = def.module;
+
+		var defName = defReg.match(def.name) ? defReg.matched(1) : null;
+		var moduleName = moduleReg.match(module) ? moduleReg.matched(1) : null;
+
+		if (defName != null && moduleName != null && defName != moduleName)
+			module = '$module.$defName';
+
+		return module;
 	}
 	#end
 }
