@@ -1,10 +1,9 @@
 package react;
 
 import haxe.Constraints.Function;
-import js.html.Element;
 
 @:callable
-abstract ReactRef<T:Element>(Function) {
+abstract ReactRef<T>(Function) {
 	public var current(get, never):T;
 
 	public function get_current():T {

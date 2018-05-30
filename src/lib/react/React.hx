@@ -1,6 +1,5 @@
 package react;
 
-import js.html.Element;
 import react.ReactComponent.ReactElement;
 
 /**
@@ -36,7 +35,7 @@ extern class React
 		If you are using an earlier release of React, use callback refs instead
 		https://reactjs.org/docs/refs-and-the-dom.html#callback-refs
 	**/
-	public static function createRef<TRef:Element>():ReactRef<TRef>;
+	public static function createRef<TRef>():ReactRef<TRef>;
 
 	/**
 		https://reactjs.org/docs/react-api.html#reactforwardref
@@ -46,7 +45,7 @@ extern class React
 		If you are using an earlier release of React, use callback refs instead
 		https://reactjs.org/docs/refs-and-the-dom.html#callback-refs
 	**/
-	public static function forwardRef<TProps, TRef:Element>(render:TProps->ReactRef<TRef>->ReactElement):CreateElementType;
+	public static function forwardRef<TProps, TRef>(render:TProps->ReactRef<TRef>->ReactElement):CreateElementType;
 
 	/**
 		https://facebook.github.io/react/docs/react-api.html#react.children
