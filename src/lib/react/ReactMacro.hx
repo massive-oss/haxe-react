@@ -163,7 +163,11 @@ class ReactMacro
 		if (ref == null) ref = macro null;
 
 		var fields = [
+			#if (haxe_ver < 4)
 			{field: "@$__hx__$$typeof", expr: macro untyped __js__("$$tre")},
+			#else
+			{field: "$$typeof", expr: macro untyped __js__("$$tre")},
+			#end
 			{field: 'type', expr: type},
 			{field: 'props', expr: props}
 		];
