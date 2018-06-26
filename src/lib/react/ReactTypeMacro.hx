@@ -35,6 +35,20 @@ class ReactTypeMacro
 		return fields;
 	}
 
+	public static function ensureRenderOverride(inClass:ClassType, fields:Array<Field>):Array<Field>
+	{
+		if (!inClass.isExtern)
+			if (!Lambda.exists(fields, function(f) return f.name == 'render'))
+				Context.warning(
+					'Component ${inClass.name}: '
+					+ 'No `render` method found: you may have forgotten to '
+					+ 'override `render` from `ReactComponent`.',
+					inClass.pos
+				);
+
+		return fields;
+	}
+
 	static function hasSetState(fields:Array<Field>) {
 		for (field in fields)
 		{
