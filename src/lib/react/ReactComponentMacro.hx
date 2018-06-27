@@ -13,6 +13,10 @@ class ReactComponentMacro {
 		react.ReactTypeMacro.alterComponentSignatures,
 		react.wrap.ReactWrapperMacro.buildComponent,
 
+		#if (debug && !react_ignore_empty_render)
+		react.ReactTypeMacro.ensureRenderOverride,
+		#end
+
 		#if (debug && react_render_warning)
 		react.ReactDebugMacro.buildComponent,
 		#end
