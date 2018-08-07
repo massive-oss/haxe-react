@@ -149,11 +149,25 @@ class JsxStaticMacro
 	{
 		return switch(extractMeta(meta, name)) {
 			case NoMeta: null;
-			case WithParams(_, params): params.pop().getValue();
+			case WithParams(_, params): extractMetaName(params.pop());
 			case NoParams(meta):
 				Context.fatalError(
 					"Parameter required for @:jsxStatic('name-of-static-function')",
 					meta.pos
+				);
+		};
+	}
+
+	static public function extractMetaName(metaExpr:Expr):String
+	{
+		return switch (metaExpr.expr) {
+			case EConst(CString(str)): str;
+			case EConst(CIdent(ident)): ident;
+
+			default:
+				Context.fatalError(
+					"@:jsxStatic: invalid parameter. Expected static function name.",
+					metaExpr.pos
 				);
 		};
 	}
