@@ -24,7 +24,6 @@ class JsxStaticMacro
 	static public var META_NAME = ':jsxStatic';
 	static public var FIELD_NAME = '__jsxStatic';
 
-	static var hasBeenHooked = false;
 	static var decls:Array<JsxStaticDecl> = [];
 
 	static public function build():Array<Field>
@@ -54,18 +53,17 @@ class JsxStaticMacro
 		return null;
 	}
 
+	static public function addHook()
+	{
+		// Add hook to generate __init__ at the end of the compilation
+		Context.onAfterTyping(afterTypingHook);
+	}
+
 	static public function injectDisplayNames(type:Expr)
 	{
 		#if !debug
 		return;
 		#end
-
-		// Add hook to generate __init__ at the end of the compilation
-		if (!hasBeenHooked)
-		{
-			hasBeenHooked = true;
-			Context.onAfterTyping(afterTypingHook);
-		}
 
 		switch (Context.typeExpr(type).expr) {
 			case TConst(TString(_)):
