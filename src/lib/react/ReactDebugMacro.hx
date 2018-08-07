@@ -7,6 +7,7 @@ import haxe.macro.TypeTools;
 
 class ReactDebugMacro
 {
+	public static inline var IGNORE_RENDER_WARNING_META = ':ignoreRenderWarning';
 	public static var firstRenderWarning:Bool = true;
 
 	#if macro
@@ -25,8 +26,9 @@ class ReactDebugMacro
 			default:
 		}
 
-		if (!updateComponentUpdate(fields, inClass, propsType, stateType))
-			addComponentUpdate(fields, inClass, propsType, stateType);
+		if (!inClass.meta.has(IGNORE_RENDER_WARNING_META))
+			if (!updateComponentUpdate(fields, inClass, propsType, stateType))
+				addComponentUpdate(fields, inClass, propsType, stateType);
 
 		return fields;
 	}
@@ -119,7 +121,10 @@ class ReactDebugMacro
 
 					js.Browser.console.warn(
 						'Make sure your props are flattened, or implement shouldComponentUpdate.\n' +
-						'See https://facebook.github.io/react/docs/optimizing-performance.html#shouldcomponentupdate-in-action'
+						'See https://facebook.github.io/react/docs/optimizing-performance.html#shouldcomponentupdate-in-action' +
+						'\n\nAlso note that legacy context API can trigger false positives if children ' +
+						'rely on context. You can hide this warning for a specific component by adding ' +
+						'`@${IGNORE_RENDER_WARNING_META}` meta to its class.'
 					);
 				}
 			}
