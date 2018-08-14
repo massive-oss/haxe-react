@@ -13,8 +13,8 @@ typedef ReactComponentProps = {
 **/
 typedef ReactComponent = ReactComponentOf<Dynamic, Dynamic>;
 
-typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Void>;
-typedef ReactComponentOfState<TState> = ReactComponentOf<Void, TState>;
+typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Empty>;
+typedef ReactComponentOfState<TState> = ReactComponentOf<Empty, TState>;
 
 // Keep the old ReactComponentOfPropsAndState typedef available a few versions
 typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState>;
