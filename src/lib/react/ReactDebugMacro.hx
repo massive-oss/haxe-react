@@ -18,7 +18,8 @@ class ReactDebugMacro
 
 		switch (inClass.superClass)
 		{
-			case {params: params, t: _.toString() => "react.ReactComponentOf"}:
+			case {params: params, t: _.toString() => cls}
+			if (cls == 'react.ReactComponentOf' || cls == 'react.PureComponentOf'):
 				propsType = TypeTools.toComplexType(params[0]);
 				stateType = TypeTools.toComplexType(params[1]);
 
