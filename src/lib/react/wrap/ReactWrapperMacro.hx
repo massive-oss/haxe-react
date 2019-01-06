@@ -10,6 +10,7 @@ import react.jsx.JsxStaticMacro;
 
 class ReactWrapperMacro
 {
+	static public inline var WRAP_BUILDER = 'Wrap';
 	static public inline var WRAP_META = ':wrap';
 	static inline var WRAPPED_META = ':wrapped_by_macro';
 

@@ -8,6 +8,7 @@ import haxe.macro.TypeTools;
 class ReactDebugMacro
 {
 	public static inline var IGNORE_RENDER_WARNING_META = ':ignoreRenderWarning';
+	public static inline var REACT_DEBUG_BUILDER = 'ReactDebug';
 	public static var firstRenderWarning:Bool = true;
 
 	#if macro

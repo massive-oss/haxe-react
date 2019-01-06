@@ -8,6 +8,9 @@ import haxe.macro.TypeTools;
 
 class ReactTypeMacro
 {
+	static public inline var ALTER_SIGNATURES_BUILDER = 'AlterSignatures';
+	static public inline var ENSURE_RENDER_OVERRIDE_BUILDER = 'EnsureRenderOverride';
+
 	#if macro
 	public static function alterComponentSignatures(inClass:ClassType, fields:Array<Field>):Array<Field>
 	{
