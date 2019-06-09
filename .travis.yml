@@ -13,6 +13,7 @@ install:
   - haxelib install munit
   - haxelib install hamcrest
   - haxelib install hxnodejs
+  - haxelib install html-entities
 
 script:
   - haxelib run munit test -js

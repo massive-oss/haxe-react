@@ -1,6 +1,7 @@
 -main TestMain
 -lib munit
 -lib hamcrest
+-lib html-entities
 -cp src/lib
 
 -lib hxnodejs
