@@ -1,8 +1,12 @@
 package react;
 
 import haxe.extern.EitherType;
-import js.Error;
 import react.ReactComponent;
+#if (haxe_ver >= 4)
+import js.lib.Error;
+#else
+import js.Error;
+#end
 
 /**
 	https://reactjs.org/docs/typechecking-with-proptypes.html
