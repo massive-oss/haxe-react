@@ -2,6 +2,14 @@ package react;
 
 import react.ReactComponent;
 
+#if nodejs
+import js.node.stream.Readable;
+
+@:native('ReactMarkupReadableStream')
+@:jsRequire('react-dom/server/ReactDOMNodeStreamRenderer', 'ReactMarkupReadableStream')
+class ReactMarkupReadableStream extends Readable<ReactMarkupReadableStream> {}
+#end
+
 /**
 	https://facebook.github.io/react/docs/react-dom-server.html
 **/
@@ -25,11 +33,11 @@ extern class ReactDOMServer
 	/**
 		https://reactjs.org/docs/react-dom-server.html#rendertonodestream
 	**/
-	public static function renderToNodeStream(component:ReactElement):js.node.stream.Readable<Dynamic>;
+	public static function renderToNodeStream(component:ReactElement):ReactMarkupReadableStream;
 
 	/**
 		https://reactjs.org/docs/react-dom-server.html#rendertostaticnodestream
 	**/
-	public static function renderToStaticNodeStream(component:ReactElement):js.node.stream.Readable<Dynamic>;
+	public static function renderToStaticNodeStream(component:ReactElement):ReactMarkupReadableStream;
 	#end
 }
