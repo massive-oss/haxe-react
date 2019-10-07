@@ -11,13 +11,13 @@ typedef ReactComponentProps = {
 /**
 	https://facebook.github.io/react/docs/react-component.html
 **/
-typedef ReactComponent = ReactComponentOf<Dynamic, Dynamic, Dynamic>;
-typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Dynamic, Dynamic>;
-typedef ReactComponentOfState<TState> = ReactComponentOf<Dynamic, TState, Dynamic>;
-typedef ReactComponentOfRefs<TRefs> = ReactComponentOf<Dynamic, Dynamic, TRefs>;
-typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, TState, TRefs>;
-typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic>;
-typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, Dynamic, TRefs>;
+typedef ReactComponent = ReactComponentOf<Dynamic, Dynamic, Dynamic, Dynamic>;
+typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Dynamic, Dynamic, Dynamic>;
+typedef ReactComponentOfState<TState> = ReactComponentOf<Dynamic, TState, Dynamic, Dynamic>;
+typedef ReactComponentOfRefs<TRefs> = ReactComponentOf<Dynamic, Dynamic, TRefs, Dynamic>;
+typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, TState, TRefs, Dynamic>;
+typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic, Dynamic>;
+typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, Dynamic, TRefs, Dynamic>;
 
 #if (!react_global)
 @:jsRequire("react", "Component")
@@ -25,11 +25,11 @@ typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, D
 @:native('React.Component')
 @:keepSub
 @:autoBuild(react.ReactComponentMacro.build())
-extern class ReactComponentOf<TProps, TState, TRefs>
+extern class ReactComponentOf<TProps, TState, TRefs, TContext>
 {
 	var props(default, null):TProps;
 	var state(default, null):TState;
-	var context(default, null):Dynamic;
+	var context(default, null):TContext;
 
 	/**
 		https://facebook.github.io/react/docs/refs-and-the-dom.html
