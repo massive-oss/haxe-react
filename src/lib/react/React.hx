@@ -29,6 +29,12 @@ extern class React
 	public static function isValidElement(object:Dynamic):Bool;
 
 	/**
+		https://reactjs.org/docs/context.html#reactcreatecontext
+		Note: this API has been introduced in React 16.3
+	**/
+	public static function createContext<T>(?defaultValue:T, ?calculateChangedBits: T->T->Int):ReactContext<T>;
+
+	/**
 		https://reactjs.org/docs/react-api.html#reactcreateref
 
 		Note: this API has been introduced in React 16.3
@@ -87,3 +93,9 @@ extern interface ReactChildren
 }
 
 typedef CreateElementType = haxe.extern.EitherType<haxe.extern.EitherType<String, haxe.Constraints.Function>, Class<ReactComponent>>;
+
+typedef ReactContext<T> = {
+	var displayName:String;
+	var Provider:{value:T}->ReactElement;
+	var Consumer:T->ReactElement;
+}

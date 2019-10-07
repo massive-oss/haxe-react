@@ -29,7 +29,10 @@ extern class ReactComponentOf<TProps, TState, TRefs>
 {
 	var props(default, null):TProps;
 	var state(default, null):TState;
+	#if react_deprecated_context
+	// It's better to define it in your ReactComponent subclass as needed, with the right typing.
 	var context(default, null):Dynamic;
+	#end
 
 	/**
 		https://facebook.github.io/react/docs/refs-and-the-dom.html
