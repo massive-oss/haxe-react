@@ -11,13 +11,13 @@ typedef ReactComponentProps = {
 /**
 	https://facebook.github.io/react/docs/react-component.html
 **/
-typedef ReactComponent = ReactComponentOf<Dynamic, Dynamic, Dynamic, Dynamic>;
-typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Dynamic, Dynamic, Dynamic>;
-typedef ReactComponentOfState<TState> = ReactComponentOf<Dynamic, TState, Dynamic, Dynamic>;
-typedef ReactComponentOfRefs<TRefs> = ReactComponentOf<Dynamic, Dynamic, TRefs, Dynamic>;
-typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, TState, TRefs, Dynamic>;
-typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic, Dynamic>;
-typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, Dynamic, TRefs, Dynamic>;
+typedef ReactComponent = ReactComponentOf<Dynamic, Dynamic, Dynamic>;
+typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Dynamic, Dynamic>;
+typedef ReactComponentOfState<TState> = ReactComponentOf<Dynamic, TState, Dynamic>;
+typedef ReactComponentOfRefs<TRefs> = ReactComponentOf<Dynamic, Dynamic, TRefs>;
+typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, TState, TRefs>;
+typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic>;
+typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, Dynamic, TRefs>;
 
 #if (!react_global)
 @:jsRequire("react", "Component")
@@ -25,11 +25,14 @@ typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, D
 @:native('React.Component')
 @:keepSub
 @:autoBuild(react.ReactComponentMacro.build())
-extern class ReactComponentOf<TProps, TState, TRefs, TContext>
+extern class ReactComponentOf<TProps, TState, TRefs>
 {
 	var props(default, null):TProps;
 	var state(default, null):TState;
-	var context(default, null):TContext;
+	#if react_deprecated_context
+	// It's better to define it in your ReactComponent subclass as needed, with the right typing.
+	var context(default, null):Dynamic;
+	#end
 
 	/**
 		https://facebook.github.io/react/docs/refs-and-the-dom.html
