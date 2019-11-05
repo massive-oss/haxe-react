@@ -1,5 +1,10 @@
 package react;
+
+#if (haxe_ver >= 4)
+import js.lib.Error;
+#else
 import js.Error;
+#end
 
 typedef ReactComponentProps = {
 	/**
