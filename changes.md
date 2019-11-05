@@ -1,5 +1,25 @@
 ## Changes
 
+### 1.8.0
+
+- Haxe 4.0.0 support
+
+### 1.7.0
+
+- Added new Context API extern
+
+### 1.6.0
+
+- Use `html-entities` library
+
+### 1.5.0
+
+- Haxe 4 preview support
+- Improved breakpoint on JSX
+- Added PureComponent extern
+- Added new Refs API extern
+- Improvement and documentation of `@:jsxStatic` functionality
+
 ### 1.4.0
 
 - Generate `displayName` for `@:jsxStatic` components #86
