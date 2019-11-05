@@ -8,11 +8,17 @@ import support.sub.CompModule;
 import AssertTools.assertHasProps;
 
 class CompBasic extends ReactComponent {
+	override function render() {
+		return jsx('<div/>');
+	}
 }
 class CompDefaults extends ReactComponent {
 	static public var defaultProps = {
 		defA:'A',
 		defB:42
+	}
+	override function render() {
+		return jsx('<div/>');
 	}
 }
 extern class CompExtern extends ReactComponent {
@@ -21,7 +27,6 @@ extern class CompExtern extends ReactComponent {
 
 class ReactMacroTest
 {
-
 	public function new() {}
 
 	@BeforeClass
