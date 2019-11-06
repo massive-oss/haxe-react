@@ -7,39 +7,44 @@ import support.sub.CompExternModule;
 import support.sub.CompModule;
 import AssertTools.assertHasProps;
 
-class CompBasic extends ReactComponent {
+#if haxe4
+class CompBasic1 extends ReactComponent {
 	override function render() {
-		return jsx('<div/>');
+		return jsx(<div/>);
 	}
 }
-class CompDefaults extends ReactComponent {
+
+class CompDefaults1 extends ReactComponent {
 	static public var defaultProps = {
 		defA:'A',
 		defB:42
 	}
 	override function render() {
-		return jsx('<div/>');
+		return jsx(<div/>);
 	}
 }
-extern class CompExtern extends ReactComponent {
+
+extern class CompExtern1 extends ReactComponent {
 }
+#end
 
-
-class ReactMacroTest
+class ReactMacroInlineMarkupTest
 {
 	public function new() {}
+
+	#if haxe4
 
 	@BeforeClass
 	public function setup()
 	{
-		untyped __js__("$global.CompExtern = function() {}");
+		untyped __js__("$global.CompExtern1 = function() {}");
 		untyped __js__("$global.CompExternModule = function() {}");
 	}
 
 	@Test
 	public function DOM_without_props()
 	{
-		var e = jsx('<div/>');
+		var e = jsx(<div/>);
 		Assert.areEqual('div', e.type);
 		assertHasProps(e.props, []);
 	}
@@ -47,7 +52,7 @@ class ReactMacroTest
 	@Test
 	public function DOM_with_const_props()
 	{
-		var e = jsx('<div a="foo" />');
+		var e = jsx(<div a="foo" />);
 		Assert.areEqual('div', e.type);
 		assertHasProps(e.props, ['a'], ['foo']);
 	}
@@ -56,7 +61,7 @@ class ReactMacroTest
 	public function DOM_with_const_and_binding_props()
 	{
 		var foo = 12;
-		var e = jsx('<div a="foo" b=$foo />');
+		var e = jsx(<div a="foo" b=$foo />);
 		Assert.areEqual('div', e.type);
 		assertHasProps(e.props, ['a', 'b'], (['foo', 12]:Array<Dynamic>));
 	}
@@ -64,7 +69,7 @@ class ReactMacroTest
 	@Test
 	public function function_with_props()
 	{
-		var e = jsx('<RenderFunction a="foo" />');
+		var e = jsx(<RenderFunction a="foo" />);
 		Assert.areEqual(RenderFunction, e.type);
 		assertHasProps(e.props, ['a'], ['foo']);
 	}
@@ -72,29 +77,29 @@ class ReactMacroTest
 	@Test
 	public function component_with_props()
 	{
-		var e = jsx('<CompBasic a="foo" />');
-		Assert.areEqual(CompBasic, e.type);
+		var e = jsx(<CompBasic1 a="foo" />);
+		Assert.areEqual(CompBasic1, e.type);
 		assertHasProps(e.props, ['a'], ['foo']);
 	}
 
 	@Test
 	public function extern_component_qualified_module_should_DEOPT()
 	{
-		var e = jsx('<support.sub.CompExternModule />');
+		var e = jsx(<support.sub.CompExternModule />);
 		Assert.areEqual('NATIVE', e.type);
 	}
 
 	@Test
 	public function extern_component_module_should_DEOPT()
 	{
-		var e = jsx('<CompExternModule />');
+		var e = jsx(<CompExternModule />);
 		Assert.areEqual('NATIVE', e.type);
 	}
 
 	@Test
 	public function extern_component_should_DEOPT()
 	{
-		var e = jsx('<CompExtern />');
+		var e = jsx(<CompExtern1 />);
 		Assert.areEqual('NATIVE', e.type);
 	}
 
@@ -105,7 +110,7 @@ class ReactMacroTest
 			a:'foo',
 			b:12
 		}
-		var e = jsx('<div {...o} />');
+		var e = jsx(<div {...o} />);
 		Assert.areEqual('div', e.type);
 		assertHasProps(e.props, ['a', 'b'], (['foo', 12]:Array<Dynamic>));
 	}
@@ -117,7 +122,7 @@ class ReactMacroTest
 			a:'foo',
 			b:12
 		}
-		var e = jsx('<div {...o} c="bar" />');
+		var e = jsx(<div {...o} c="bar" />);
 		Assert.areEqual('div', e.type);
 		assertHasProps(e.props, ['a', 'b', 'c'], (['foo', 12, 'bar']:Array<Dynamic>));
 	}
@@ -129,7 +134,7 @@ class ReactMacroTest
 			a:'foo',
 			b:12
 		}
-		var e = jsx('<div {...o} a="bar" />');
+		var e = jsx(<div {...o} a="bar" />);
 		Assert.areEqual('div', e.type);
 		assertHasProps(e.props, ['a', 'b'], (['bar', 12]:Array<Dynamic>));
 	}
@@ -137,15 +142,15 @@ class ReactMacroTest
 	@Test
 	public function component_with_defaultProps()
 	{
-		var e = jsx('<CompDefaults />');
-		Assert.areEqual(CompDefaults, e.type);
+		var e = jsx(<CompDefaults1 />);
+		Assert.areEqual(CompDefaults1, e.type);
 		assertHasProps(e.props, ['defA', 'defB'], (['A', 42]:Array<Dynamic>));
 	}
 
 	@Test
 	public function component_in_sub_package_with_defaultProps()
 	{
-		var e = jsx('<CompModule />');
+		var e = jsx(<CompModule />);
 		Assert.areEqual(CompModule, e.type);
 		assertHasProps(e.props, ['defA', 'defB'], (['B', 43]:Array<Dynamic>));
 	}
@@ -153,7 +158,7 @@ class ReactMacroTest
 	@Test
 	public function qualified_component_in_sub_package_with_defaultProps()
 	{
-		var e = jsx('<support.sub.CompModule />');
+		var e = jsx(<support.sub.CompModule />);
 		Assert.areEqual(CompModule, e.type);
 		assertHasProps(e.props, ['defA', 'defB'], (['B', 43]:Array<Dynamic>));
 	}
@@ -165,16 +170,16 @@ class ReactMacroTest
 			a:'foo',
 			b:12
 		}
-		var e = jsx('<CompDefaults {...o}/>');
-		Assert.areEqual(CompDefaults, e.type);
+		var e = jsx(<CompDefaults1 {...o}/>);
+		Assert.areEqual(CompDefaults1, e.type);
 		assertHasProps(e.props, ['defA', 'defB', 'a', 'b'], (['A', 42, 'foo', 12]:Array<Dynamic>));
 	}
 
 	@Test
 	public function component_with_defaultProps_and_prop_override()
 	{
-		var e = jsx('<CompDefaults defA="foo"/>');
-		Assert.areEqual(CompDefaults, e.type);
+		var e = jsx(<CompDefaults1 defA="foo"/>);
+		Assert.areEqual(CompDefaults1, e.type);
 		assertHasProps(e.props, ['defA', 'defB'], (['foo', 42]:Array<Dynamic>));
 	}
 
@@ -185,8 +190,8 @@ class ReactMacroTest
 			defA:'foo',
 			b:12
 		}
-		var e = jsx('<CompDefaults {...o}/>');
-		Assert.areEqual(CompDefaults, e.type);
+		var e = jsx(<CompDefaults1 {...o}/>);
+		Assert.areEqual(CompDefaults1, e.type);
 		assertHasProps(e.props, ['defA', 'defB', 'b'], (['foo', 42, 12]:Array<Dynamic>));
 	}
 
@@ -197,8 +202,8 @@ class ReactMacroTest
 			defA:'foo',
 			b:12
 		}
-		var e = jsx('<CompDefaults {...o} defA="bar" />');
-		Assert.areEqual(CompDefaults, e.type);
+		var e = jsx(<CompDefaults1 {...o} defA="bar" />);
+		Assert.areEqual(CompDefaults1, e.type);
 		assertHasProps(e.props, ['defA', 'defB', 'b'], (['bar', 42, 12]:Array<Dynamic>));
 	}
 
@@ -206,7 +211,7 @@ class ReactMacroTest
 	public function DOM_with_ref_function_should_be_inlined()
 	{
 		function setRef() {};
-		var e = jsx('<div ref=$setRef />');
+		var e = jsx(<div ref=$setRef />);
 		Assert.areEqual('div', e.type);
 		Assert.areEqual(setRef, e.ref);
 		assertHasProps(e.props, []);
@@ -215,7 +220,7 @@ class ReactMacroTest
 	@Test
 	public function DOM_with_ref_const_string_should_be_DEOPT()
 	{
-		var e = jsx('<div ref="myref" />');
+		var e = jsx(<div ref="myref" />);
 		Assert.areEqual('NATIVE', e.type);
 	}
 
@@ -223,7 +228,7 @@ class ReactMacroTest
 	public function DOM_with_ref_string_should_be_DEOPT()
 	{
 		var setRef = 'myRef';
-		var e = jsx('<div ref=$setRef />');
+		var e = jsx(<div ref=$setRef />);
 		Assert.areEqual('NATIVE', e.type);
 	}
 
@@ -231,14 +236,14 @@ class ReactMacroTest
 	public function DOM_with_ref_unknown_should_be_DEOPT()
 	{
 		var setRef:Dynamic = function() {};
-		var e = jsx('<div ref=$setRef />');
+		var e = jsx(<div ref=$setRef />);
 		Assert.areEqual('NATIVE', e.type);
 	}
 
 	@Test
 	public function DOM_with_single_child_text_should_NOT_be_array()
 	{
-		var e = jsx('<div>hello</div>');
+		var e = jsx(<div>hello</div>);
 		Assert.areEqual('div', e.type);
 		assertHasProps(e.props, ['children']);
 		var children = e.props.children;
@@ -248,7 +253,7 @@ class ReactMacroTest
 	@Test
 	public function DOM_with_single_child_node_should_NOT_be_array()
 	{
-		var e = jsx('<div><span/></div>');
+		var e = jsx(<div><span/></div>);
 		Assert.areEqual('div', e.type);
 		assertHasProps(e.props, ['children']);
 		var children = e.props.children;
@@ -260,7 +265,7 @@ class ReactMacroTest
 	public function DOM_with_single_child_binding_should_NOT_be_array()
 	{
 		var o = { name:'o' };
-		var e = jsx('<div>${o}</div>');
+		var e = jsx(<div>${o}</div>);
 		Assert.areEqual('div', e.type);
 		Assert.areEqual(e.props.children, o);
 	}
@@ -268,7 +273,7 @@ class ReactMacroTest
 	@Test
 	public function DOM_with_children_should_be_array()
 	{
-		var e = jsx('<div>hello <span/></div>');
+		var e = jsx(<div>hello <span/></div>);
 		Assert.areEqual('div', e.type);
 		assertHasProps(e.props, ['children']);
 		var children = e.props.children;
@@ -281,6 +286,8 @@ class ReactMacroTest
 
 	function RenderFunction()
 	{
-		return jsx('<div/>');
+		return jsx(<div/>);
 	}
+
+	#end
 }

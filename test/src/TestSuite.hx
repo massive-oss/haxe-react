@@ -1,8 +1,9 @@
 import massive.munit.TestSuite;
 
+import JsxSanitizeTest;
+import ReactMacroInlineMarkupTest;
 import JsxParserTest;
 import ReactMacroTest;
-import JsxSanitizeTest;
 
 /**
  * Auto generated Test Suite for MassiveUnit.
@@ -14,8 +15,9 @@ class TestSuite extends massive.munit.TestSuite
 	{
 		super();
 
+		add(JsxSanitizeTest);
+		add(ReactMacroInlineMarkupTest);
 		add(JsxParserTest);
 		add(ReactMacroTest);
-		add(JsxSanitizeTest);
 	}
 }
