@@ -52,6 +52,17 @@ class ReactMacroTest
 		assertHasProps(e.props, ['a'], ['foo']);
 	}
 
+	#if haxe4
+	@Test
+	public function inline_markup()
+	{
+		var e = jsx(<div>hello</div>);
+		Assert.areEqual('div', e.type);
+		var children = e.props.children;
+		Assert.areEqual('hello', children);
+	}
+	#end
+
 	@Test
 	public function DOM_with_const_and_binding_props()
 	{
