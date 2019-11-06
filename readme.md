@@ -81,11 +81,8 @@ extern class Provider extends react.ReactComponent { }
 
 ## JSX
 
-The Haxe compiler (and editors) doesn't allow to use exactly the JSX XML DSL,
-so we had to compromise a bit...
-
-This library's take on JSX is to use a compile-time macro to parse JSX as a string to generate
-the same kind of code that Facebook's JSX, Babel and Typescript will generate.
+This library uses a compile-time macro to parse JSX and generate
+the same kind of code that Facebook's JSX, Babel and Typescript will.
 
 Both classic JSX `{}` binding and Haxe string interpolation `$var` / `${expression}` / `<$Comp>`
 are allowed. The advantage of string interpolation is Haxe editor supports for completion and
@@ -93,44 +90,43 @@ code navigation.
 
 Spread operator and complex expressions within curly braces are supported.
 
+The `jsx` macro can be called either with a String literal, or with an XML literal.
+The result is absolutely identical so choose what you prefer:
+
 ```haxe
-import react.React;
-import react.ReactDOM;
 import react.ReactMacro.jsx;
-
-class App extends ReactComponent {
-
-	static public function main() {
-		ReactDOM.render(jsx('<App/>'), Browser.document.getElementById('app'));
-	}
-
-	public function new() {
-		super();
-	}
-
-	override function render() {
-		var cname = 'foo';
-		return jsx('
-			<div className=$cname>
-				<App.statelessComponent style=${{margin:"10px"}}/>
-				${/*children*/}
-			</div>
-		');
-	}
-
-	static function statelessComponent(props:Dynamic) {
-		return jsx('<div {...props}/>');
-	}
+...
+override function render() {
+	var cname = 'foo';
+	return jsx('
+		<div className=$cname>
+			<MyComponent style=${{margin:"10px"}}/>
+			${/*children*/}
+		</div>
+	');
+}
+```
+```haxe
+import react.ReactMacro.jsx;
+...
+override function render() {
+	var cname = 'foo';
+	return jsx(
+		<div className=$cname>
+			<MyComponent style=${{margin:"10px"}}/>
+			${/*children*/}
+		</div>
+	);
 }
 ```
 
 ### JSX Fragments
 
-[Fragments](https://reactjs.org/docs/fragments.html) (React 16.2+) let you group 
-a list of children without adding extra nodes to the DOM. 
+[Fragments](https://reactjs.org/docs/fragments.html) (React 16.2+) let you group
+a list of children without adding extra nodes to the DOM.
 
 Two syntaxes are supported:
-```jsx
+```javascript
 <Fragment>
     Text
     <span>more text</span>
@@ -160,25 +156,28 @@ Two syntaxes are supported:
 
 	However this isn't allowed in Haxe, so you must extract nested JSX into variables:
 	```haxe
-	var content = isA ? jsx('<A/>') : jsx('<B/>');
-	return jsx('<div>{content}</div>');
+	var content = isA ? jsx(<A/>) : jsx(<B/>);
+	return jsx(<div>{content}</div>);
 	```
 
 ## Components strict typing
 
-The default `ReactComponent` type is a shorthand for `ReactComponentOf<Dynamic, Dynamic, Dynamic>`,
+The default `ReactComponent` type is a shorthand for `ReactComponentOf<Dynamic, Dynamic>`,
 a fully untyped component.
 
 To fully benefit from Haxe's strict typing you should look into extending a stricter base class:
 
 ```haxe
-typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Dynamic, Dynamic>;
-typedef ReactComponentOfState<TState> = ReactComponentOf<Dynamic, TState, Dynamic>;
-typedef ReactComponentOfRefs<TRefs> = ReactComponentOf<Dynamic, Dynamic, TRefs>;
-typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic>;
-typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, Dynamic, TRefs>;
-typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, TState, TRefs>;
+typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Empty>;
+typedef ReactComponentOfState<TState> = ReactComponentOf<Empty, TState>;
+typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState>;
 ```
+
+The `Empty` type is an alias to `{}`, which means:
+- `ReactComponentOfProps` can NOT use any state,
+- `ReactComponentOfState` can NOT use any props.
+
+To re-open to `Dynamic` you need to use `ReactComponentOf`.
 
 ## React JS dependency
 

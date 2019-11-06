@@ -1,8 +1,17 @@
 ## Changes
 
+### 1.9.0
+
+- Removed string-based `Refs` API
+- Added inline XML support
+- Removed `context` field in base `ReactComponent` class;
+it should be declared as needed, but can be restored by adding `-D react_deprecated_context`
+
 ### 1.8.0
 
 - Haxe 4.0.0 support
+- Fixed `ReactDOMServer` extern
+- `ReactComponentMacro` is now extensible
 
 ### 1.7.0
 

@@ -28,13 +28,14 @@ class ReactTypeMacro
 		}
 
 		// Only alter setState signature for non-dynamic states
-		switch (ComplexTypeTools.toType(stateType))
-		{
-			case TType(_) if (!hasSetState(fields)):
-				addSetStateType(fields, inClass, propsType, stateType);
+		if (!Context.defined('display'))
+			switch (ComplexTypeTools.toType(stateType))
+			{
+				case TType(_) if (!hasSetState(fields)):
+					addSetStateType(fields, inClass, propsType, stateType);
 
-			default:
-		}
+				default:
+			}
 
 		return fields;
 	}
