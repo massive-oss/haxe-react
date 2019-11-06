@@ -1,4 +1,5 @@
 package react;
+import js.Error;
 
 typedef ReactComponentProps = {
 	/**
@@ -10,28 +11,27 @@ typedef ReactComponentProps = {
 /**
 	STUB CLASSES
 **/
-typedef ReactComponent = ReactComponentOf<Dynamic, Dynamic, Dynamic>;
-typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Dynamic, Dynamic>;
-typedef ReactComponentOfState<TState> = ReactComponentOf<Dynamic, TState, Dynamic>;
-typedef ReactComponentOfRefs<TRefs> = ReactComponentOf<Dynamic, Dynamic, TRefs>;
-typedef ReactComponentOfStateAndRefs<TState, TRefs> = ReactComponentOf<Dynamic, TState, TRefs>;
-typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState, Dynamic>;
-typedef ReactComponentOfPropsAndRefs<TProps, TRefs> = ReactComponentOf<TProps, Dynamic, TRefs>;
+typedef ReactComponent = ReactComponentOf<Dynamic, Dynamic>;
+
+typedef ReactComponentOfProps<TProps> = ReactComponentOf<TProps, Dynamic>;
+typedef ReactComponentOfState<TState> = ReactComponentOf<Dynamic, TState>;
+
+// Keep the old ReactComponentOfPropsAndState typedef available
+typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState>;
 
 @:autoBuild(react.ReactComponentMacro.build())
-class ReactComponentOf<TProps, TState, TRefs>
+class ReactComponentOf<TProps, TState>
 {
 	static var defaultProps:Dynamic;
 	static var contextTypes:Dynamic;
 
 	var props(default, null):TProps;
 	var state(default, null):TState;
-	var context(default, null):Dynamic;
 
-	/**
-		https://facebook.github.io/react/docs/refs-and-the-dom.html
-	**/
-	var refs(default, null):TRefs;
+	#if react_deprecated_context
+	// It's better to define it in your ReactComponent subclass as needed, with the right typing.
+	var context(default, null):Dynamic;
+	#end
 
 	function new(?props:TProps) {}
 
@@ -84,6 +84,11 @@ class ReactComponentOf<TProps, TState, TRefs>
 		https://facebook.github.io/react/docs/react-component.html#componentdidupdate
 	**/
 	function componentDidUpdate(prevProps:TProps, prevState:TState):Void {}
+
+	/**
+		https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html
+	**/
+	function componentDidCatch(error:Error, info:{ componentStack:String }):Void {}
 
 	static function __init__():Void {
 		// required magic value to tag literal react elements
