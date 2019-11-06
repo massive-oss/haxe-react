@@ -3,7 +3,7 @@ package react.jsx;
 using StringTools;
 
 #if (macro || munit || display)
-enum JsxAst 
+enum JsxAst
 {
 	Node(isHtml:Bool, path:Array<String>, attributes:Array<{name:String, value:String}>, children:Array<JsxAst>);
 	Expr(value:String);
@@ -19,7 +19,7 @@ class JsxParser
 		if (entries.length > 1) throw('Syntax error: Adjacent JSX elements must be wrapped in an enclosing tag');
 		return entries[0];
 	}
-	
+
 	static function processElement(xml:Xml):JsxAst
 	{
 		// parse type
@@ -35,13 +35,13 @@ class JsxParser
 			if (value.length > 0 && value.charAt(0) != '{') value = replaceEntities(value);
 			attrs.push({ name:attr, value:value });
 		}
-		
+
 		// parse children
 		var children = parseChildren(xml);
-		
+
 		return JsxAst.Node(isHtml, path, attrs, children);
 	}
-	
+
 	static function parseChildren(xml:Xml):Array<JsxAst>
 	{
 		var children = [];
@@ -82,14 +82,14 @@ class JsxParser
 			? JsxAst.Expr(value.substr(1, value.length - 2))
 			: JsxAst.Text(replaceEntities(value));
 	}
-	
+
 	static public function replaceEntities(value:String)
 	{
-		if (value.indexOf('&') < 0) 
+		if (value.indexOf('&') < 0)
 			return value;
-		
+
 		var reEntity = ~/&[a-z0-9]+;/gi;
-		var map = HtmlEntities.map;
+		var map = html.Entities.all;
 		var result = '';
 		while (reEntity.match(value))
 		{

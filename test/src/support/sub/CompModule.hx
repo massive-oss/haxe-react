@@ -1,5 +1,6 @@
 package support.sub;
 
+import react.ReactMacro.jsx;
 import react.ReactComponent;
 
 class CompModule extends ReactComponent
@@ -9,9 +10,11 @@ class CompModule extends ReactComponent
 		defB:43
 	}
 
-	public function new() 
-	{
+	public function new() {
 		super();
 	}
-	
+
+	override function render() {
+		return jsx('<div/>');
+	}
 }

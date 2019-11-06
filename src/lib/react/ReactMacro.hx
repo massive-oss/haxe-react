@@ -137,7 +137,7 @@ class ReactMacro
 					var props = makeProps(spread, attrs, pos);
 
 					var args = [type, props].concat(children);
-					return macro react.React.createElement($a{args});
+					return macro @:pos(pos) react.React.createElement($a{args});
 				}
 		}
 	}

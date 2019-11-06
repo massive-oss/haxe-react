@@ -50,8 +50,8 @@ If you have questions / issues, join [haxe-react on Gitter.im](https://gitter.im
 Most of the regular React API is integrated (non-JSX example):
 
 ```haxe
-import api.react.React;
-import api.react.ReactDOM;
+import react.React;
+import react.ReactDOM;
 
 class App extends ReactComponent {
 
@@ -94,9 +94,9 @@ code navigation.
 Spread operator and complex expressions within curly braces are supported.
 
 ```haxe
-import api.react.React;
-import api.react.ReactDOM;
-import api.react.ReactMacro.jsx;
+import react.React;
+import react.ReactDOM;
+import react.ReactMacro.jsx;
 
 class App extends ReactComponent {
 

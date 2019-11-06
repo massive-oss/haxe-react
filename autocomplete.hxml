@@ -1,0 +1,5 @@
+-lib munit
+-cp src/lib
+-cp test/src
+-js _
+react.React
