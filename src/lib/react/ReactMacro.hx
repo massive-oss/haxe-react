@@ -28,10 +28,16 @@ class ReactMacro
 	public static macro function jsx(expr:ExprOf<String>):Expr
 	{
 		if (Context.defined('display'))
-			return macro untyped ${expr};
+			return switch(expr) {
+				case macro @:markup $v{(s:String)}: macro @:pos(expr.pos) untyped $v{s};
+				case _: macro @:pos(expr.pos) untyped $e{expr};
+			};
 		else
-			return parseJsx(ExprTools.getValue(expr), expr.pos);
-	}
+			return parseJsx(switch(expr) {
+				case macro @:markup $v{(s:String)}: s;
+				case _: ExprTools.getValue(expr);
+			}, expr.pos);
+}
 
 	public static macro function sanitize(expr:ExprOf<String>):Expr
 	{
