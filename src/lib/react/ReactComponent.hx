@@ -91,14 +91,21 @@ extern class ReactComponentOf<TProps, TState>
 
 	/**
 		https://facebook.github.io/react/docs/react-component.html#componentdidupdate
+		Note: Updated to version introduced in React 16.3
 	**/
-	function componentDidUpdate(prevProps:TProps, prevState:TState):Void;
+	function componentDidUpdate(prevProps:TProps, prevState:TState, ?snapshot:Dynamic):Void;
 
 	/**
 		https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html
 	**/
 	function componentDidCatch(error:Error, info:{ componentStack:String }):Void;
 
+	/**
+		https://reactjs.org/docs/react-component.html#getsnapshotbeforeupdate
+		Note: this API has been introduced in React 16.3
+	**/
+	function getSnapshotBeforeUpdate(prevProps:TProps, prevState:TState):Dynamic;
+	
 	#if (js && !debug && !react_no_inline)
 	static function __init__():Void {
 		// required magic value to tag literal react elements
