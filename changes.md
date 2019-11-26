@@ -1,5 +1,14 @@
 ## Changes
 
+### 1.10.0
+
+- Added `getSnapshotBeforeUpdate` livecycle methods behind `-D react_snapshot_api`
+
+Breaking change: `componentDidUpdate` will expects an extra `snapshot` optional parameter:
+```
+override function componentDidUpdate(prevProps:TProps, prevState:TState, ?snapshot:Dynamic):Void {}
+```
+
 ### 1.9.0
 
 - Removed string-based `Refs` API
