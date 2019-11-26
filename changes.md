@@ -53,4 +53,4 @@ it should be declared as needed, but can be restored by adding `-D react_depreca
 
 - `setState` now accepts `Partial<T>`; where `T` is a `typedef`, `Partial<T>` is `T` will all the fields made optional
 - `react.React.PropTypes` removed in favor of `react.ReactPropTypes`
-- added `-D react_render_warning` option
+- added `-D react_runtime_warnings` option

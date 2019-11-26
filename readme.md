@@ -236,7 +236,7 @@ This behaviour can be **disabled** using `-D react_no_inline`.
 
 ### Avoidable renders warning
 
-Setting `-D react_render_warning` will enable runtime warnings for avoidable renders.
+Setting `-D react_runtime_warnings` will enable runtime warnings for avoidable renders.
 
 This will add a `componentDidUpdate` (or update the existing one) where a **shallowCompare** is done on current and previous props and state. If both did not change, a warning will be displayed in the console.
 

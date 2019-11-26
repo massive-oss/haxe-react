@@ -93,7 +93,11 @@ extern class ReactComponentOf<TProps, TState>
 		https://facebook.github.io/react/docs/react-component.html#componentdidupdate
 		Note: Updated to version introduced in React 16.3
 	**/
+	#if react_snapshot_api
 	function componentDidUpdate(prevProps:TProps, prevState:TState, ?snapshot:Dynamic):Void;
+	#else
+	function componentDidUpdate(prevProps:TProps, prevState:TState):Void;
+	#end
 
 	/**
 		https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html

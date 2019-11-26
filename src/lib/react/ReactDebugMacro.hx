@@ -47,8 +47,13 @@ class ReactDebugMacro
 			{
 				switch (field.kind) {
 					case FFun(f):
+						#if react_snapshot_api
+						if (f.args.length != 2 && f.args.length != 3)
+							return Context.error('componentDidUpdate should accept two or three arguments', inClass.pos);
+						#else
 						if (f.args.length != 2)
 							return Context.error('componentDidUpdate should accept two arguments', inClass.pos);
+						#end
 
 						f.expr = macro {
 							${exprComponentDidUpdate(inClass, f.args[0].name, f.args[1].name)}
@@ -85,10 +90,17 @@ class ReactDebugMacro
 					type: stateType,
 					opt: false,
 					value: null
+				},
+				{
+					meta: [],
+					name: "snapshot",
+					type: macro :Dynamic,
+					opt: true,
+					value: null
 				}
 			],
 			ret: macro :Void,
-			expr: exprComponentDidUpdate(inClass, "prevProps", "prevState")
+			expr: exprComponentDidUpdate(inClass, "prevProps", "prevState", "snapshot")
 		}
 
 		fields.push({
