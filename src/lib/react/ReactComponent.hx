@@ -65,6 +65,11 @@ extern class ReactComponentOf<TProps, TState>
 	function componentWillMount():Void;
 
 	/**
+		https://facebook.github.io/react/docs/react-component.html#unsafe_componentwillmount
+	**/
+	function UNSAFE_componentWillMount():Void;
+
+	/**
 		https://facebook.github.io/react/docs/react-component.html#componentdidmount
 	**/
 	function componentDidMount():Void;
@@ -80,6 +85,11 @@ extern class ReactComponentOf<TProps, TState>
 	function componentWillReceiveProps(nextProps:TProps):Void;
 
 	/**
+		https://facebook.github.io/react/docs/react-component.html#unsafe_componentwillreceiveprops
+	**/
+	function UNSAFE_componentWillReceiveProps(nextProps:TProps):Void;
+
+	/**
 		https://facebook.github.io/react/docs/react-component.html#shouldcomponentupdate
 	**/
 	dynamic function shouldComponentUpdate(nextProps:TProps, nextState:TState):Bool;
@@ -88,6 +98,11 @@ extern class ReactComponentOf<TProps, TState>
 		https://facebook.github.io/react/docs/react-component.html#componentwillupdate
 	**/
 	function componentWillUpdate(nextProps:TProps, nextState:TState):Void;
+
+	/**
+		https://facebook.github.io/react/docs/react-component.html#unsafe_componentwillupdate
+	**/
+	function UNSAFE_componentWillUpdate(nextProps:TProps, nextState:TState):Void;
 
 	/**
 		https://facebook.github.io/react/docs/react-component.html#componentdidupdate
@@ -111,7 +126,7 @@ extern class ReactComponentOf<TProps, TState>
 	#if react_snapshot_api
 	function getSnapshotBeforeUpdate(prevProps:TProps, prevState:TState):Dynamic;
 	#end
-	
+
 	#if (js && !debug && !react_no_inline)
 	static function __init__():Void {
 		// required magic value to tag literal react elements
