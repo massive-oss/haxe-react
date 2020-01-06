@@ -60,11 +60,6 @@ extern class ReactComponentOf<TProps, TState>
 	function render():ReactElement;
 
 	/**
-		https://facebook.github.io/react/docs/react-component.html#componentwillmount
-	**/
-	function componentWillMount():Void;
-
-	/**
 		https://facebook.github.io/react/docs/react-component.html#unsafe_componentwillmount
 	**/
 	function UNSAFE_componentWillMount():Void;
@@ -80,11 +75,6 @@ extern class ReactComponentOf<TProps, TState>
 	function componentWillUnmount():Void;
 
 	/**
-		https://facebook.github.io/react/docs/react-component.html#componentwillreceiveprops
-	**/
-	function componentWillReceiveProps(nextProps:TProps):Void;
-
-	/**
 		https://facebook.github.io/react/docs/react-component.html#unsafe_componentwillreceiveprops
 	**/
 	function UNSAFE_componentWillReceiveProps(nextProps:TProps):Void;
@@ -93,11 +83,6 @@ extern class ReactComponentOf<TProps, TState>
 		https://facebook.github.io/react/docs/react-component.html#shouldcomponentupdate
 	**/
 	dynamic function shouldComponentUpdate(nextProps:TProps, nextState:TState):Bool;
-
-	/**
-		https://facebook.github.io/react/docs/react-component.html#componentwillupdate
-	**/
-	function componentWillUpdate(nextProps:TProps, nextState:TState):Void;
 
 	/**
 		https://facebook.github.io/react/docs/react-component.html#unsafe_componentwillupdate
