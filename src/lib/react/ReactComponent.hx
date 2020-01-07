@@ -60,9 +60,13 @@ extern class ReactComponentOf<TProps, TState>
 	function render():ReactElement;
 
 	/**
-		https://facebook.github.io/react/docs/react-component.html#unsafe_componentwillmount
+		https://facebook.github.io/react/docs/react-component.html#componentwillmount
 	**/
+	#if (react_ver > 16.08)
 	function UNSAFE_componentWillMount():Void;
+	#else
+	function componentWillMount():Void;
+	#end
 
 	/**
 		https://facebook.github.io/react/docs/react-component.html#componentdidmount
@@ -75,9 +79,13 @@ extern class ReactComponentOf<TProps, TState>
 	function componentWillUnmount():Void;
 
 	/**
-		https://facebook.github.io/react/docs/react-component.html#unsafe_componentwillreceiveprops
+		https://facebook.github.io/react/docs/react-component.html#componentwillreceiveprops
 	**/
+	#if (react_ver > 16.08)
 	function UNSAFE_componentWillReceiveProps(nextProps:TProps):Void;
+	#else
+	function componentWillReceiveProps(nextProps:TProps):Void;
+	#end
 
 	/**
 		https://facebook.github.io/react/docs/react-component.html#shouldcomponentupdate
@@ -85,9 +93,13 @@ extern class ReactComponentOf<TProps, TState>
 	dynamic function shouldComponentUpdate(nextProps:TProps, nextState:TState):Bool;
 
 	/**
-		https://facebook.github.io/react/docs/react-component.html#unsafe_componentwillupdate
+		https://facebook.github.io/react/docs/react-component.html#componentwillupdate
 	**/
+	#if (react_ver > 16.08)
 	function UNSAFE_componentWillUpdate(nextProps:TProps, nextState:TState):Void;
+	#else
+	function componentWillUpdate(nextProps:TProps, nextState:TState):Void;
+	#end
 
 	/**
 		https://facebook.github.io/react/docs/react-component.html#componentdidupdate
