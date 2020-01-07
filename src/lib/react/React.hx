@@ -32,7 +32,9 @@ extern class React
 		https://reactjs.org/docs/context.html#reactcreatecontext
 		Note: this API has been introduced in React 16.3
 	**/
+	#if react_context_api
 	public static function createContext<T>(?defaultValue:T, ?calculateChangedBits: T->T->Int):ReactContext<T>;
+	#end
 
 	/**
 		https://reactjs.org/docs/react-api.html#reactcreateref
@@ -41,7 +43,9 @@ extern class React
 		If you are using an earlier release of React, use callback refs instead
 		https://reactjs.org/docs/refs-and-the-dom.html#callback-refs
 	**/
+	#if react_ref_api
 	public static function createRef<TRef>():ReactRef<TRef>;
+	#end
 
 	/**
 		https://reactjs.org/docs/react-api.html#reactforwardref
@@ -51,7 +55,9 @@ extern class React
 		If you are using an earlier release of React, use callback refs instead
 		https://reactjs.org/docs/refs-and-the-dom.html#callback-refs
 	**/
+	#if react_ref_api
 	public static function forwardRef<TProps, TRef>(render:TProps->ReactRef<TRef>->ReactElement):CreateElementType;
+	#end
 
 	/**
 		https://facebook.github.io/react/docs/react-api.html#react.children
@@ -94,8 +100,10 @@ extern interface ReactChildren
 
 typedef CreateElementType = haxe.extern.EitherType<haxe.extern.EitherType<String, haxe.Constraints.Function>, Class<ReactComponent>>;
 
+#if react_context_api
 typedef ReactContext<T> = {
 	var displayName:String;
 	var Provider:{value:T}->ReactElement;
 	var Consumer:T->ReactElement;
 }
+#end

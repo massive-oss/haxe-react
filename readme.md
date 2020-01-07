@@ -168,6 +168,8 @@ use `-D react_ver=<version>`, like `-D react_ver=16.3` if you want to restrict t
 Otherwise all the features will be turned on:
 
 - `react_fragments`: e.g `<Fragment>`, since React 16.2
+- `react_context_api`: e.g. `React.createContext`, since React 16.3
+- `react_ref_api`: e.g. `React.createRef`, since React 16.3
 - `react_snapshot_api`: e.g. `getSnapshotBeforeUpdate`, since React 16.3
 - `react_unsafe_lifecycle`: e.g. `UNSAFE_componentWillMount`, since React 16.9
 
