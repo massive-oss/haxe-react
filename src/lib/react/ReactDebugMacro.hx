@@ -102,7 +102,7 @@ class ReactDebugMacro
 				#end
 			],
 			ret: macro :Void,
-			expr: exprComponentDidUpdate(inClass, "prevProps", "prevState", "snapshot")
+			expr: exprComponentDidUpdate(inClass, "prevProps", "prevState")
 		}
 
 		fields.push({
