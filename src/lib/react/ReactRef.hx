@@ -2,6 +2,7 @@ package react;
 
 import haxe.Constraints.Function;
 
+#if react_ref_api
 @:callable
 abstract ReactRef<T>(Function) {
 	public var current(get, never):T;
@@ -10,4 +11,4 @@ abstract ReactRef<T>(Function) {
 		return untyped this.current;
 	}
 }
-
+#end

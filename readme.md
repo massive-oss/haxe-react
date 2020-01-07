@@ -160,6 +160,19 @@ Two syntaxes are supported:
 	return jsx(<div>{content}</div>);
 	```
 
+## Feature flags
+
+To control React features that should be enabled, depending on your target React version,
+use `-D react_ver=<version>`, like `-D react_ver=16.3` if you want to restrict to `16.3`.
+
+Otherwise all the features will be turned on:
+
+- `react_fragments`: e.g `<Fragment>`, since React 16.2
+- `react_context_api`: e.g. `React.createContext`, since React 16.3
+- `react_ref_api`: e.g. `React.createRef`, since React 16.3
+- `react_snapshot_api`: e.g. `getSnapshotBeforeUpdate`, since React 16.3
+- `react_unsafe_lifecycle`: e.g. `UNSAFE_componentWillMount`, since React 16.9
+
 ## Components strict typing
 
 The default `ReactComponent` type is a shorthand for `ReactComponentOf<Dynamic, Dynamic>`,

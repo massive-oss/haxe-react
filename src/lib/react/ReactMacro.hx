@@ -10,7 +10,7 @@ import haxe.macro.ExprTools;
 import haxe.macro.Type;
 import react.jsx.JsxStaticMacro;
 
-#if (haxe_ver < 4)
+#if !haxe4
 typedef ObjectField = {field:String, expr:Expr};
 #end
 
@@ -169,7 +169,7 @@ class ReactMacro
 		if (ref == null) ref = macro null;
 
 		var fields = [
-			#if (haxe_ver < 4)
+			#if !haxe4
 			{field: "@$__hx__$$typeof", expr: macro untyped __js__("$$tre")},
 			#else
 			{field: "$$typeof", expr: macro untyped __js__("$$tre")},

@@ -1,6 +1,6 @@
 package react;
 
-#if (haxe_ver >= 4)
+#if haxe4
 import js.lib.Error;
 #else
 import js.Error;
@@ -62,7 +62,11 @@ extern class ReactComponentOf<TProps, TState>
 	/**
 		https://facebook.github.io/react/docs/react-component.html#componentwillmount
 	**/
+	#if react_unsafe_lifecycle
+	function UNSAFE_componentWillMount():Void;
+	#else
 	function componentWillMount():Void;
+	#end
 
 	/**
 		https://facebook.github.io/react/docs/react-component.html#componentdidmount
@@ -77,7 +81,11 @@ extern class ReactComponentOf<TProps, TState>
 	/**
 		https://facebook.github.io/react/docs/react-component.html#componentwillreceiveprops
 	**/
+	#if react_unsafe_lifecycle
+	function UNSAFE_componentWillReceiveProps(nextProps:TProps):Void;
+	#else
 	function componentWillReceiveProps(nextProps:TProps):Void;
+	#end
 
 	/**
 		https://facebook.github.io/react/docs/react-component.html#shouldcomponentupdate
@@ -87,7 +95,11 @@ extern class ReactComponentOf<TProps, TState>
 	/**
 		https://facebook.github.io/react/docs/react-component.html#componentwillupdate
 	**/
+	#if react_unsafe_lifecycle
+	function UNSAFE_componentWillUpdate(nextProps:TProps, nextState:TState):Void;
+	#else
 	function componentWillUpdate(nextProps:TProps, nextState:TState):Void;
+	#end
 
 	/**
 		https://facebook.github.io/react/docs/react-component.html#componentdidupdate
@@ -104,14 +116,14 @@ extern class ReactComponentOf<TProps, TState>
 	**/
 	function componentDidCatch(error:Error, info:{ componentStack:String }):Void;
 
+	#if react_snapshot_api
 	/**
 		https://reactjs.org/docs/react-component.html#getsnapshotbeforeupdate
 		Note: this API has been introduced in React 16.3
 	**/
-	#if react_snapshot_api
 	function getSnapshotBeforeUpdate(prevProps:TProps, prevState:TState):Dynamic;
 	#end
-	
+
 	#if (js && !debug && !react_no_inline)
 	static function __init__():Void {
 		// required magic value to tag literal react elements

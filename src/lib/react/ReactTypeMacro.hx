@@ -12,6 +12,40 @@ class ReactTypeMacro
 	static public inline var ENSURE_RENDER_OVERRIDE_BUILDER = 'EnsureRenderOverride';
 
 	#if macro
+
+	// define React feature flags based on -D react_ver (default to latest)
+	public static function setFlags() {
+		var ver = Context.defined("react_ver") ? Context.definedValue("react_ver") : "16.12";
+		var match = ~/([0-9]+).([0-9]+)/;
+		if (!match.match(ver)) {
+			Context.fatalError("Invalid `react_ver` specified: " + Context.definedValue("react_ver"), Context.currentPos());
+		}
+		var version = [Std.parseInt(match.matched(1)), Std.parseInt(match.matched(2))];
+
+		if (semver(version, [16, 2])) {
+			define("react_fragments");
+		}
+		if (semver(version, [16, 3])) {
+			define("react_context_api");
+			define("react_ref_api");
+			define("react_snapshot_api");
+		}
+		if (semver(version, [16, 9])) {
+			define("react_unsafe_lifecycle");
+		}
+	}
+
+	static function semver(target: Array<Int>, required: Array<Int>) {
+		if (target[0] != required[0]) return target[0] > required[0];
+		return target[1] >= required[1];
+	}
+
+	static function define(flag: String) {
+		if (!Context.defined(flag)) {
+			haxe.macro.Compiler.define(flag);
+		}
+	}
+
 	public static function alterComponentSignatures(inClass:ClassType, fields:Array<Field>):Array<Field>
 	{
 		var propsType:ComplexType = macro :Dynamic;
