@@ -64,13 +64,13 @@ class ReactTypeMacro
 		// auto-declare arguments of `componentDidUpdate` for convenience
 		var updateArgs = Context.defined("react_snapshot_api") ? 3 : 2;
 		for (field in fields) {
-			if (field.name == "componentDidUpdate") {
+			if (field.name == 'componentDidUpdate') {
 				switch (field.kind) {
 					case FFun(f):
 						while (f.args.length < updateArgs) {
 							var index = f.args.length;
 							f.args.push({
-								name: 'arg$index',
+								name: '_',
 								opt: index == 2,
 								type: macro :Dynamic
 							});
