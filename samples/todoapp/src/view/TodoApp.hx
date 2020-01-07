@@ -12,34 +12,35 @@ typedef TodoAppState = {
 	items:Array<TodoItem>
 }
 
-typedef TodoAppRefs = {
-	input:InputElement
-}
-
-class TodoApp extends ReactComponentOfStateAndRefs<TodoAppState, TodoAppRefs>
+class TodoApp extends ReactComponentOfState<TodoAppState>
 {
 	var todoStore = new TodoStore();
-	
+	var input: js.html.InputElement;
+
 	public function new(props:Dynamic)
 	{
 		super(props);
-		
+
 		state = { items:todoStore.list };
-		
+
 		todoStore.changed.add(function() {
 			setState({ items:todoStore.list });
 		});
 	}
-	
-	override public function render() 
+
+	override function componentWillMount() {
+		trace('App will mount...');
+	}
+
+	override public function render()
 	{
 		var unchecked = state.items.filter(function(item) return !item.checked).length;
-		
+
 		var listProps = { data:state.items };
 		return jsx('
 			<div className="app" style={{margin:"10px"}}>
 				<div className="header">
-					<input ref="input" placeholder="Enter new task description" />
+					<input ref="setInput" placeholder="Enter new task description" />
 					<button className="button-add" onClick=$addItem>+</button>
 				</div>
 				<hr/>
@@ -49,19 +50,23 @@ class TodoApp extends ReactComponentOfStateAndRefs<TodoAppState, TodoAppRefs>
 			</div>
 		');
 	}
-	
+
+	function setInput(ref: js.html.InputElement) {
+		input = ref;
+	}
+
 	function mountList(comp:ReactComponent)
 	{
 		trace('List mounted ' + comp.props);
 	}
-	
+
 	function addItem()
 	{
-		var text = refs.input.value;
-		if (text.length > 0) 
+		var text = input.value;
+		if (text.length > 0)
 		{
 			TodoActions.addItem.dispatch(text);
-			refs.input.value = "";
+			input.value = "";
 		}
 	}
 }
