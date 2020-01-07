@@ -13,12 +13,12 @@ class ReactTypeMacro
 
 	#if macro
 
-	// define React feature flags based on -D haxe_ver (default to latest)
+	// define React feature flags based on -D react_ver (default to latest)
 	public static function setFlags() {
 		var ver = Context.defined("react_ver") ? Context.definedValue("react_ver") : "16.12";
 		var match = ~/([0-9]+).([0-9]+)/;
 		if (!match.match(ver)) {
-			Context.fatalError("Invalid `haxe_ver` specified: " + Context.definedValue("react_ver"), Context.currentPos());
+			Context.fatalError("Invalid `react_ver` specified: " + Context.definedValue("react_ver"), Context.currentPos());
 		}
 		var version = [Std.parseInt(match.matched(1)), Std.parseInt(match.matched(2))];
 

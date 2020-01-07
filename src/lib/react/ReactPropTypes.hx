@@ -2,7 +2,7 @@ package react;
 
 import haxe.extern.EitherType;
 import react.ReactComponent;
-#if (haxe_ver >= 4)
+#if haxe4
 import js.lib.Error;
 #else
 import js.Error;
