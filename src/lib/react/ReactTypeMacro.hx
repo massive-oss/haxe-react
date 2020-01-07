@@ -27,6 +27,7 @@ class ReactTypeMacro
 		}
 		if (semver(version, [16, 3])) {
 			define("react_context_api");
+			define("react_ref_api");
 			define("react_snapshot_api");
 		}
 		if (semver(version, [16, 9])) {

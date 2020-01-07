@@ -28,14 +28,15 @@ extern class React
 	**/
 	public static function isValidElement(object:Dynamic):Bool;
 
+	#if react_context_api
 	/**
 		https://reactjs.org/docs/context.html#reactcreatecontext
 		Note: this API has been introduced in React 16.3
 	**/
-	#if react_context_api
 	public static function createContext<T>(?defaultValue:T, ?calculateChangedBits: T->T->Int):ReactContext<T>;
 	#end
 
+	#if react_ref_api
 	/**
 		https://reactjs.org/docs/react-api.html#reactcreateref
 
@@ -43,10 +44,10 @@ extern class React
 		If you are using an earlier release of React, use callback refs instead
 		https://reactjs.org/docs/refs-and-the-dom.html#callback-refs
 	**/
-	#if react_ref_api
 	public static function createRef<TRef>():ReactRef<TRef>;
 	#end
 
+	#if react_ref_api
 	/**
 		https://reactjs.org/docs/react-api.html#reactforwardref
 		See also https://reactjs.org/docs/forwarding-refs.html
@@ -55,7 +56,6 @@ extern class React
 		If you are using an earlier release of React, use callback refs instead
 		https://reactjs.org/docs/refs-and-the-dom.html#callback-refs
 	**/
-	#if react_ref_api
 	public static function forwardRef<TProps, TRef>(render:TProps->ReactRef<TRef>->ReactElement):CreateElementType;
 	#end
 
