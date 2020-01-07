@@ -61,6 +61,26 @@ class ReactTypeMacro
 			default:
 		}
 
+		// auto-declare arguments of `componentDidUpdate` for convenience
+		var updateArgs = Context.defined("react_snapshot_api") ? 3 : 2;
+		for (field in fields) {
+			if (field.name == 'componentDidUpdate') {
+				switch (field.kind) {
+					case FFun(f):
+						while (f.args.length < updateArgs) {
+							var index = f.args.length;
+							f.args.push({
+								name: '_',
+								opt: index == 2,
+								type: macro :Dynamic
+							});
+						}
+					default:
+				}
+				break;
+			}
+		}
+
 		// Only alter setState signature for non-dynamic states
 		if (!Context.defined('display'))
 			switch (ComplexTypeTools.toType(stateType))

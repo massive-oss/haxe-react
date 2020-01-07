@@ -28,8 +28,8 @@ class TodoApp extends ReactComponentOfState<TodoAppState>
 		});
 	}
 
-	override function componentWillMount() {
-		trace('App will mount...');
+	override function componentDidUpdate() { // notice: args optional here
+		trace('App updated...');
 	}
 
 	override public function render()
