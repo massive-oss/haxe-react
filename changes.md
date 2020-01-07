@@ -1,5 +1,12 @@
 ## Changes
 
+### 1.11.0
+
+- Added proper React feature flags system using `-D react_ver=major.minor` (default to latest)
+- Added UNSAFE lifecycle methods for React 16.9+
+- Enabling `getSnapshotBeforeUpdate` livecycle API for React 16.3+
+- Declaring `componentDidUpdate`'s arguments is now optional, to avoid API breaking changes
+
 ### 1.10.0
 
 - Added `getSnapshotBeforeUpdate` livecycle methods behind `-D react_snapshot_api`

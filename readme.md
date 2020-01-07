@@ -173,6 +173,22 @@ Otherwise all the features will be turned on:
 - `react_snapshot_api`: e.g. `getSnapshotBeforeUpdate`, since React 16.3
 - `react_unsafe_lifecycle`: e.g. `UNSAFE_componentWillMount`, since React 16.9
 
+### Special cases
+
+`componentDidUpdate` exceptionally doesn't need to be overriden with all its parameters,
+as it's common in JS to omit or add just what is needed: since React 16.3 you should
+normally exactly override the function as:
+
+```haxe
+override function componentDidUpdate(prevProps:Props, prevState:State, ?snapshot:Dynamic):Void {
+	// ugh :(
+}
+
+override function componentDidUpdate() {
+	// better!
+}
+```
+
 ## Components strict typing
 
 The default `ReactComponent` type is a shorthand for `ReactComponentOf<Dynamic, Dynamic>`,
