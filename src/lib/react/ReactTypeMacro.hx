@@ -36,6 +36,7 @@ class ReactTypeMacro
 	}
 
 	static function semver(target: Array<Int>, required: Array<Int>) {
+		if (target[0] < required[0]) return false;
 		if (target[0] > required[0]) return true;
 		return target[1] >= required[1];
 	}
