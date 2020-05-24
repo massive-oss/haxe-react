@@ -13,5 +13,5 @@ typedef PureComponentOfPropsAndState<TProps, TState> = PureComponentOf<TProps, T
 @:native('React.PureComponent')
 @:keepSub
 extern class PureComponentOf<TProps, TState>
-extends ReactComponentOf<TProps, TState, Dynamic>
+extends ReactComponentOf<TProps, TState>
 {}
