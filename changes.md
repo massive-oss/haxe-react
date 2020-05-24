@@ -1,5 +1,9 @@
 ## Changes
 
+### 1.11.1
+
+- Fixes `PureComponent` typing
+
 ### 1.11.0
 
 - Added proper React feature flags system using `-D react_ver=major.minor` (default to latest)
