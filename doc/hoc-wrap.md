@@ -10,11 +10,11 @@ import React from 'react';
 import { withRouter } from 'react-router';
 
 class MyComponent extends React.Component {
-    render() {
-        return (
-            <p>Current path is {this.props.location.pathname}</p>
-        );
-    }
+	render() {
+		return (
+			<p>Current path is {this.props.location.pathname}</p>
+		);
+	}
 }
 
 // HOC wrap
@@ -33,8 +33,8 @@ import react.router.Route.RouteRenderProps;
 class MyComponent extends ReactComponentOfProps<RouteRenderProps> {
 	function render() {
 		return jsx(
-            '<p>Current path is ${props.location.pathname}</p>'
-        );
+			'<p>Current path is ${props.location.pathname}</p>'
+		);
 	}
 }
 ```

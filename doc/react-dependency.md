@@ -7,8 +7,8 @@ There are 2 ways to link the React JS library:
 ## Require method (default)
 
 By default the library uses `require('react')` to reference React JS,
-which means that you need to get into the `npm` and use `package.json`
-to manage your JS dependencies.
+which means that you need to use `npm` and `package.json` to manage
+your JS dependencies.
 
 (1) use `npm` to install this dependency:
 
@@ -58,7 +58,7 @@ React in the "global scope" of the browser.
 <script src="//cdnjs.cloudflare.com/ajax/libs/react-dom/16.3.3/umd/react-dom.development.js"></script>
 ```
 
-In this casee you must compile with the following flag:
+In this case you must compile with the following flag:
 
 	-D react_global
 
