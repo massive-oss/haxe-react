@@ -21,7 +21,7 @@ Static components can be expressed as static functions:
 class MyComponents {
 	public static function heading(props:{children:String}) {
 		return jsx('
-			<h1>${props.content}</h1>
+			<h1>{props.content}</h1>
 		');
 	}
 }
@@ -31,7 +31,7 @@ And used in your jsx like this:
 ```haxe
 	jsx('
 		<div>
-			<$MyComponents.heading>Hello world!</$MyComponents.heading>
+			<MyComponents.heading>Hello world!</MyComponents.heading>
 
 			...
 		</div>
@@ -45,7 +45,7 @@ component and only then change it into a static component for performance).
 ## `@:jsxStatic` components
 
 Since haxe-react `1.3.0`, you can use a special meta on any class to transform
-it into a static component in the eyes of the jsx parser:
+it into a static component in the eyes of the JSX parser:
 
 ```haxe
 private typedef Props = {
@@ -72,15 +72,3 @@ Which can be used in jsx just like any other component:
 		</div>
 	');
 ```
-
-### Using `@:jsxStatic` components outside jsx
-
-Current implementation only works when calling your component inside jsx. It
-won't work if you use `Heading` where a `CreateElementType` is required. It
-still works, however, to use `Heading.myRenderFunction` there.
-
-[PR #109](https://github.com/massiveinteractive/haxe-react/pull/109) improves
-`CreateElementType` (and renames it as `ReactNode` like in TypeScript), and
-adds such support. `@:jsxStatic` components can be used anywhere a `ReactNode`
-is needed, like any other component.
-
