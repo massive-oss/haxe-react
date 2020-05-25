@@ -2,7 +2,7 @@
 
 You can use HOCs with your components by adding `@:wrap` meta.
 
-Note: not compatible with `@jsxStatic` meta.
+Note: not compatible with `@:jsxStatic` meta.
 
 In JavaScript it may look like that:
 ```javascript
