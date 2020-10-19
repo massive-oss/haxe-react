@@ -172,7 +172,7 @@ class ReactMacro
 			#if !haxe4
 			{field: "@$__hx__$$typeof", expr: macro untyped __js__("$$tre")},
 			#else
-			{field: "$$typeof", expr: macro untyped __js__("$$tre")},
+			{field: "$$typeof", expr: macro js.Syntax.code("$$tre")},
 			#end
 			{field: 'type', expr: type},
 			{field: 'props', expr: props}
