@@ -39,7 +39,7 @@ class MyComponent extends ReactComponentOfProps<RouteRenderProps> {
 }
 ```
 
-You can add multime `@:wrap` metas:
+You can add multiple `@:wrap` metas:
 
 ```haxe
 import react.ReactComponent;
