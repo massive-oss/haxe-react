@@ -60,6 +60,13 @@ extern class React
 	#end
 
 	/**
+		https://react.dev/reference/react/StrictMode
+
+		Note: this API has been introduced in React 16.3
+	**/
+	public static var StrictMode:CreateElementType;
+
+	/**
 		https://facebook.github.io/react/docs/react-api.html#react.children
 	**/
 	public static var Children:ReactChildren;
