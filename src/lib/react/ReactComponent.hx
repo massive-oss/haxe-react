@@ -24,17 +24,10 @@ typedef ReactComponentOfState<TState> = ReactComponentOf<Empty, TState>;
 // Keep the old ReactComponentOfPropsAndState typedef available a few versions
 typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState>;
 
-#if (jsImport)
-@:js.import(@default "react.Component")
-#else
-
 #if (!react_global)
 @:jsRequire("react", "Component")
 #end
 @:native('React.Component')
-
-#end
-
 @:keepSub
 @:autoBuild(react.ReactComponentMacro.build())
 extern class ReactComponentOf<TProps, TState>
