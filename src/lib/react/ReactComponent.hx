@@ -25,7 +25,7 @@ typedef ReactComponentOfState<TState> = ReactComponentOf<Empty, TState>;
 typedef ReactComponentOfPropsAndState<TProps, TState> = ReactComponentOf<TProps, TState>;
 
 #if (jsImport)
-@:js.import(@default "react")
+@:js.import(@default "react.Component")
 #else
 
 #if (!react_global)

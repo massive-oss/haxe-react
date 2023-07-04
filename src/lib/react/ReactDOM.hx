@@ -8,7 +8,7 @@ import js.html.Element;
 **/
 
 #if (jsImport)
-@:js.import(@default "react")
+@:js.import(@default "react-dom")
 #else
 
 #if (!react_global)

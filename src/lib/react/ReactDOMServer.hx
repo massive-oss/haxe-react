@@ -15,7 +15,7 @@ class ReactMarkupReadableStream extends Readable<ReactMarkupReadableStream> {}
 **/
 
 #if (jsImport)
-@:js.import(@default "react")
+@:js.import(@default "react-dom/server")
 #else
 
 #if (!react_global)
