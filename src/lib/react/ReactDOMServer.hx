@@ -13,10 +13,16 @@ class ReactMarkupReadableStream extends Readable<ReactMarkupReadableStream> {}
 /**
 	https://facebook.github.io/react/docs/react-dom-server.html
 **/
+
+#if (jsImport)
+@:js.import(@default "react")
+#else
+
 #if (!react_global)
 @:jsRequire('react-dom/server')
 #end
 @:native('ReactDOMServer')
+#end
 extern class ReactDOMServer
 {
 	/**

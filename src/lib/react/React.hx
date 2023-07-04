@@ -5,10 +5,17 @@ import react.ReactComponent.ReactElement;
 /**
 	https://facebook.github.io/react/docs/react-api.html
 **/
+
+#if (jsImport)
+@:js.import(@default "react")
+#else
+
 #if (!react_global)
 @:jsRequire("react")
 #end
+
 @:native('React')
+#end
 extern class React
 {
 	// Warning: react.React.PropTypes is deprecated, reference as react.ReactPropTypes
