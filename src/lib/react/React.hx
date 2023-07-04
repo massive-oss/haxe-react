@@ -35,6 +35,18 @@ extern class React
 	**/
 	public static function isValidElement(object:Dynamic):Bool;
 
+	/**
+		https://react.dev/reference/react/useState
+		Note: this API has been introduced in React 16.8
+	**/
+	public static function useState<T>(initialValue:T):Array<T>;
+
+	/**
+		https://react.dev/reference/react/useEffect'
+		Note: this API has been introduced in React 16.8
+	**/
+	public static function useEffect(effect:Void->Void, ?inputs:Array<Dynamic>):Void;
+
 	#if react_context_api
 	/**
 		https://reactjs.org/docs/context.html#reactcreatecontext
