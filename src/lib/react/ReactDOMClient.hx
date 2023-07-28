@@ -1,6 +1,7 @@
 package react;
 
 import js.html.Element;
+import react.ReactComponent.ReactElement;
 
 /**
     Note: this API has been introduced in React 18
