@@ -6,10 +6,16 @@ import js.html.Element;
 /**
 	https://facebook.github.io/react/docs/react-dom.html
 **/
+
+#if (jsImport)
+@:js.import(@default "react-dom")
+#else
+
 #if (!react_global)
 @:jsRequire("react-dom")
 #end
 @:native('ReactDOM')
+#end
 extern class ReactDOM
 {
 	/**

@@ -5,10 +5,17 @@ import react.ReactComponent.ReactElement;
 /**
 	https://facebook.github.io/react/docs/react-api.html
 **/
+
+#if (jsImport)
+@:js.import(@default "react")
+#else
+
 #if (!react_global)
 @:jsRequire("react")
 #end
+
 @:native('React')
+#end
 extern class React
 {
 	// Warning: react.React.PropTypes is deprecated, reference as react.ReactPropTypes
@@ -58,6 +65,13 @@ extern class React
 	**/
 	public static function forwardRef<TProps, TRef>(render:TProps->ReactRef<TRef>->ReactElement):CreateElementType;
 	#end
+
+	/**
+		https://react.dev/reference/react/StrictMode
+
+		Note: this API has been introduced in React 16.3
+	**/
+	public static var StrictMode:CreateElementType;
 
 	/**
 		https://facebook.github.io/react/docs/react-api.html#react.children
